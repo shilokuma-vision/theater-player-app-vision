@@ -1,0 +1,253 @@
+//
+//  VideoDecoder.swift
+//  TheaterMedia
+//
+//  映像のデコード（自分のスレッドで回す）。VideoToolbox（ハードウェア）で扱える形式は VideoToolbox で、それ以外はソフトウェアでデコードする。
+//  インターレースの映像はソフトウェアでデコードして bwdif でプログレッシブにする。
+//  フレームはスクリーンの光（3 区画の色）を測ってから、VideoOutput に時刻付きで渡す。
+//
+
+import CFFmpeg
+import CoreVideo
+import Foundation
+import Synchronization
+
+final class VideoDecoder: @unchecked Sendable {
+    let streamIndex: Int
+    private let timeBase: AVRational
+    private let startTime: Double
+    private let frameDuration: Double
+    private let codec: UnsafeMutablePointer<AVCodecContext>
+    private let frame: UnsafeMutablePointer<AVFrame>
+    private let interlaced: Bool
+    private let rotation: Int
+    private let isHDR: Bool
+    private let maker = PixelBufferMaker()
+    private var deinterlacer: Deinterlacer?
+    private var decoderSerial = -1
+    private var waitingFirstFrame = true
+    private var lastTime: Double?
+    private var reportedFormat: VideoFormat?
+    let queue = PacketQueue()
+    let output: VideoOutput
+    let lights: ScreenLightTimeline
+    private let control: PlaybackControl
+    /// 映像の形式が分かった・変わった
+    var onFormat: (@Sendable (VideoFormat) -> Void)?
+
+    init(
+        stream: UnsafeMutablePointer<AVStream>,
+        index: Int,
+        startTime: Double,
+        control: PlaybackControl,
+        output: VideoOutput,
+        lights: ScreenLightTimeline
+    ) throws {
+        let parameters = stream.pointee.codecpar.pointee
+        guard let decoder = avcodec_find_decoder(parameters.codec_id), let context = avcodec_alloc_context3(decoder),
+              let frame = av_frame_alloc() else {
+            throw MediaError("この映像の形式には対応していません")
+        }
+        codec = context
+        self.frame = frame
+        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "映像の設定")
+        context.pointee.pkt_timebase = stream.pointee.time_base
+        context.pointee.thread_count = 0
+        let fieldOrder = parameters.field_order
+        interlaced = fieldOrder != AV_FIELD_UNKNOWN && fieldOrder != AV_FIELD_PROGRESSIVE
+        if !interlaced {
+            Self.attachVideoToolbox(context)
+        }
+        try check(avcodec_open2(context, decoder, nil), "映像のデコーダーを開けません")
+        streamIndex = index
+        timeBase = stream.pointee.time_base
+        self.startTime = startTime
+        let rate = av_q2d(stream.pointee.avg_frame_rate)
+        frameDuration = rate > 1 ? 1 / rate : 1 / 24
+        rotation = MediaTracks.rotation(of: stream)
+        isHDR = parameters.color_trc == AVCOL_TRC_SMPTE2084 || parameters.color_trc == AVCOL_TRC_ARIB_STD_B67
+        self.control = control
+        self.output = output
+        self.lights = lights
+    }
+
+    deinit {
+        var context: UnsafeMutablePointer<AVCodecContext>? = codec
+        avcodec_free_context(&context)
+        var pointer: UnsafeMutablePointer<AVFrame>? = frame
+        av_frame_free(&pointer)
+    }
+
+    private static func attachVideoToolbox(_ context: UnsafeMutablePointer<AVCodecContext>) {
+        var device: UnsafeMutablePointer<AVBufferRef>?
+        guard av_hwdevice_ctx_create(&device, AV_HWDEVICE_TYPE_VIDEOTOOLBOX, nil, nil, 0) >= 0 else {
+            return
+        }
+        context.pointee.hw_device_ctx = av_buffer_ref(device)
+        av_buffer_unref(&device)
+        tp_use_videotoolbox(context)
+    }
+
+    // MARK: - スレッド
+
+    /// このデコーダーを止める（トラックを替えるとき）
+    private let active = Atomic<Bool>(true)
+
+    func deactivate() {
+        active.store(false, ordering: .releasing)
+        queue.abort()
+    }
+
+    func run() {
+        while !control.isStopped, active.load(ordering: .acquiring) {
+            guard let item = queue.take() else {
+                continue
+            }
+            switch item {
+            case let .packet(packet, serial):
+                var pointer: UnsafeMutablePointer<AVPacket>? = packet
+                defer { av_packet_free(&pointer) }
+                guard serial == control.serial else {
+                    continue
+                }
+                prepare(serial: serial)
+                if avcodec_send_packet(codec, packet) >= 0 {
+                    receiveFrames(serial: serial)
+                }
+            case let .endOfStream(serial):
+                guard serial == control.serial else {
+                    continue
+                }
+                prepare(serial: serial)
+                avcodec_send_packet(codec, nil)
+                receiveFrames(serial: serial)
+                avcodec_flush_buffers(codec)
+                decoderSerial = -1
+                control.markEnded(.video, serial: serial)
+            }
+        }
+    }
+
+    /// 番号が変わったら（シークの直後）、デコーダーと出口を空にする
+    private func prepare(serial: Int) {
+        guard serial != decoderSerial else {
+            return
+        }
+        if decoderSerial >= 0 {
+            avcodec_flush_buffers(codec)
+        }
+        decoderSerial = serial
+        deinterlacer = nil
+        waitingFirstFrame = true
+        lastTime = nil
+        output.flush()
+        lights.clear()
+    }
+
+    private func receiveFrames(serial: Int) {
+        while serial == control.serial, avcodec_receive_frame(codec, frame) >= 0 {
+            defer { av_frame_unref(frame) }
+            if interlaced, frame.pointee.flags & AV_FRAME_FLAG_INTERLACED != 0 || deinterlacer != nil {
+                deinterlace(frame, serial: serial)
+            } else {
+                deliver(frame, timeBase: timeBase, serial: serial)
+            }
+        }
+    }
+
+    private func deinterlace(_ source: UnsafeMutablePointer<AVFrame>, serial: Int) {
+        if deinterlacer == nil {
+            deinterlacer = try? Deinterlacer(
+                width: source.pointee.width,
+                height: source.pointee.height,
+                format: source.pointee.format,
+                timeBase: timeBase,
+                aspect: source.pointee.sample_aspect_ratio
+            )
+        }
+        guard let deinterlacer else {
+            deliver(source, timeBase: timeBase, serial: serial)
+            return
+        }
+        let base = deinterlacer.timeBase
+        deinterlacer.process(source) { output in
+            deliver(output, timeBase: base, serial: serial)
+        }
+    }
+
+    // MARK: - フレームを渡す
+
+    private func deliver(_ decoded: UnsafeMutablePointer<AVFrame>, timeBase base: AVRational, serial: Int) {
+        let time = frameTime(decoded, timeBase: base)
+        let duration = decoded.pointee.duration > 0 ? Double(decoded.pointee.duration) * av_q2d(base) : frameDuration
+        lastTime = time
+        if let target = control.seekTarget(for: serial), time + duration < target {
+            return
+        }
+        guard let buffer = pixelBuffer(of: decoded) else {
+            return
+        }
+        report(decoded)
+        let light = ScreenLightSampler.sample(buffer)
+        guard waitUntilReady(serial: serial) else {
+            return
+        }
+        // 遅れたフレームは飛ばす（デコードが追いつかないとき）。シーク直後の 1 枚目は必ず出す
+        if !waitingFirstFrame, !control.isPaused, time + duration < output.time - 0.15 {
+            return
+        }
+        lights.append(time: time, light: light)
+        output.enqueue(DecodedVideoFrame(pixelBuffer: buffer, time: time, duration: duration, serial: serial),
+                       displayImmediately: waitingFirstFrame && control.isPaused)
+        waitingFirstFrame = false
+    }
+
+    private func frameTime(_ decoded: UnsafeMutablePointer<AVFrame>, timeBase base: AVRational) -> Double {
+        var stamp = decoded.pointee.best_effort_timestamp
+        if stamp == tp_no_pts() {
+            stamp = decoded.pointee.pts
+        }
+        guard stamp != tp_no_pts() else {
+            return (lastTime ?? 0) + frameDuration
+        }
+        return Double(stamp) * av_q2d(base) - startTime
+    }
+
+    private func pixelBuffer(of decoded: UnsafeMutablePointer<AVFrame>) -> CVPixelBuffer? {
+        if let hardware = tp_frame_pixel_buffer(decoded) {
+            let buffer = hardware.takeUnretainedValue()
+            av_vt_pixbuf_set_attachments(nil, buffer, decoded)
+            return buffer
+        }
+        return maker.make(from: decoded)
+    }
+
+    /// 出口が受け取れるまで待つ（止まっている・シークした・閉じたら false）
+    private func waitUntilReady(serial: Int) -> Bool {
+        while !output.isReady {
+            if control.isStopped || serial != control.serial {
+                return false
+            }
+            Thread.sleep(forTimeInterval: 0.004)
+        }
+        return serial == control.serial
+    }
+
+    private func report(_ decoded: UnsafeMutablePointer<AVFrame>) {
+        let width = Int(decoded.pointee.width)
+        let height = Int(decoded.pointee.height)
+        let aspect = decoded.pointee.sample_aspect_ratio
+        let pixelAspect = aspect.num > 0 && aspect.den > 0 ? av_q2d(aspect) : 1
+        let format = VideoFormat(
+            width: width,
+            height: height,
+            displayAspect: Double(width) * pixelAspect / Double(max(height, 1)),
+            rotation: rotation,
+            isHDR: isHDR
+        )
+        if format != reportedFormat {
+            reportedFormat = format
+            onFormat?(format)
+        }
+    }
+}
