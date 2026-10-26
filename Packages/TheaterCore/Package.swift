@@ -12,9 +12,16 @@ let package = Package(
         .macOS(.v26)
     ],
     products: [
+        .library(name: "TheaterScene", targets: ["TheaterScene"]),
         .library(name: "CinemaAudio", targets: ["CinemaAudio"])
     ],
     targets: [
+        .target(
+            name: "TheaterScene",
+            swiftSettings: [
+                .enableUpcomingFeature("MemberImportVisibility")
+            ]
+        ),
         .target(
             name: "CinemaAudio",
             swiftSettings: [
@@ -24,6 +31,10 @@ let package = Package(
         .testTarget(
             name: "CinemaAudioTests",
             dependencies: ["CinemaAudio"]
+        ),
+        .testTarget(
+            name: "TheaterSceneTests",
+            dependencies: ["TheaterScene"]
         )
     ]
 )
