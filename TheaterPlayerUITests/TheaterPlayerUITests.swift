@@ -13,28 +13,30 @@ final class TheaterPlayerUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    /// 起動するとライブラリが開き、ファイルを選べる
     @MainActor
-    func testLaunchShowsContentView() throws {
+    func testLaunchShowsLibrary() throws {
         let app = XCUIApplication()
         app.launch()
 
-        XCTAssertTrue(app.staticTexts["Hello, world!"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["ファイルを選ぶ"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["映画館に入る"].exists)
     }
 
-    /// Immersive Space を開いて閉じられることを確認する（Info.plist の Scene Manifest と ImmersiveSpace の id が合っているか）
+    /// 映画館（Immersive Space）に入り、操作パネルから出られる（Info.plist の Scene Manifest と ImmersiveSpace の id が合っているか）
     @MainActor
-    func testToggleImmersiveSpace() throws {
+    func testEnterAndLeaveTheater() throws {
         let app = XCUIApplication()
         app.launch()
 
-        let showButton = app.buttons["Show Immersive Space"]
-        XCTAssertTrue(showButton.waitForExistence(timeout: 10))
-        showButton.tap()
+        let enter = app.buttons["映画館に入る"]
+        XCTAssertTrue(enter.waitForExistence(timeout: 10))
+        enter.tap()
 
-        let hideButton = app.buttons["Hide Immersive Space"]
-        XCTAssertTrue(hideButton.waitForExistence(timeout: 10))
-        hideButton.tap()
+        let leave = app.buttons["leaveTheater"]
+        XCTAssertTrue(leave.waitForExistence(timeout: 30))
+        leave.tap()
 
-        XCTAssertTrue(showButton.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["ファイルを選ぶ"].waitForExistence(timeout: 15))
     }
 }
