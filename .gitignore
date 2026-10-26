@@ -106,3 +106,12 @@ private_keys/
 # （ralph-loop の制御用 worktree に残ると、起動スクリプトが worktree を片付けられない）
 *.profraw
 *.profdata
+
+# scripts/build-ffmpeg.sh が作る FFmpeg のビルド成果物（ソースから作り直せるので入れない）
+Packages/TheaterMedia/Vendor/
+
+# Tools/Theater（Blender）の作業の出力（.blend・確認用の画像・焼き付けの途中）。作り直せるので入れない
+Tools/Theater/out/
+
+# Python のキャッシュ（Tools/Theater のスクリプトを Blender で流すとできる）
+__pycache__/

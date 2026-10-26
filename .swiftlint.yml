@@ -4,6 +4,8 @@
 
 excluded:
   - .build
+  # ローカルパッケージ・道具の swift build の出力（Packages/*/.build など）
+  - "**/.build"
   - DerivedData
   - Configs
   - "**/Package.swift"
