@@ -1,13 +1,13 @@
 //
-//  VisionOSTemplateAppUITestsLaunchTests.swift
-//  VisionOSTemplateAppUITests
+//  TheaterPlayerUITestsLaunchTests.swift
+//  TheaterPlayerUITests
 //
 //  Created by 村石 拓海 on 2024/05/12.
 //
 
 import XCTest
 
-final class VisionOSTemplateAppUITestsLaunchTests: XCTestCase {
+final class TheaterPlayerUITestsLaunchTests: XCTestCase {
     override static var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }

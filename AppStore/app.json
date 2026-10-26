@@ -6,9 +6,9 @@
     "Bundle ID は Configs/Project.xcconfig の APP_BUNDLE_IDENTIFIER から読む（ここに bundleId を書けばそちらを使う）。",
     "screenshotDemoSource: 撮影モードの Swift ファイル。screenshots.json の scene が ScreenshotDemo.Scene にあるかを突き合わせる。"
   ],
-  "project": "VisionOSTemplateApp.xcodeproj",
-  "scheme": "VisionOSTemplateApp",
+  "project": "TheaterPlayer.xcodeproj",
+  "scheme": "TheaterPlayer",
   "configuration": "Release",
-  "simulatorPrefix": "VisionOSTemplateApp",
-  "screenshotDemoSource": "VisionOSTemplateApp/Screenshot/ScreenshotDemo.swift"
+  "simulatorPrefix": "TheaterPlayer",
+  "screenshotDemoSource": "TheaterPlayer/Screenshot/ScreenshotDemo.swift"
 }

@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4FC9E1E82BF1049B00F630AB"
-               BuildableName = "VisionOSTemplateApp.app"
-               BlueprintName = "VisionOSTemplateApp"
-               ReferencedContainer = "container:VisionOSTemplateApp.xcodeproj">
+               BuildableName = "TheaterPlayer.app"
+               BlueprintName = "TheaterPlayer"
+               ReferencedContainer = "container:TheaterPlayer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,9 +36,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4FC9E1F82BF1049C00F630AB"
-               BuildableName = "VisionOSTemplateAppTests.xctest"
-               BlueprintName = "VisionOSTemplateAppTests"
-               ReferencedContainer = "container:VisionOSTemplateApp.xcodeproj">
+               BuildableName = "TheaterPlayerTests.xctest"
+               BlueprintName = "TheaterPlayerTests"
+               ReferencedContainer = "container:TheaterPlayer.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -46,9 +46,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4FC9E2022BF1049C00F630AB"
-               BuildableName = "VisionOSTemplateAppUITests.xctest"
-               BlueprintName = "VisionOSTemplateAppUITests"
-               ReferencedContainer = "container:VisionOSTemplateApp.xcodeproj">
+               BuildableName = "TheaterPlayerUITests.xctest"
+               BlueprintName = "TheaterPlayerUITests"
+               ReferencedContainer = "container:TheaterPlayer.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -68,9 +68,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4FC9E1E82BF1049B00F630AB"
-            BuildableName = "VisionOSTemplateApp.app"
-            BlueprintName = "VisionOSTemplateApp"
-            ReferencedContainer = "container:VisionOSTemplateApp.xcodeproj">
+            BuildableName = "TheaterPlayer.app"
+            BlueprintName = "TheaterPlayer"
+            ReferencedContainer = "container:TheaterPlayer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -85,9 +85,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4FC9E1E82BF1049B00F630AB"
-            BuildableName = "VisionOSTemplateApp.app"
-            BlueprintName = "VisionOSTemplateApp"
-            ReferencedContainer = "container:VisionOSTemplateApp.xcodeproj">
+            BuildableName = "TheaterPlayer.app"
+            BlueprintName = "TheaterPlayer"
+            ReferencedContainer = "container:TheaterPlayer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

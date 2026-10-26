@@ -1,6 +1,6 @@
 //
 //  RealityKitContentTests.swift
-//  VisionOSTemplateAppTests
+//  TheaterPlayerTests
 //
 //  Packages/RealityKitContent の素材が、ビルドでパッケージのバンドルに入って読み込めることを確認する。
 //  rkassets に素材を足したら arguments にも足す。

@@ -1,10 +1,10 @@
 //
 //  AppModelTests.swift
-//  VisionOSTemplateAppTests
+//  TheaterPlayerTests
 //
 
 import Testing
-@testable import VisionOSTemplateApp
+@testable import TheaterPlayer
 
 struct AppModelTests {
     /// 起動した直後は Immersive Space が閉じている

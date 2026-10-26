@@ -1,4 +1,4 @@
-# VisionOSTemplateApp
+# TheaterPlayer
 
 visionOS Application Template (SwiftUI)
 
@@ -29,13 +29,13 @@ SwiftUI / RealityKit のプロジェクト一式と、ビルド・テスト・Ar
       <tr>
         <td style="border:2px double #000080;text-align:left;">main</td>
         <td style="border:2px double #000080;text-align:center;">
-          <a href="https://github.com/shilokuma-vision/template-app-visionos/actions/workflows/build.yml?query=branch%3Amain">
-            <img src="https://github.com/shilokuma-vision/template-app-visionos/actions/workflows/build.yml/badge.svg?branch=main" alt="Build">
+          <a href="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/build.yml?query=branch%3Amain">
+            <img src="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/build.yml/badge.svg?branch=main" alt="Build">
           </a>
         </td>
         <td style="border:2px double #000080;text-align:center;">
-          <a href="https://github.com/shilokuma-vision/template-app-visionos/actions/workflows/archive.yml?query=branch%3Amain">
-            <img src="https://github.com/shilokuma-vision/template-app-visionos/actions/workflows/archive.yml/badge.svg?branch=main" alt="Archive">
+          <a href="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/archive.yml?query=branch%3Amain">
+            <img src="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/archive.yml/badge.svg?branch=main" alt="Archive">
           </a>
         </td>
         <td style="border:2px double #000080;text-align:center;">
@@ -44,15 +44,15 @@ SwiftUI / RealityKit のプロジェクト一式と、ビルド・テスト・Ar
       <tr>
         <td style="border:2px double #000080;text-align:left;">develop</td>
         <td style="border:2px double #000080;text-align:center;">
-          <a href="https://github.com/shilokuma-vision/template-app-visionos/actions/workflows/build.yml?query=branch%3Adevelop">
-            <img src="https://github.com/shilokuma-vision/template-app-visionos/actions/workflows/build.yml/badge.svg?branch=develop" alt="Build">
+          <a href="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/build.yml?query=branch%3Adevelop">
+            <img src="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/build.yml/badge.svg?branch=develop" alt="Build">
           </a>
         </td>
         <td style="border:2px double #000080;text-align:center;">
         </td>
         <td style="border:2px double #000080;text-align:center;">
-          <a href="https://github.com/shilokuma-vision/template-app-visionos/actions/workflows/upload.yml?query=branch%3Adevelop">
-            <img src="https://github.com/shilokuma-vision/template-app-visionos/actions/workflows/upload.yml/badge.svg?branch=develop" alt="Upload">
+          <a href="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/upload.yml?query=branch%3Adevelop">
+            <img src="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/upload.yml/badge.svg?branch=develop" alt="Upload">
           </a>
         </td>
       </tr>
@@ -68,7 +68,7 @@ GitHub の「Use this template」からリポジトリを作成し、clone し�
 
 ### 2. プロジェクト名を変更する
 
-`VisionOSTemplateApp` を新しいアプリ名に一括変更するスクリプトを用意しています。
+`TheaterPlayer` を新しいアプリ名に一括変更するスクリプトを用意しています。
 ディレクトリ・`.xcodeproj`・スキーム・ソース内の識別子・README のバッジ URL をまとめて置換し、GitHub リポジトリの Discussions を有効にします。
 
 ```bash
@@ -190,8 +190,8 @@ iOS 版にあるプロダクトページのヘッダーと検索結果のクリ�
 
 **スクリーンショット**
 
-- 撮影はアプリの撮影モード（[VisionOSTemplateApp/Screenshot/ScreenshotDemo.swift](VisionOSTemplateApp/Screenshot/ScreenshotDemo.swift)）で行います。`Tools/capture_screenshots.sh` が `-screenshot-demo -screenshot-scene <名前>` と言語を起動引数で渡し、アプリはデモデータで目的の画面を開きます
-- 画面を足すときは、`ScreenshotDemo.Scene` に case を足し、`VisionOSTemplateApp.swift` の `rootView` で開く画面を返し、`AppStore/screenshots.json` の `scenes` に同じ名前を足します（1 表示サイズにつき 10 枚まで）
+- 撮影はアプリの撮影モード（[TheaterPlayer/Screenshot/ScreenshotDemo.swift](TheaterPlayer/Screenshot/ScreenshotDemo.swift)）で行います。`Tools/capture_screenshots.sh` が `-screenshot-demo -screenshot-scene <名前>` と言語を起動引数で渡し、アプリはデモデータで目的の画面を開きます
+- 画面を足すときは、`ScreenshotDemo.Scene` に case を足し、`TheaterPlayer.swift` の `rootView` で開く画面を返し、`AppStore/screenshots.json` の `scenes` に同じ名前を足します（1 表示サイズにつき 10 枚まで）
 - 表示サイズは Apple Vision Pro（`APP_APPLE_VISION_PRO`、3840x2160）の 1 つだけです。Simulator の「Apple Vision Pro」がこの寸法で撮れます
 - 撮れるのは起動直後のウィンドウ（`WindowGroup`）で、Simulator の部屋の中に浮かんだ状態で写ります。Immersive Space の様子を載せたいときは、Xcode の Simulator で撮った画像を App Store Connect に直接上げます
 - 撮るのはリリースのときだけです。`release/**` ブランチを選んで手動実行します（それ以外のブランチでは止まります）
@@ -236,8 +236,8 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 | 項目 | 理由・手順 |
 |---|---|
 | アプリの作成（名前・プライマリ言語・バンドル ID・SKU） | API で作れません。「5. App Store Connect にアプリを作成する」の手順で、Upload の Job Summary に出る値で作ります |
-| App のプライバシー（収集するデータの申告） | API がありません。[VisionOSTemplateApp/PrivacyInfo.xcprivacy](VisionOSTemplateApp/PrivacyInfo.xcprivacy) とプライバシーポリシーに合わせて「App のプライバシー」で答え、公開します |
-| ビルドの選択と審査への提出 | リリースの判断なので人が行います。輸出コンプライアンスは [VisionOSTemplateApp/Info.plist](VisionOSTemplateApp/Info.plist) の `ITSAppUsesNonExemptEncryption`（`false`）で申告済みなので、聞かれません |
+| App のプライバシー（収集するデータの申告） | API がありません。[TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) とプライバシーポリシーに合わせて「App のプライバシー」で答え、公開します |
+| ビルドの選択と審査への提出 | リリースの判断なので人が行います。輸出コンプライアンスは [TheaterPlayer/Info.plist](TheaterPlayer/Info.plist) の `ITSAppUsesNonExemptEncryption`（`false`）で申告済みなので、聞かれません |
 | デジタルサービス法（EU）の取引業者の情報 | アプリごとではなくアカウントで一度だけ行います（「ビジネス」）。登録済みなら不要です |
 
 流す順は、`Metadata/App Store` を dry-run で実行して Job Summary の差分を確かめ → `dry_run` を外して実行 → 最後に出る「審査に出す前に App Store Connect で入力が要るもの」を App Store Connect で埋める、です。
@@ -248,11 +248,11 @@ Xcode の visionOS アプリのテンプレート（Initial Scene: Window、Imme
 
 | ファイル | 役割 |
 |---|---|
-| [VisionOSTemplateApp.swift](VisionOSTemplateApp/VisionOSTemplateApp.swift) | `WindowGroup`（最初に開くウィンドウ）と `ImmersiveSpace`（周りの空間に出す内容）を宣言する |
-| [ContentView.swift](VisionOSTemplateApp/ContentView.swift) | ウィンドウの中身。`Model3D` で RealityKitContent の `Scene` を出し、Immersive Space を開閉するボタンを置く |
-| [ImmersiveSpace/](VisionOSTemplateApp/ImmersiveSpace) | Immersive Space に出す `ImmersiveView`（`RealityView` で `Immersive` を読み込む）と、開閉のボタン |
-| [AppModel.swift](VisionOSTemplateApp/AppModel.swift) | Immersive Space の開閉の状態など、アプリ全体で共有する状態（`@Observable`） |
-| [Info.plist](VisionOSTemplateApp/Info.plist) | Scene Manifest。複数のシーン（ウィンドウと Immersive Space）を使い、Immersive Space を Mixed で始める |
+| [TheaterPlayer.swift](TheaterPlayer/TheaterPlayer.swift) | `WindowGroup`（最初に開くウィンドウ）と `ImmersiveSpace`（周りの空間に出す内容）を宣言する |
+| [ContentView.swift](TheaterPlayer/ContentView.swift) | ウィンドウの中身。`Model3D` で RealityKitContent の `Scene` を出し、Immersive Space を開閉するボタンを置く |
+| [ImmersiveSpace/](TheaterPlayer/ImmersiveSpace) | Immersive Space に出す `ImmersiveView`（`RealityView` で `Immersive` を読み込む）と、開閉のボタン |
+| [AppModel.swift](TheaterPlayer/AppModel.swift) | Immersive Space の開閉の状態など、アプリ全体で共有する状態（`@Observable`） |
+| [Info.plist](TheaterPlayer/Info.plist) | Scene Manifest。複数のシーン（ウィンドウと Immersive Space）を使い、Immersive Space を Mixed で始める |
 | [Packages/RealityKitContent](Packages/RealityKitContent) | 3D の素材（USD）を置く Swift Package。Reality Composer Pro で編集する（[README](Packages/RealityKitContent/README.md)） |
 
 - アプリターゲットは RealityKitContent をリンク済みです。素材を足すときは `RealityKitContent.rkassets` にファイルを置くだけで、pbxproj を変える必要はありません
@@ -264,10 +264,10 @@ Xcode の visionOS アプリのテンプレート（Initial Scene: Window、Imme
 ```
 .
 ├── Configs/                      # xcconfig（署名情報・バージョン・Deployment Target）
-├── VisionOSTemplateApp/          # アプリ本体（SwiftUI / RealityKit）
-├── VisionOSTemplateAppTests/     # Unit テスト（Swift Testing）
-├── VisionOSTemplateAppUITests/   # UI テスト（XCTest）
-├── VisionOSTemplateApp.xcodeproj # 共有スキーム VisionOSTemplateApp を含む
+├── TheaterPlayer/          # アプリ本体（SwiftUI / RealityKit）
+├── TheaterPlayerTests/     # Unit テスト（Swift Testing）
+├── TheaterPlayerUITests/   # UI テスト（XCTest）
+├── TheaterPlayer.xcodeproj # 共有スキーム TheaterPlayer を含む
 ├── Packages/RealityKitContent/   # 3D の素材（Reality Composer Pro）
 ├── AppStore/                     # App Store の掲載情報（言語・撮る画面・説明文）
 ├── Tools/                        # スクリーンショットの撮影と App Store Connect への反映
@@ -291,7 +291,7 @@ Xcode の visionOS アプリのテンプレート（Initial Scene: Window、Imme
 - プロジェクトはフォルダ同期グループ（Xcode 16 以降の形式）で管理しているため、ファイルの追加・削除で pbxproj は変わりません
 - SwiftLint は Build Tool Plugin として全ターゲットに適用され、CI では `swiftlint lint --strict` としても実行されます。ルールは [.swiftlint.yml](.swiftlint.yml) で管理します
 - CI のワークフローは `*.xcodeproj` の名前と同名の共有スキームが存在することを前提にしています
-- [VisionOSTemplateApp/PrivacyInfo.xcprivacy](VisionOSTemplateApp/PrivacyInfo.xcprivacy) はプライバシーマニフェストです。UserDefaults（`@AppStorage`）の利用だけを申告しています。データの収集・トラッキング・ほかの理由の申告が必要な API を足したら、ここと App Store Connect の「App のプライバシー」を更新してください
+- [TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) はプライバシーマニフェストです。UserDefaults（`@AppStorage`）の利用だけを申告しています。データの収集・トラッキング・ほかの理由の申告が必要な API を足したら、ここと App Store Connect の「App のプライバシー」を更新してください
 
 ## License
 

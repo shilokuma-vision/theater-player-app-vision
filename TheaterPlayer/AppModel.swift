@@ -1,8 +1,8 @@
 //
 //  AppModel.swift
-//  VisionOSTemplateApp
+//  TheaterPlayer
 //
-//  アプリ全体で共有する状態。VisionOSTemplateApp で 1 つ作り、environment で各 View に渡す。
+//  アプリ全体で共有する状態。TheaterPlayer で 1 つ作り、environment で各 View に渡す。
 //
 
 import Observation

@@ -1,6 +1,6 @@
 //
-//  VisionOSTemplateApp.swift
-//  VisionOSTemplateApp
+//  TheaterPlayer.swift
+//  TheaterPlayer
 //
 //  Created by 村石 拓海 on 2024/05/12.
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct VisionOSTemplateApp: App {
+struct TheaterPlayer: App {
     @State private var appModel = AppModel()
 
     var body: some Scene {

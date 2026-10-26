@@ -1,6 +1,6 @@
 //
 //  ToggleImmersiveSpaceButton.swift
-//  VisionOSTemplateApp
+//  TheaterPlayer
 //
 //  Immersive Space を開閉するボタン。
 //

@@ -1,6 +1,6 @@
 //
 //  ImmersiveView.swift
-//  VisionOSTemplateApp
+//  TheaterPlayer
 //
 //  Immersive Space（周りの空間）に出す内容。RealityKitContent の Immersive.usda を読み込んで置く。
 //

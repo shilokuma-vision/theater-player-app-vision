@@ -11,7 +11,7 @@ set -euo pipefail
 #
 #   -screenshot-demo -screenshot-scene <scene> -AppleLanguages (<言語>) -AppleLocale <ロケール>
 #
-# アプリ側はこの起動引数を読んで、デモデータで目的の画面を開く（VisionOSTemplateApp/Screenshot/ScreenshotDemo.swift）。
+# アプリ側はこの起動引数を読んで、デモデータで目的の画面を開く（TheaterPlayer/Screenshot/ScreenshotDemo.swift）。
 # 1 回ビルドしたものを使い回すので、言語を増やしても時間は大きく伸びない。
 #
 # 出力先: $SCREENSHOTS_DIR/<表示サイズ>/<言語>/01_….png …（既定は build/screenshots）
