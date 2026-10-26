@@ -1,0 +1,220 @@
+//
+//  ControlPanel.swift
+//  TheaterPlayer
+//
+//  手元の操作パネル（座席の前、ひざの上あたりに浮かぶ）。再生の操作と、照明・席・音響・トラックの切り替え。
+//  映画館の中ではメニュー（ポップオーバー）を出せないので、パネルの中でページを切り替える。
+//  再生中は 6 秒操作しないと小さく畳む（映画の邪魔をしない）。
+//
+
+import SwiftUI
+import TheaterMedia
+
+struct ControlPanel: View {
+    enum Page: Hashable {
+        case main, audioTracks, subtitles, speed, lighting, seats, sound
+    }
+
+    let stage: TheaterStage?
+    let loadError: String?
+    @Environment(AppModel.self) private var appModel
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
+    @State private var page = Page.main
+    @State private var collapsed = false
+    @State private var lastInteraction = Date()
+
+    var body: some View {
+        Group {
+            if collapsed {
+                Button {
+                    touch()
+                } label: {
+                    Label("操作を表示", systemImage: "chevron.up")
+                }
+                .padding(12)
+                .glassBackgroundEffect()
+            } else {
+                expanded
+                    .frame(width: 720)
+                    .padding(28)
+                    .glassBackgroundEffect()
+            }
+        }
+        .task(id: lastInteraction) {
+            try? await Task.sleep(for: .seconds(6))
+            if appModel.player.isPlaying, page == .main {
+                withAnimation { collapsed = true }
+            }
+        }
+        .simultaneousGesture(TapGesture().onEnded { touch() })
+    }
+
+    private func touch() {
+        lastInteraction = Date()
+        withAnimation { collapsed = false }
+    }
+
+    @ViewBuilder private var expanded: some View {
+        switch page {
+        case .main:
+            mainPage
+        case .audioTracks:
+            AudioTrackPage(page: $page)
+        case .subtitles:
+            SubtitlePage(page: $page)
+        case .speed:
+            SpeedPage(page: $page)
+        case .lighting:
+            LightingPage(page: $page)
+        case .seats:
+            SeatPicker(stage: stage, page: $page)
+        case .sound:
+            SoundPage(stage: stage, page: $page)
+        }
+    }
+
+    private var mainPage: some View {
+        VStack(spacing: 18) {
+            if let loadError {
+                Text(loadError).foregroundStyle(.red)
+            }
+            NowPlayingHeader()
+            if appModel.player.hasMedia {
+                TransportControls()
+            } else {
+                Text("ライブラリでファイルを選ぶと、ここで再生します")
+                    .foregroundStyle(.secondary)
+            }
+            HStack(spacing: 12) {
+                pageButton("音声", systemImage: "waveform", page: .audioTracks)
+                    .disabled(!appModel.player.hasMedia)
+                pageButton("字幕", systemImage: "captions.bubble", page: .subtitles)
+                    .disabled(!appModel.player.hasMedia)
+                pageButton("速さ", systemImage: "gauge.with.dots.needle.50percent", page: .speed)
+                    .disabled(!appModel.player.hasMedia)
+                pageButton("明るさ", systemImage: "lightbulb.max", page: .lighting)
+                pageButton("座席", systemImage: "chair", page: .seats)
+                pageButton("音響", systemImage: "hifispeaker.2", page: .sound)
+            }
+            HStack {
+                Button {
+                    openWindow(id: appModel.libraryWindowID)
+                } label: {
+                    Label("ライブラリ", systemImage: "rectangle.stack")
+                }
+                Spacer()
+                Button(role: .destructive) {
+                    Task {
+                        openWindow(id: appModel.libraryWindowID)
+                        await dismissImmersiveSpace()
+                    }
+                } label: {
+                    Label("映画館を出る", systemImage: "door.left.hand.open")
+                }
+                .accessibilityIdentifier("leaveTheater")
+            }
+        }
+    }
+
+    private func pageButton(_ title: LocalizedStringKey, systemImage: String, page target: Page) -> some View {
+        Button {
+            page = target
+            touch()
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: systemImage).font(.title2)
+                Text(title).font(.caption)
+            }
+            .frame(width: 88, height: 64)
+        }
+        .buttonStyle(.bordered)
+    }
+}
+
+/// 曲名・題名と、時刻
+struct NowPlayingHeader: View {
+    @Environment(AppModel.self) private var appModel
+
+    var body: some View {
+        let player = appModel.player
+        VStack(spacing: 4) {
+            Text(player.hasMedia ? player.title : String(localized: "Theater Player"))
+                .font(.title2.weight(.semibold))
+                .lineLimit(1)
+            if let artist = player.info?.artist, player.info?.isAudioOnly == true {
+                Text(artist).font(.subheadline).foregroundStyle(.secondary)
+            }
+            if let message = player.errorMessage {
+                Text(message).font(.footnote).foregroundStyle(.red)
+            }
+        }
+    }
+}
+
+/// シーク・再生・音量
+struct TransportControls: View {
+    @Environment(AppModel.self) private var appModel
+    @State private var scrubbing: Double?
+
+    var body: some View {
+        let player = appModel.player
+        VStack(spacing: 14) {
+            Slider(
+                value: Binding(get: { scrubbing ?? player.currentTime }, set: { scrubbing = $0 }),
+                in: 0...max(player.duration, 1)
+            ) { editing in
+                if !editing, let target = scrubbing {
+                    player.seek(to: target)
+                    scrubbing = nil
+                }
+            }
+            HStack {
+                Text(TimeFormat.clock(scrubbing ?? player.currentTime)).monospacedDigit()
+                Spacer()
+                Text("-" + TimeFormat.clock(max(0, player.duration - (scrubbing ?? player.currentTime)))).monospacedDigit()
+            }
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            HStack(spacing: 28) {
+                Button { player.skip(by: -10) } label: { Image(systemName: "gobackward.10").font(.title) }
+                Button { player.togglePlay() } label: {
+                    Image(systemName: player.isPlaying ? "pause.fill" : "play.fill").font(.largeTitle)
+                        .frame(width: 64, height: 64)
+                }
+                Button { player.skip(by: 30) } label: { Image(systemName: "goforward.30").font(.title) }
+            }
+            .buttonStyle(.borderless)
+            VolumeSlider()
+        }
+    }
+}
+
+struct VolumeSlider: View {
+    @Environment(AppModel.self) private var appModel
+
+    var body: some View {
+        @Bindable var preferences = appModel.preferences
+        HStack {
+            Image(systemName: "speaker.fill")
+            Slider(value: $preferences.volume, in: 0...1.5)
+                .onChange(of: preferences.volume) { appModel.player.applyAudioPreferences() }
+            Image(systemName: "speaker.wave.3.fill")
+        }
+        .foregroundStyle(.secondary)
+    }
+}
+
+/// 時刻の表示（1:23:45）
+enum TimeFormat {
+    static func clock(_ seconds: Double) -> String {
+        guard seconds.isFinite else {
+            return "--:--"
+        }
+        let total = Int(seconds.rounded(.down))
+        let hours = total / 3_600
+        let minutes = total / 60 % 60
+        let rest = total % 60
+        return hours > 0 ? String(format: "%d:%02d:%02d", hours, minutes, rest) : String(format: "%d:%02d", minutes, rest)
+    }
+}
