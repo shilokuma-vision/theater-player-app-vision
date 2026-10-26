@@ -1,15 +1,22 @@
-# TheaterPlayer
+# Theater Player
 
-visionOS Application Template (SwiftUI)
+Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を再生するアプリです。
 
-visionOS（Apple Vision Pro）アプリのリポジトリを新規作成するときの GitHub テンプレートリポジトリです。
-SwiftUI / RealityKit のプロジェクト一式と、ビルド・テスト・Archive・TestFlight 配信までの GitHub Actions ワークフローを含みます。
-[shilokuma-inc/template-app-ios](https://github.com/shilokuma-inc/template-app-ios) の visionOS 版で、CI や App Store の掲載情報の仕組みは iOS 版と同じ作りです。
+- **VLC と同じくらい幅広い形式**：VLC が内部で使っている FFmpeg でファイルを開くので、MKV・MP4・MOV・AVI・WMV・FLV・WebM・TS・M2TS・VOB・OGG などの動画と、
+  AAC・AC-3・E-AC-3・DTS・TrueHD・FLAC・ALAC・MP3・Opus・Vorbis・WMA・APE・DSD・WAV などの音声を再生できます。H.264・HEVC（HDR を含む）・ProRes などは VideoToolbox（ハードウェア）でデコードします。
+  字幕（SRT・ASS・WebVTT・PGS・DVD など）、音声・字幕のトラックの切り替え、チャプター、シーク、再生の速さ、音・字幕のずれの調整、続きからの再生に対応します
+- **Blender で作った映画館**：442 席のスタジアム形式の劇場（曲面スクリーン・マスキング・木のフィンと吸音パネル・浮き天井のダウンライトと間接照明・足元灯・誘導灯・サラウンドスピーカー）。
+  照明は Cycles で層ごとに焼き付け、客電の明るさと、映像の色によるスクリーンの照り返しをアプリで変えます（[Tools/Theater](Tools/Theater/README.md)）
+- **映画館の空間オーディオ**：スクリーンの裏の L / C / R、サブウーファー、側壁・後方・天井のサラウンドの位置に、RealityKit の空間オーディオの音源を置いて鳴らします。
+  5.1・7.1・7.1.4 はそのまま、ステレオは映画館向けに広げます。低音はサブウーファーへ集め、低音の量・低音の残響・体感の低音（倍音）を調整できます
+- **部屋の明るさと座る席**：再生を始めると客電がゆっくり落ち、止めると戻ります。座席表から好きな席に移れます
 
 ## Environment
 
 - Xcode 26.6
 - visionOS 26.0 以上
+- FFmpeg 9.0.2（LGPL の構成。`scripts/build-ffmpeg.sh` でソースから作る。下の「開発の準備」）
+- Blender 5.2（映画館のモデルを作り直すときだけ。[Tools/Theater](Tools/Theater/README.md)）
 - Swift 6（Swift 6 言語モード / Strict Concurrency）
 - SwiftUI / RealityKit / Swift Testing / XCTest（UI テスト）
 - SwiftLint 0.65.1（Build Tool Plugin。バイナリだけを配布する [SwiftLintPlugins](https://github.com/SimplyDanny/SwiftLintPlugins) 経由）
@@ -29,13 +36,13 @@ SwiftUI / RealityKit のプロジェクト一式と、ビルド・テスト・Ar
       <tr>
         <td style="border:2px double #000080;text-align:left;">main</td>
         <td style="border:2px double #000080;text-align:center;">
-          <a href="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/build.yml?query=branch%3Amain">
-            <img src="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/build.yml/badge.svg?branch=main" alt="Build">
+          <a href="https://github.com/shilokuma-vision/theater-player-app-vision/actions/workflows/build.yml?query=branch%3Amain">
+            <img src="https://github.com/shilokuma-vision/theater-player-app-vision/actions/workflows/build.yml/badge.svg?branch=main" alt="Build">
           </a>
         </td>
         <td style="border:2px double #000080;text-align:center;">
-          <a href="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/archive.yml?query=branch%3Amain">
-            <img src="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/archive.yml/badge.svg?branch=main" alt="Archive">
+          <a href="https://github.com/shilokuma-vision/theater-player-app-vision/actions/workflows/archive.yml?query=branch%3Amain">
+            <img src="https://github.com/shilokuma-vision/theater-player-app-vision/actions/workflows/archive.yml/badge.svg?branch=main" alt="Archive">
           </a>
         </td>
         <td style="border:2px double #000080;text-align:center;">
@@ -44,15 +51,15 @@ SwiftUI / RealityKit のプロジェクト一式と、ビルド・テスト・Ar
       <tr>
         <td style="border:2px double #000080;text-align:left;">develop</td>
         <td style="border:2px double #000080;text-align:center;">
-          <a href="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/build.yml?query=branch%3Adevelop">
-            <img src="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/build.yml/badge.svg?branch=develop" alt="Build">
+          <a href="https://github.com/shilokuma-vision/theater-player-app-vision/actions/workflows/build.yml?query=branch%3Adevelop">
+            <img src="https://github.com/shilokuma-vision/theater-player-app-vision/actions/workflows/build.yml/badge.svg?branch=develop" alt="Build">
           </a>
         </td>
         <td style="border:2px double #000080;text-align:center;">
         </td>
         <td style="border:2px double #000080;text-align:center;">
-          <a href="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/upload.yml?query=branch%3Adevelop">
-            <img src="https://github.com/shilokuma-inc/theater-player-app-vision/actions/workflows/upload.yml/badge.svg?branch=develop" alt="Upload">
+          <a href="https://github.com/shilokuma-vision/theater-player-app-vision/actions/workflows/upload.yml?query=branch%3Adevelop">
+            <img src="https://github.com/shilokuma-vision/theater-player-app-vision/actions/workflows/upload.yml/badge.svg?branch=develop" alt="Upload">
           </a>
         </td>
       </tr>
@@ -60,7 +67,20 @@ SwiftUI / RealityKit のプロジェクト一式と、ビルド・テスト・Ar
   </table>
 </div>
 
-## テンプレートの使い方
+## 開発の準備（FFmpeg）
+
+FFmpeg（と AV1 の dav1d）は、リポジトリに入れずにソースから作ります。clone したら最初に一度だけ実行してください（M4 Max で数分）。
+
+```bash
+scripts/build-ffmpeg.sh
+```
+
+- 公式の配布物（ffmpeg.org・videolan.org）を取得し、SHA-256 を確かめてから、visionOS の実機（xros）と Simulator（xrsimulator）向けにビルドします
+- できあがるのは `Packages/TheaterMedia/Vendor/FFmpeg.xcframework`（git には入りません）。これが無いと Xcode がパッケージを読めません
+- FFmpeg は LGPL 2.1 以降の構成です（GPL・nonfree のコンポーネントは有効にしません）。dav1d は BSD 2-Clause です
+- CI ではキャッシュし、スクリプト・Xcode・Deployment Target が変わったときだけ作り直します
+
+## リポジトリの運用（テンプレートから引き継いだもの）
 
 ### 1. リポジトリを作成する
 
@@ -244,48 +264,47 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 
 ## アプリの構成
 
-Xcode の visionOS アプリのテンプレート（Initial Scene: Window、Immersive Space Renderer: RealityKit、Immersive Space: Mixed）と同じ構成です。
-
-| ファイル | 役割 |
+| 場所 | 役割 |
 |---|---|
-| [TheaterPlayer.swift](TheaterPlayer/TheaterPlayer.swift) | `WindowGroup`（最初に開くウィンドウ）と `ImmersiveSpace`（周りの空間に出す内容）を宣言する |
-| [ContentView.swift](TheaterPlayer/ContentView.swift) | ウィンドウの中身。`Model3D` で RealityKitContent の `Scene` を出し、Immersive Space を開閉するボタンを置く |
-| [ImmersiveSpace/](TheaterPlayer/ImmersiveSpace) | Immersive Space に出す `ImmersiveView`（`RealityView` で `Immersive` を読み込む）と、開閉のボタン |
-| [AppModel.swift](TheaterPlayer/AppModel.swift) | Immersive Space の開閉の状態など、アプリ全体で共有する状態（`@Observable`） |
-| [Info.plist](TheaterPlayer/Info.plist) | Scene Manifest。複数のシーン（ウィンドウと Immersive Space）を使い、Immersive Space を Mixed で始める |
-| [Packages/RealityKitContent](Packages/RealityKitContent) | 3D の素材（USD）を置く Swift Package。Reality Composer Pro で編集する（[README](Packages/RealityKitContent/README.md)） |
+| [TheaterPlayer/Library](TheaterPlayer/Library) | ライブラリ（最初のウィンドウ）。「ファイル」・写真から選ぶ、最近の一覧から続きを再生する |
+| [TheaterPlayer/Theater](TheaterPlayer/Theater) | 映画館（`ImmersiveSpace`、Full）。映画館のモデル・スクリーンの映像（`VideoMaterial(videoRenderer:)`）・空間オーディオのスピーカー・照明の演出・手元の操作パネル・座席表・字幕 |
+| [TheaterPlayer/Model](TheaterPlayer/Model) | 再生の状態（`PlayerModel`）・設定（`Preferences`）・最近の一覧（`RecentItems`） |
+| [TheaterPlayer/Resources/Theater](TheaterPlayer/Resources/Theater) | 映画館のモデル（`Theater.usdz`）と配置（`TheaterLayout.json`）。[Tools/Theater](Tools/Theater/README.md) のスクリプトが書く |
+| [Packages/TheaterMedia](Packages/TheaterMedia) | 再生のエンジン。FFmpeg で開いてデコードし、映像は `AVSampleBufferVideoRenderer` へ、音声は映画館の音響処理へ。音の時計に映像を合わせる |
+| [Packages/TheaterCore](Packages/TheaterCore) | `CinemaAudio`（映画館の音響処理：系統への振り分け・アップミックス・ベースマネジメント・低音・リミッター・スピーカーへの輪のバッファ）と、`TheaterScene`（映画館の空間：照明の状態・座席の組み立て・マスキング・スクリーンの曲面）。macOS でもテストできる |
+| [Tools/Theater](Tools/Theater) | 映画館を作る Blender のスクリプトと、RealityKit で確かめる道具 |
 
-- アプリターゲットは RealityKitContent をリンク済みです。素材を足すときは `RealityKitContent.rkassets` にファイルを置くだけで、pbxproj を変える必要はありません
-- 最初のシーンをウィンドウではなくボリューム（`.windowStyle(.volumetric)`）にするときは、Info.plist の `UIApplicationPreferredDefaultSceneSessionRole` を `UIWindowSceneSessionRoleVolumetricApplication` に変えます
-- Immersive Space を Full / Progressive にするときは、`immersionStyle` と Info.plist の `UISceneInitialImmersionStyle` を揃えて変えます
+### 音の流れ
+
+```
+ファイル → FFmpeg（デコード → 48 kHz の float）→ CinemaProcessor（7.1.4 の系統へ振り分け・アップミックス → ベースマネジメント → 低音 → 音量の幅 → スピーカーごとの倍率と遅延 → リミッター）
+        → SpeakerFeedRing → RealityKit の空間オーディオの音源（スピーカー 31 台の位置）
+```
+
+- サラウンドは同じ信号を何台ものスピーカーで鳴らす（映画館のアレイ）ので、スピーカーごとに 0〜6 ms ずらして音が濁らないようにしています
+- 再生の時計は、音が実際に鳴った位置（描画の時刻）から求め、映像の時計（`AVSampleBufferRenderSynchronizer`）をそれに合わせます
 
 ## 構成
 
 ```
 .
 ├── Configs/                      # xcconfig（署名情報・バージョン・Deployment Target）
-├── TheaterPlayer/          # アプリ本体（SwiftUI / RealityKit）
-├── TheaterPlayerTests/     # Unit テスト（Swift Testing）
-├── TheaterPlayerUITests/   # UI テスト（XCTest）
-├── TheaterPlayer.xcodeproj # 共有スキーム TheaterPlayer を含む
-├── Packages/RealityKitContent/   # 3D の素材（Reality Composer Pro）
+├── TheaterPlayer/                # アプリ本体（SwiftUI / RealityKit）
+├── TheaterPlayerTests/           # Unit テスト（Swift Testing）
+├── TheaterPlayerUITests/         # UI テスト（XCTest）
+├── TheaterPlayer.xcodeproj       # 共有スキーム TheaterPlayer を含む（パッケージのテストも実行する）
+├── Packages/
+│   ├── TheaterCore/              # 映画館の音響処理（CinemaAudio）と空間（TheaterScene）
+│   ├── TheaterMedia/             # 再生のエンジン（FFmpeg）。Vendor/ は scripts/build-ffmpeg.sh が作る
+│   └── RealityKitContent/        # Reality Composer Pro の素材（テンプレートから）
 ├── AppStore/                     # App Store の掲載情報（言語・撮る画面・説明文）
-├── Tools/                        # スクリーンショットの撮影と App Store Connect への反映
+├── Tools/
+│   ├── Theater/                  # 映画館のモデル（Blender のスクリプト・RealityKit で確かめる道具）
+│   └── …                         # スクリーンショットの撮影と App Store Connect への反映
 ├── docs/                         # ExportOptions.plist のサンプル
-├── scripts/                      # rename.sh
+├── scripts/                      # build-ffmpeg.sh・rename.sh
 ├── .swiftlint.yml                # SwiftLint 設定
-└── .github/
-    ├── ISSUE_TEMPLATE/           # Issue テンプレート
-    ├── pull_request_template.md
-    ├── scripts/                  # check-app-store-app.rb（App Store Connect のアプリの有無を確認）
-    └── workflows/
-        ├── _build.yml            # 共通処理: ビルド + テスト + SwiftLint（workflow_call）
-        ├── _archive.yml          # 共通処理: Archive → Export（→ Upload）（workflow_call）
-        ├── build.yml             # 全ブランチの push / Fork からの PR
-        ├── archive.yml           # main の push
-        ├── upload.yml            # develop / release/** の push
-        ├── app-store-*.yml       # App Store の掲載情報の反映（手動実行）
-        └── verify-app-store-metadata.yml  # 掲載情報の検査（PR）
+└── .github/                      # Issue・PR のテンプレートと、ワークフロー（_build.yml・_archive.yml は FFmpeg を作ってキャッシュする）
 ```
 
 - プロジェクトはフォルダ同期グループ（Xcode 16 以降の形式）で管理しているため、ファイルの追加・削除で pbxproj は変わりません
@@ -293,6 +312,8 @@ Xcode の visionOS アプリのテンプレート（Initial Scene: Window、Imme
 - CI のワークフローは `*.xcodeproj` の名前と同名の共有スキームが存在することを前提にしています
 - [TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) はプライバシーマニフェストです。UserDefaults（`@AppStorage`）の利用だけを申告しています。データの収集・トラッキング・ほかの理由の申告が必要な API を足したら、ここと App Store Connect の「App のプライバシー」を更新してください
 
-## License
+## ライセンス
 
-[MIT License](LICENSE)
+- このアプリ：[MIT License](LICENSE)
+- FFmpeg：[LGPL 2.1 以降](https://ffmpeg.org/legal.html)（静的にリンクします。このアプリのソースと、FFmpeg を作るスクリプトを公開しているので、差し替えた FFmpeg で作り直せます）
+- dav1d：[BSD 2-Clause](https://code.videolan.org/videolan/dav1d/-/blob/master/COPYING)
