@@ -1,0 +1,8 @@
+//
+//  Release.xcconfig
+//  VisionOSTemplateApp
+//
+//  Release 構成だけに適用したい設定をここに書く。
+//
+
+#include "Project.xcconfig"

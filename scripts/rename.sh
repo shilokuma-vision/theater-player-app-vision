@@ -1,0 +1,113 @@
+#!/bin/bash
+#
+# テンプレートのプロジェクト名（VisionOSTemplateApp）を新しいアプリ名に一括変更する。
+# あわせて、GitHub リポジトリの Discussions を有効にする（テンプレートから作成しても設定は引き継がれない）。
+#
+# 使い方:
+#   scripts/rename.sh <NewAppName> [owner/repo]
+#
+#   NewAppName  新しいプロジェクト名。英字で始まる英数字のみ（例: MyApp）
+#   owner/repo  README のバッジ URL と Discussions の有効化に使う GitHub リポジトリ。省略時は origin から推定する
+#
+# 実行後に行うこと:
+#   - Configs/Project.xcconfig の DEVELOPMENT_TEAM / APP_BUNDLE_IDENTIFIER を書き換える
+#   - 差分を確認してコミットする
+#   - App Store に出す前に、AppStore/ の TODO: を書き換える（README の「App Store の掲載情報」）
+#
+set -euo pipefail
+
+OLD_NAME="VisionOSTemplateApp"
+OLD_REPO="shilokuma-vision/template-app-visionos"
+
+NEW_NAME="${1:-}"
+if [[ ! "$NEW_NAME" =~ ^[A-Za-z][A-Za-z0-9]*$ ]]; then
+  echo "usage: $0 <NewAppName> [owner/repo]" >&2
+  echo "  NewAppName は英字で始まる英数字のみ（例: MyApp）" >&2
+  exit 1
+fi
+if [[ "$NEW_NAME" == "$OLD_NAME" ]]; then
+  echo "新しい名前が現在の名前と同じです: $NEW_NAME" >&2
+  exit 1
+fi
+
+NEW_REPO="${2:-}"
+if [[ -z "$NEW_REPO" ]]; then
+  NEW_REPO=$(git remote get-url origin 2>/dev/null | sed -E 's#^.*github\.com[:/]##; s#\.git$##' || true)
+fi
+if [[ ! "$NEW_REPO" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+  echo "GitHub リポジトリ（owner/repo）を特定できません。第 2 引数で指定してください" >&2
+  exit 1
+fi
+
+cd "$(git rev-parse --show-toplevel)"
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "作業ツリーに未コミットの変更があります。コミットまたは退避してから実行してください" >&2
+  exit 1
+fi
+
+echo "==> $OLD_NAME -> $NEW_NAME / $OLD_REPO -> $NEW_REPO"
+
+# 1) パスに旧名を含むファイルを新しいパスへ移動する（深い階層から順に）
+echo "==> ファイル・ディレクトリをリネーム"
+while IFS= read -r -d '' path; do
+  new_path="${path//$OLD_NAME/$NEW_NAME}"
+  mkdir -p "$(dirname "$new_path")"
+  git mv "$path" "$new_path"
+  echo "  $path -> $new_path"
+done < <(git ls-files -z | grep -z "$OLD_NAME" | sort -z -r)
+
+# 移動後にファイルが残っていない旧ディレクトリを削除する（空のサブディレクトリごと）
+find . -depth -type d -name "*${OLD_NAME}*" -not -path "./.git/*" | while IFS= read -r dir; do
+  if [[ -z "$(find "$dir" -type f -print -quit)" ]]; then
+    rm -r "$dir"
+  fi
+done
+
+# 2) ファイル内容の旧名・旧リポジトリを置換する（バイナリは対象外）
+echo "==> ファイル内容を置換"
+git ls-files -z \
+  | xargs -0 grep -Il -e "$OLD_NAME" -e "$OLD_REPO" 2>/dev/null \
+  | grep -v "^scripts/rename.sh$" \
+  | while IFS= read -r file; do
+      perl -pi -e "s/\Q$OLD_NAME\E/$NEW_NAME/g; s#\Q$OLD_REPO\E#$NEW_REPO#g" "$file"
+      echo "  $file"
+    done
+
+# 3) アプリのモジュールを import している Swift ファイルの import を並べ直す。
+#    テストの `@testable import <アプリ名>` は名前によって並びの位置が変わり、SwiftLint の sorted_imports
+#    （@testable などを除いたモジュール名の、大文字・小文字を区別しない順）に合わなくなる
+echo "==> import を並べ直す"
+git ls-files -z -- '*.swift' \
+  | xargs -0 grep -lE "^(@testable )?import ${NEW_NAME}\$" 2>/dev/null \
+  | while IFS= read -r file; do
+      perl -0pi -e 's{(?:^(?:\@testable )?import [^\n]+\n)+}{join "", sort { lc(($a =~ /import (?:\w+ )?(\S+)$/m)[0]) cmp lc(($b =~ /import (?:\w+ )?(\S+)$/m)[0]) } split /(?<=\n)/, $&}gme' "$file"
+      echo "  $file"
+    done
+
+# 4) GitHub リポジトリの Discussions を有効にする（ralph-loop はゴールを Discussion で受け取る）
+#    gh が無い・権限が無いなどで有効にできなくても、リネームは止めずに手順を表示する
+echo "==> Discussions を有効化"
+if ! command -v gh >/dev/null 2>&1; then
+  discussions_enabled=false
+  echo "  gh コマンドが見つかりません" >&2
+elif [[ "$(gh repo view "$NEW_REPO" --json hasDiscussionsEnabled --jq .hasDiscussionsEnabled 2>/dev/null)" == "true" ]]; then
+  discussions_enabled=true
+  echo "  ${NEW_REPO}: 既に有効です"
+elif gh repo edit "$NEW_REPO" --enable-discussions; then
+  discussions_enabled=true
+  echo "  ${NEW_REPO}: 有効にしました"
+else
+  discussions_enabled=false
+fi
+if [[ "$discussions_enabled" != true ]]; then
+  echo "  警告: Discussions を有効にできませんでした。リポジトリの管理者が次のどちらかで有効にしてください:" >&2
+  echo "    - gh repo edit ${NEW_REPO} --enable-discussions" >&2
+  echo "    - GitHub のリポジトリの Settings → General → Features で Discussions にチェックを入れる" >&2
+fi
+
+echo
+echo "完了しました。続けて以下を行ってください:"
+echo "  1. Configs/Project.xcconfig の DEVELOPMENT_TEAM と APP_BUNDLE_IDENTIFIER を書き換える"
+echo "  2. git diff で差分を確認し、コミットする"
+echo "  3. App Store に出す前に、AppStore/metadata/*.json と AppStore/app_info.json の TODO: を書き換える"
