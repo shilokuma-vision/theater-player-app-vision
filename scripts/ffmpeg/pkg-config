@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+"""FFmpeg の configure が dav1d を見つけるためだけの、最小限の pkg-config。
+
+Mac に pkg-config が無くても scripts/build-ffmpeg.sh を流せるようにする（Homebrew などを入れない）。
+PKG_CONFIG_LIBDIR（無ければ PKG_CONFIG_PATH）の .pc を読み、configure が使う次の問い合わせにだけ答える。
+  --version / --exists [--print-errors] "<名前> [>= <版>]" / --modversion / --cflags / --cflags-only-I / --libs / --variable=<名前>
+--static は受け付けるだけ（Libs.private も足す）。
+"""
+import os
+import re
+import sys
+
+
+def find_pc(name):
+    dirs = (os.environ.get("PKG_CONFIG_LIBDIR") or os.environ.get("PKG_CONFIG_PATH") or "").split(":")
+    for d in dirs:
+        path = os.path.join(d, f"{name}.pc")
+        if d and os.path.isfile(path):
+            return path
+    return None
+
+
+def parse_pc(path):
+    variables, fields = {}, {}
+
+    def expand(value):
+        return re.sub(r"\$\{(\w+)\}", lambda m: variables.get(m.group(1), ""), value)
+
+    with open(path, encoding="utf-8") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            m = re.match(r"^(\w+)\s*=\s*(.*)$", line)
+            if m:
+                variables[m.group(1)] = expand(m.group(2))
+                continue
+            m = re.match(r"^([\w.]+)\s*:\s*(.*)$", line)
+            if m:
+                fields[m.group(1)] = expand(m.group(2))
+    return variables, fields
+
+
+def version_tuple(v):
+    return tuple(int(x) for x in re.findall(r"\d+", v))
+
+
+def satisfies(have, op, want):
+    a, b = version_tuple(have), version_tuple(want)
+    return {">=": a >= b, ">": a > b, "<=": a <= b, "<": a < b, "=": a == b, "==": a == b, "!=": a != b}[op]
+
+
+def main(argv):
+    if "--version" in argv:
+        print("0.29.2")
+        return 0
+    options = [a for a in argv if a.startswith("--")]
+    words = " ".join(a for a in argv if not a.startswith("--")).split()
+    # 「dav1d >= 1.0.0」のような条件を（名前, 演算子, 版）に分ける
+    requests, i = [], 0
+    while i < len(words):
+        name, op, want = words[i], None, None
+        if i + 2 < len(words) and words[i + 1] in (">=", ">", "<=", "<", "=", "==", "!="):
+            op, want = words[i + 1], words[i + 2]
+            i += 3
+        else:
+            i += 1
+        requests.append((name, op, want))
+
+    out = []
+    for name, op, want in requests:
+        path = find_pc(name)
+        if path is None:
+            if "--print-errors" in options:
+                print(f"Package {name} was not found in the pkg-config search path.", file=sys.stderr)
+            return 1
+        variables, fields = parse_pc(path)
+        version = fields.get("Version", "0")
+        if op and not satisfies(version, op, want):
+            if "--print-errors" in options:
+                print(f"Requested '{name} {op} {want}' but version of {name} is {version}", file=sys.stderr)
+            return 1
+        for opt in options:
+            if opt == "--modversion":
+                out.append(version)
+            elif opt == "--cflags":
+                out.append(fields.get("Cflags", ""))
+            elif opt == "--cflags-only-I":
+                out.append(" ".join(t for t in fields.get("Cflags", "").split() if t.startswith("-I")))
+            elif opt == "--libs":
+                out.append(fields.get("Libs", ""))
+                if "--static" in options:
+                    out.append(fields.get("Libs.private", ""))
+            elif opt.startswith("--variable="):
+                out.append(variables.get(opt.split("=", 1)[1], ""))
+    text = " ".join(s for s in out if s).strip()
+    if text:
+        print(text)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
