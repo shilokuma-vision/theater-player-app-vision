@@ -86,14 +86,18 @@ public final class MediaPlayer: @unchecked Sendable {
 
     /// ファイルを開き、最初の画を出して止まった状態にする
     public func open(_ url: URL) async throws -> MediaInfo {
-        close()
+        let generation = closeSession()
         setState(.opening)
         do {
             let opened = try await Task.detached(priority: .userInitiated) { try Self.makeSession(url: url) }.value
-            try start(opened)
+            try start(opened, generation: generation)
             return opened.info
         } catch {
-            setState(.failed(error.localizedDescription))
+            controlLock.withLock {
+                if lock.withLock({ openGeneration == generation }) {
+                    setState(.failed(error.localizedDescription))
+                }
+            }
             throw error
         }
     }
@@ -118,7 +122,14 @@ public final class MediaPlayer: @unchecked Sendable {
         return PlaybackSession(container: container, info: info)
     }
 
-    private func start(_ newSession: PlaybackSession) throws {
+    private func start(_ newSession: PlaybackSession, generation: Int) throws {
+        controlLock.lock()
+        defer { controlLock.unlock() }
+        // 開いている間に、別のファイルを開いた・閉じた：この結果は使わない
+        guard lock.withLock({ openGeneration == generation }) else {
+            throw CancellationError()
+        }
+        stopSession()
         subtitleStore.clear()
         lights.clear()
         audioTimeline.reset()
@@ -126,6 +137,26 @@ public final class MediaPlayer: @unchecked Sendable {
         ring.flush()
         videoOutput.flush(removingImage: true)
         videoOutput.setRate(0, time: 0)
+        do {
+            try attachDecoders(newSession)
+        } catch {
+            // 途中で失敗した：動き始めたデコードのスレッドを止める
+            newSession.stop()
+            throw error
+        }
+        lock.lock()
+        session = newSession
+        pausedTime = 0
+        showsExternalSubtitles = false
+        audioStarved = false
+        lock.unlock()
+        newSession.control.isPaused = true
+        newSession.startReading()
+        startClock()
+        setState(.paused)
+    }
+
+    private func attachDecoders(_ newSession: PlaybackSession) throws {
         if let track = Self.preferredVideo(newSession.info) {
             try newSession.setVideo(makeVideoDecoder(newSession, index: track.id))
         }
@@ -135,18 +166,28 @@ public final class MediaPlayer: @unchecked Sendable {
         if let track = newSession.info.subtitleTracks.first(where: { $0.isForced || $0.isDefault }) {
             newSession.setSubtitle(try? makeSubtitleDecoder(newSession, index: track.id))
         }
-        lock.lock()
-        session = newSession
-        pausedTime = 0
-        lock.unlock()
-        newSession.control.isPaused = true
-        newSession.startReading()
-        startClock()
-        setState(.paused)
     }
 
     /// 再生を止めて、開いていたファイルを閉じる
     public func close() {
+        closeSession()
+    }
+
+    /// 閉じて、開く操作の番号を進める（進めた番号を返す。それより前に始めた open の結果は捨てる）
+    @discardableResult
+    private func closeSession() -> Int {
+        controlLock.lock()
+        defer { controlLock.unlock() }
+        let generation = lock.withLock {
+            openGeneration += 1
+            return openGeneration
+        }
+        stopSession()
+        return generation
+    }
+
+    /// 今のセッションと時計のスレッドを止める（スレッドは自分で抜ける）
+    private func stopSession() {
         lock.lock()
         let old = session
         session = nil

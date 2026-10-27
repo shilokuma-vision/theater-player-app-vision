@@ -99,7 +99,12 @@ final class SubtitleDecoder: @unchecked Sendable {
               let context = avcodec_alloc_context3(decoder) else {
             throw MediaError("この字幕の形式には対応していません")
         }
+        // 先にすべての値を決める（この後で失敗しても deinit が context を解放する）
         codec = context
+        streamIndex = index
+        timeBase = stream.pointee.time_base
+        self.startTime = startTime
+        self.store = store
         try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "字幕の設定")
         context.pointee.pkt_timebase = stream.pointee.time_base
         var options: OpaquePointer?
@@ -112,10 +117,6 @@ final class SubtitleDecoder: @unchecked Sendable {
         if context.pointee.width > 0, context.pointee.height > 0 {
             canvas = CGSize(width: Int(context.pointee.width), height: Int(context.pointee.height))
         }
-        streamIndex = index
-        timeBase = stream.pointee.time_base
-        self.startTime = startTime
-        self.store = store
     }
 
     deinit {

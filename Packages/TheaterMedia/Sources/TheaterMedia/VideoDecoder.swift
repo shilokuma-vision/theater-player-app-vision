@@ -48,17 +48,11 @@ final class VideoDecoder: @unchecked Sendable {
               let frame = av_frame_alloc() else {
             throw MediaError("この映像の形式には対応していません")
         }
+        // 先にすべての値を決める（この後で失敗しても deinit が context・frame を解放する）
         codec = context
         self.frame = frame
-        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "映像の設定")
-        context.pointee.pkt_timebase = stream.pointee.time_base
-        context.pointee.thread_count = 0
         let fieldOrder = parameters.field_order
         interlaced = fieldOrder != AV_FIELD_UNKNOWN && fieldOrder != AV_FIELD_PROGRESSIVE
-        if !interlaced {
-            Self.attachVideoToolbox(context)
-        }
-        try check(avcodec_open2(context, decoder, nil), "映像のデコーダーを開けません")
         streamIndex = index
         timeBase = stream.pointee.time_base
         self.startTime = startTime
@@ -69,6 +63,13 @@ final class VideoDecoder: @unchecked Sendable {
         self.control = control
         self.output = output
         self.lights = lights
+        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "映像の設定")
+        context.pointee.pkt_timebase = stream.pointee.time_base
+        context.pointee.thread_count = 0
+        if !interlaced {
+            Self.attachVideoToolbox(context)
+        }
+        try check(avcodec_open2(context, decoder, nil), "映像のデコーダーを開けません")
     }
 
     deinit {

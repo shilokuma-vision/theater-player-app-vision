@@ -98,11 +98,9 @@ final class AudioDecoder: @unchecked Sendable {
               let context = avcodec_alloc_context3(decoder), let frame = av_frame_alloc() else {
             throw MediaError("この音声の形式には対応していません")
         }
+        // 先にすべての値を決める（この後で失敗しても deinit が context・frame を解放する）
         codec = context
         self.frame = frame
-        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "音声の設定")
-        context.pointee.pkt_timebase = stream.pointee.time_base
-        try check(avcodec_open2(context, decoder, nil), "音声のデコーダーを開けません")
         streamIndex = index
         timeBase = stream.pointee.time_base
         self.startTime = startTime
@@ -111,6 +109,9 @@ final class AudioDecoder: @unchecked Sendable {
         self.ring = ring
         self.timeline = timeline
         feeds = PlanarFeeds(count: processor.feeds.count, frames: 8_192)
+        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "音声の設定")
+        context.pointee.pkt_timebase = stream.pointee.time_base
+        try check(avcodec_open2(context, decoder, nil), "音声のデコーダーを開けません")
     }
 
     deinit {

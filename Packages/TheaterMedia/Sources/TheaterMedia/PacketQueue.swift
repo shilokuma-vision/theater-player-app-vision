@@ -30,6 +30,10 @@ final class PacketQueue: @unchecked Sendable {
         self.maxPackets = maxPackets
     }
 
+    deinit {
+        Self.free(items)
+    }
+
     var isFull: Bool {
         condition.lock()
         defer { condition.unlock() }
@@ -55,6 +59,12 @@ final class PacketQueue: @unchecked Sendable {
         }
         av_packet_move_ref(copy, packet)
         condition.lock()
+        // 閉じた後は受け取らない（取り出す側がもういない）
+        guard !aborted else {
+            condition.unlock()
+            Self.free([.packet(copy, serial: serial)])
+            return
+        }
         items.append(.packet(copy, serial: serial))
         bytes += Int(copy.pointee.size)
         condition.signal()
