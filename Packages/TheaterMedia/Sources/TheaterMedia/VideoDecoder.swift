@@ -156,6 +156,10 @@ final class VideoDecoder: @unchecked Sendable {
     }
 
     private func deinterlace(_ source: UnsafeMutablePointer<AVFrame>, serial: Int) {
+        if let current = deinterlacer, !current.matches(source) {
+            // 大きさ・画素の形式が変わった：作り直す（bwdif は途中の変化に対応していない）
+            deinterlacer = nil
+        }
         if deinterlacer == nil {
             deinterlacer = try? Deinterlacer(
                 width: source.pointee.width,
@@ -169,8 +173,14 @@ final class VideoDecoder: @unchecked Sendable {
             deliver(source, timeBase: timeBase, serial: serial)
             return
         }
+        // bwdif は pts だけを出口の時刻の単位（入力の半分）に直し、best_effort_timestamp は入力の単位のまま写す。
+        // best_effort_timestamp を pts にして入れ、出てきたフレームは pts を時刻にする
+        if source.pointee.best_effort_timestamp != tp_no_pts() {
+            source.pointee.pts = source.pointee.best_effort_timestamp
+        }
         let base = deinterlacer.timeBase
         deinterlacer.process(source) { output in
+            output.pointee.best_effort_timestamp = output.pointee.pts
             deliver(output, timeBase: base, serial: serial)
         }
     }

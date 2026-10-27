@@ -16,8 +16,14 @@ final class Deinterlacer {
     private let output: UnsafeMutablePointer<AVFrame>
     /// 出力のフレームの時刻の単位
     private(set) var timeBase = AVRational(num: 1, den: 1)
+    private let width: Int32
+    private let height: Int32
+    private let format: Int32
 
     init(width: Int32, height: Int32, format: Int32, timeBase: AVRational, aspect: AVRational) throws {
+        self.width = width
+        self.height = height
+        self.format = format
         guard let frame = av_frame_alloc() else {
             throw MediaError("インターレースの解除を準備できません")
         }
@@ -54,6 +60,11 @@ final class Deinterlacer {
         avfilter_graph_free(&graph)
         var frame: UnsafeMutablePointer<AVFrame>? = output
         av_frame_free(&frame)
+    }
+
+    /// 同じ大きさ・画素の形式のフレームか（違えば作り直す）
+    func matches(_ frame: UnsafeMutablePointer<AVFrame>) -> Bool {
+        frame.pointee.width == width && frame.pointee.height == height && frame.pointee.format == format
     }
 
     /// frame を入れ、出てきたフレームを body に渡す（1 枚から 0〜2 枚）。body の中で frame を使い終える
