@@ -31,6 +31,8 @@ final class PlayerModel {
     private let preferences: Preferences
     private let recents: RecentItems
     private var accessedURL: URL?
+    /// 写真から選んだ動画の一時的なコピー（閉じたら消す）
+    private var temporaryFile: URL?
     private var refreshTask: Task<Void, Never>?
     private var eventTask: Task<Void, Never>?
 
@@ -59,9 +61,10 @@ final class PlayerModel {
 
     // MARK: - 開く
 
-    /// ファイルを開いて再生する（最近の一覧に入れ、前回の続きから）
-    func open(url: URL) async {
-        await open(url: url, recentID: nil)
+    /// ファイルを開いて再生する（最近の一覧に入れ、前回の続きから）。
+    /// temporary：写真から選んだ動画の一時的なコピー。あとで開き直せないので一覧には入れず、閉じたら消す
+    func open(url: URL, temporary: Bool = false) async {
+        await open(url: url, recentID: nil, temporary: temporary)
     }
 
     /// 最近の一覧から開く（その項目を書き換える）
@@ -70,14 +73,15 @@ final class PlayerModel {
             errorMessage = String(localized: "ファイルが見つかりません。もう一度選んでください。")
             return
         }
-        await open(url: url, recentID: item.id)
+        await open(url: url, recentID: item.id, temporary: false)
     }
 
-    private func open(url: URL, recentID: UUID?) async {
+    private func open(url: URL, recentID: UUID?, temporary: Bool) async {
         close()
         let accessing = url.startAccessingSecurityScopedResource()
         accessedURL = accessing ? url : nil
-        let item = recents.add(url: url, replacing: recentID)
+        temporaryFile = temporary ? url : nil
+        let item = temporary ? nil : recents.add(url: url, replacing: recentID)
         await start(url: url, title: url.deletingPathExtension().lastPathComponent, item: item)
     }
 
@@ -113,6 +117,10 @@ final class PlayerModel {
         engine?.close()
         accessedURL?.stopAccessingSecurityScopedResource()
         accessedURL = nil
+        if let temporaryFile {
+            try? FileManager.default.removeItem(at: temporaryFile)
+        }
+        temporaryFile = nil
         info = nil
         videoFormat = nil
         subtitles = []

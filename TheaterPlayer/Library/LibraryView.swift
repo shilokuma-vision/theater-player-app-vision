@@ -136,7 +136,7 @@ struct LibraryView: View {
         guard let movie = try? await item.loadTransferable(type: PickedMovie.self) else {
             return
         }
-        await play { await appModel.player.open(url: movie.url) }
+        await play { await appModel.player.open(url: movie.url, temporary: true) }
     }
 
     /// 映画館（ImmersiveSpace）を開き、ライブラリのウィンドウを閉じる。映画館に入れたら true
@@ -222,7 +222,7 @@ struct RecentList: View {
     }
 }
 
-/// 写真ライブラリの動画（一時的な場所にコピーして開く）
+/// 写真ライブラリの動画（Caches/PickedMovies にコピーして開く。再生を閉じたら PlayerModel が消す）
 struct PickedMovie: Transferable {
     let url: URL
 
@@ -230,10 +230,19 @@ struct PickedMovie: Transferable {
         FileRepresentation(contentType: .movie) { movie in
             SentTransferredFile(movie.url)
         } importing: { received in
-            let target = FileManager.default.temporaryDirectory.appendingPathComponent(received.file.lastPathComponent)
-            try? FileManager.default.removeItem(at: target)
-            try FileManager.default.copyItem(at: received.file, to: target)
-            return Self(url: target)
+            try Self.copy(received.file)
         }
+    }
+
+    /// 選ぶたびに別のフォルダーへコピーする（前の動画を閉じて消すときに、新しいコピーを消さない）。
+    /// 前に選んだ物の残り（再生中にアプリが終わったときなど）は、ここで消す。再生中の物を消しても、開いているあいだは読める
+    nonisolated private static func copy(_ file: URL) throws -> Self {
+        let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first ?? FileManager.default.temporaryDirectory
+        let folder = caches.appendingPathComponent("PickedMovies", isDirectory: true)
+        try? FileManager.default.removeItem(at: folder)
+        let target = folder.appendingPathComponent(UUID().uuidString, isDirectory: true).appendingPathComponent(file.lastPathComponent)
+        try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try FileManager.default.copyItem(at: file, to: target)
+        return Self(url: target)
     }
 }
