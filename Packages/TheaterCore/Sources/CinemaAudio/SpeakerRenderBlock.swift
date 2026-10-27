@@ -16,9 +16,11 @@ final class RenderGainState: @unchecked Sendable {
 }
 
 extension SpeakerFeedRing {
-    /// feed 番目の信号を鳴らす、モノラルの生成器の描画の関数
-    public func renderBlock(feed: Int) -> AVAudioSourceNodeRenderBlock {
+    /// feed 番目の信号を鳴らす、モノラルの生成器の描画の関数。sampleRate は描画のサンプルレート
+    /// （描画の時刻に mSampleTime が無いとき、ホストの時刻をサンプルの数に直すのに使う）
+    public func renderBlock(feed: Int, sampleRate: Double = 48_000) -> AVAudioSourceNodeRenderBlock {
         let state = RenderGainState()
+        let samplesPerHostTick = Self.hostTickSeconds * sampleRate
         return { [self] isSilence, timestamp, frameCount, bufferList in
             let buffers = UnsafeMutableAudioBufferListPointer(bufferList)
             guard let first = buffers.first, let data = first.mData else {
@@ -28,7 +30,9 @@ extension SpeakerFeedRing {
             let frames = Int(frameCount)
             let output = data.assumingMemoryBound(to: Float.self)
             let stamp = timestamp.pointee
-            let sampleTime = stamp.mFlags.contains(.sampleTimeValid) ? stamp.mSampleTime : Double(stamp.mHostTime)
+            let sampleTime = stamp.mFlags.contains(.sampleTimeValid)
+                ? stamp.mSampleTime
+                : (Double(stamp.mHostTime) * samplesPerHostTick).rounded()
             read(
                 feed: feed,
                 into: output,
@@ -45,4 +49,11 @@ extension SpeakerFeedRing {
             return noErr
         }
     }
+
+    /// ホストの時刻（mach_absolute_time）の 1 単位の秒数
+    private static let hostTickSeconds: Double = {
+        var info = mach_timebase_info_data_t()
+        mach_timebase_info(&info)
+        return Double(info.numer) / Double(info.denom) / 1_000_000_000
+    }()
 }
