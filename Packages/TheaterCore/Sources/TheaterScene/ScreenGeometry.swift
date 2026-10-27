@@ -93,8 +93,12 @@ public enum ScreenMesh {
 
     /// スクリーンの曲面の、横位置 x（弦の上の位置）・高さ y の点（少し客席側）
     public static func surfacePoint(x: Float, y: Float, spec: ScreenSpec) -> SIMD3<Float> {
-        let sag = spec.radius - (spec.radius * spec.radius - x * x).squareRoot()
-        return SIMD3(x, y, spec.center.z + sag + offset)
+        SIMD3(x, y, spec.center.z + sag(x: x, spec: spec) + offset)
+    }
+
+    /// 曲面の、中心から横に x 離れた所が、中心より客席側へ出ている量（m）。平らな物を手前に置くときの逃げ
+    public static func sag(x: Float, spec: ScreenSpec) -> Float {
+        spec.radius - (spec.radius * spec.radius - x * x).squareRoot()
     }
 
     /// 曲面の、客席側を向いた法線

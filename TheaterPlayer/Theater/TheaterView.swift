@@ -80,7 +80,7 @@ struct TheaterView: View {
         }
     }
 
-    /// スクリーンの手前に、映像の幅に合わせた大きさで置く
+    /// スクリーンの手前（曲面の端より手前）に、映像の幅に合わせた大きさで置く
     private func place(_ entity: ViewAttachmentEntity?, on stage: TheaterStage, width: Float, enabled: Bool) {
         guard let entity else {
             return
@@ -89,6 +89,7 @@ struct TheaterView: View {
             stage.screenAnchor.addChild(entity)
         }
         entity.isEnabled = enabled
+        entity.position = SIMD3(0, 0, stage.overlayDepth(width: width))
         let natural = entity.attachment.bounds.extents.x
         if natural > 0 {
             entity.scale = SIMD3(repeating: width / natural)

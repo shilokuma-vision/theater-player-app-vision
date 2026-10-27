@@ -44,6 +44,10 @@ struct ScreenGeometryTests {
         let edge = ScreenMesh.surfacePoint(x: 10, y: 5, spec: spec)
         #expect(edge.z > center.z)
         #expect(abs(center.z - (-27 + ScreenMesh.offset)) < 1e-4)
+        // 端の出っ張り（半径 50 m・幅 21 m の端で約 1.1 m）。字幕などの平らな表示はこれより手前に置く
+        #expect(abs(edge.z - (center.z + ScreenMesh.sag(x: 10, spec: spec))) < 1e-4)
+        #expect(ScreenMesh.sag(x: 0, spec: spec) == 0)
+        #expect(ScreenMesh.sag(x: 10.5, spec: spec) > 1)
     }
 
     @Test func rotatedVideoTurnsTheTextureCoordinates() {

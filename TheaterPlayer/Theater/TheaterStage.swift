@@ -21,7 +21,7 @@ final class TheaterStage {
     private let speakers = SpatialSpeakers()
     let lighting: LightingDirector
     private var currentFormat: VideoFormat?
-    /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点
+    /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点（表示は、さらに曲面の出っ張りの分だけ手前に置く。overlayDepth）
     let screenAnchor = Entity()
 
     static func load(preferences: Preferences) async throws -> TheaterStage {
@@ -101,6 +101,12 @@ final class TheaterStage {
         currentFormat = nil
         screenFrame = ScreenFrame(aspect: 2.0, spec: layout.screen)
         environment.setMasking(frame: screenFrame)
+    }
+
+    /// 幅 width の平らな表示（字幕など）を、screenAnchor からどれだけ手前に置くか。
+    /// スクリーンは端ほど客席側へ出ているので、表示の端の出っ張りより手前に置く（中心の手前だけだと、端がスクリーンに隠れる）
+    func overlayDepth(width: Float) -> Float {
+        ScreenMesh.sag(x: width / 2, spec: layout.screen)
     }
 
     // MARK: - 席
