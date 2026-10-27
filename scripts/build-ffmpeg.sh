@@ -17,7 +17,8 @@ FFMPEG_SHA256=8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e
 DAV1D_VERSION=1.5.4
 DAV1D_SHA256=686616b7c69eb88d44459391ab25cac13b6647a3b288835c5784e71c1514a5c5
 # dav1d のビルドに使う meson / ninja（Python の仮想環境に入れる。システムには入れない）
-MESON_VERSION=1.12.1
+# meson 1.12 以降は Python 3.10 以上が要る。macOS の標準の python3（3.9）でも入る 1.11 系にする
+MESON_VERSION=1.11.2
 NINJA_VERSION=1.13.2
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
