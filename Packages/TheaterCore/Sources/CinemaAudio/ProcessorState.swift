@@ -2,7 +2,7 @@
 //  ProcessorState.swift
 //  CinemaAudio
 //
-//  CinemaProcessor の途中の状態（フィルター・遅延・アップミックス）。設定が変わったら作り直す。
+//  CinemaProcessor の途中の状態（フィルター・遅延・アップミックス）。設定が変わったら係数だけを変える。
 //
 
 import Foundation
@@ -26,7 +26,7 @@ struct ProcessorState {
     /// アップミックスのサラウンドの受け取り
     let scratch: PlanarBuffer
 
-    init(settings: CinemaAudioSettings, feeds: [SpeakerFeed], sampleRate: Float) throws {
+    init(settings: CinemaAudioSettings, feeds: [SpeakerFeed], sampleRate: Float, maxFrames: Int) throws {
         upmixer = try StereoUpmixer(sampleRate: sampleRate)
         alignment = CinemaBus.allCases.map { _ in DelayLine(frames: StereoUpmixer.latency) }
         surroundDelays = [DelayLine(frames: Int(0.012 * sampleRate)), DelayLine(frames: Int(0.012 * sampleRate))]
@@ -42,7 +42,7 @@ struct ProcessorState {
         dynamics = DynamicRangeController(sampleRate: sampleRate)
         limiter = LookaheadLimiter(channels: feeds.count, sampleRate: sampleRate)
         feedDelays = feeds.map { DelayLine(frames: $0.delayFrames) }
-        scratch = PlanarBuffer(channels: 2, frames: 4096 * 2)
+        scratch = PlanarBuffer(channels: 2, frames: maxFrames)
     }
 
     /// 低音の残響の長さ（秒）
@@ -50,19 +50,28 @@ struct ProcessorState {
         0.6 + 1.6 * rumble
     }
 
-    /// 設定の変化に合わせて、フィルターを作り直す
+    /// 設定の変化に合わせる。フィルターと残響は係数だけを変え、途中の状態は残す
+    /// （スライダーを動かしているあいだ、作り直すたびに状態が 0 に戻ってクリックが出ないように）
     mutating func apply(_ settings: CinemaAudioSettings, previous: CinemaAudioSettings, sampleRate: Float) {
         if settings.crossoverHz != previous.crossoverHz {
-            bass = BassManager(frequency: settings.crossoverHz, sampleRate: sampleRate)
+            bass.retune(frequency: settings.crossoverHz, sampleRate: sampleRate)
         }
         if settings.bassBoostDB != previous.bassBoostDB {
-            shelf = Biquad.lowShelf(frequency: 60, gainDB: settings.bassBoostDB, sampleRate: sampleRate)
+            shelf.retune(to: Biquad.lowShelf(frequency: 60, gainDB: settings.bassBoostDB, sampleRate: sampleRate))
         }
         if settings.rumble != previous.rumble {
-            reverb = LowFrequencyReverb(sampleRate: sampleRate, decaySeconds: Self.decay(settings.rumble))
+            reverb.setDecay(Self.decay(settings.rumble))
         }
         if settings.upmix != previous.upmix {
+            // 経路が替わるので、使っていなかった側に残っている古い音を捨てる（切り替えたときに前の音が鳴らないように）
             upmixer.reset()
+            for index in alignment.indices {
+                alignment[index].reset()
+            }
+            for index in surroundDelays.indices {
+                surroundDelays[index].reset()
+                surroundFilters[index].reset()
+            }
         }
     }
 
@@ -100,6 +109,7 @@ struct ProcessorState {
         }
         bass.reset()
         shelf.reset()
+        reverb.reset()
         dynamics.reset()
         limiter.reset()
     }

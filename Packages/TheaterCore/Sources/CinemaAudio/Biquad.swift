@@ -47,6 +47,15 @@ public struct Biquad: Sendable {
         z2 = 0
     }
 
+    /// 係数だけを other のものにする（途中の状態は残す。設定を変えたときに音が途切れたりクリックが出たりしないように）
+    public mutating func retune(to other: Biquad) {
+        b0 = other.b0
+        b1 = other.b1
+        b2 = other.b2
+        a1 = other.a1
+        a2 = other.a2
+    }
+
     // MARK: - 係数
 
     private struct Terms {
@@ -114,6 +123,16 @@ public struct LinkwitzRiley: Sendable {
         let high = Biquad.highPass(frequency: frequency, sampleRate: sampleRate)
         lowStages = (low, low)
         highStages = (high, high)
+    }
+
+    /// 分ける周波数を変える（途中の状態は残す）
+    public mutating func retune(frequency: Float, sampleRate: Float) {
+        let low = Biquad.lowPass(frequency: frequency, sampleRate: sampleRate)
+        let high = Biquad.highPass(frequency: frequency, sampleRate: sampleRate)
+        lowStages.0.retune(to: low)
+        lowStages.1.retune(to: low)
+        highStages.0.retune(to: high)
+        highStages.1.retune(to: high)
     }
 
     /// 低域だけ

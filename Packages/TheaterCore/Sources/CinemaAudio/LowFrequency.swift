@@ -41,6 +41,13 @@ struct BassManager {
         }
     }
 
+    /// 分ける周波数を変える（途中の状態は残す）
+    mutating func retune(frequency: Float, sampleRate: Float) {
+        for index in crossovers.indices {
+            crossovers[index].retune(frequency: frequency, sampleRate: sampleRate)
+        }
+    }
+
     mutating func reset() {
         for index in crossovers.indices {
             crossovers[index].reset()
@@ -56,16 +63,36 @@ struct LowFrequencyReverb {
     private var damping: [Float]
     private var gains: [Float]
     private let smoothing: Float
+    private let sampleRate: Float
 
     init(sampleRate: Float, decaySeconds: Float) {
         let lengths = [0.041, 0.059, 0.073, 0.089].map { Int(Float($0) * sampleRate) }
+        self.sampleRate = sampleRate
         lines = lengths.map { [Float](repeating: 0, count: $0) }
         positions = [Int](repeating: 0, count: lengths.count)
         damping = [Float](repeating: 0, count: lengths.count)
-        // 1 回まわるごとの減衰（decaySeconds で -60 dB）
-        gains = lengths.map { pow(10, -3 * Float($0) / sampleRate / max(decaySeconds, 0.1)) }
+        gains = Self.gains(lengths: lengths, sampleRate: sampleRate, decaySeconds: decaySeconds)
         // 遅延の中の 1 次の低域通過（約 150 Hz）
         smoothing = exp(-2 * Float.pi * 150 / sampleRate)
+    }
+
+    /// 1 回まわるごとの減衰（decaySeconds で -60 dB）
+    private static func gains(lengths: [Int], sampleRate: Float, decaySeconds: Float) -> [Float] {
+        lengths.map { pow(10, -3 * Float($0) / sampleRate / max(decaySeconds, 0.1)) }
+    }
+
+    /// 残響の長さを変える（遅延の中の音は残す。響きが途中で切れないように）
+    mutating func setDecay(_ decaySeconds: Float) {
+        gains = Self.gains(lengths: lines.map(\.count), sampleRate: sampleRate, decaySeconds: decaySeconds)
+    }
+
+    mutating func reset() {
+        for line in lines.indices {
+            for index in lines[line].indices {
+                lines[line][index] = 0
+            }
+            damping[line] = 0
+        }
     }
 
     /// 1 サンプル。入力を受け取り、残響（入力を含まない）を返す

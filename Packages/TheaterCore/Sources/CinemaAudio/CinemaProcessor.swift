@@ -34,7 +34,7 @@ public final class CinemaProcessor: @unchecked Sendable {
         feeds = SpeakerFeed.feeds(for: speakers, sampleRate: sampleRate)
         buses = PlanarBuffer(channels: CinemaBus.allCases.count, frames: maxFrames)
         sub = PlanarBuffer(channels: 2, frames: maxFrames)
-        state = try ProcessorState(settings: CinemaAudioSettings(), feeds: feeds, sampleRate: sampleRate)
+        state = try ProcessorState(settings: CinemaAudioSettings(), feeds: feeds, sampleRate: sampleRate, maxFrames: maxFrames)
     }
 
     /// 設定を変える（次の処理から効く）

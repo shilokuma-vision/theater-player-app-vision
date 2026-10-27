@@ -86,6 +86,25 @@ struct ProcessorTests {
         #expect(peak > 0.5)
     }
 
+    /// 低音の量を変えても、フィルターの途中の状態を捨てない（音が跳ばない）
+    @Test func changingBassBoostDoesNotClick() throws {
+        let processor = try CinemaProcessor(speakers: speakers)
+        processor.update(settings: flatSettings())
+        processor.configure(input: [.lowFrequency])
+        let tone = sine(frequency: 40, amplitude: 0.3, frames: 24_000)
+        var settings = flatSettings()
+        settings.bassBoostDB = 6
+        processor.update(settings: settings)
+        let before = process(processor, input: [Array(tone.prefix(12_000))])
+        settings.bassBoostDB = 7
+        processor.update(settings: settings)
+        let after = process(processor, input: [Array(tone.suffix(12_000))])
+        let lfe = try #require(speakers.firstIndex(of: .lfe))
+        let joined = Array(before[lfe].suffix(4_000)) + after[lfe]
+        let largestStep = zip(joined, joined.dropFirst()).map { abs($1 - $0) }.max() ?? 0
+        #expect(largestStep < 0.02)
+    }
+
     @Test func surroundArraysShareThePower() {
         let feeds = SpeakerFeed.feeds(for: [.leftSideSurround, .leftSideSurround, .leftSideSurround, .leftSideSurround, .center],
                                       sampleRate: 48_000)
