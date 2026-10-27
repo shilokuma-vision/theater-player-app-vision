@@ -12,7 +12,6 @@ struct SoundPage: View {
     let stage: TheaterStage?
     @Binding var page: ControlPanel.Page
     @Environment(AppModel.self) private var appModel
-    @AppStorage("room") private var room = SpatialSpeakers.Room.standard.rawValue
 
     var body: some View {
         @Bindable var preferences = appModel.preferences
@@ -33,10 +32,10 @@ struct SoundPage: View {
                         Text("夜").tag(CinemaAudioSettings.DynamicRange.night)
                     }
                     .pickerStyle(.segmented)
-                    Picker("部屋の響き", selection: $room) {
-                        Text("控えめ").tag(SpatialSpeakers.Room.dry.rawValue)
-                        Text("標準").tag(SpatialSpeakers.Room.standard.rawValue)
-                        Text("豊か").tag(SpatialSpeakers.Room.rich.rawValue)
+                    Picker("部屋の響き", selection: $preferences.room) {
+                        Text("控えめ").tag(SpatialSpeakers.Room.dry)
+                        Text("標準").tag(SpatialSpeakers.Room.standard)
+                        Text("豊か").tag(SpatialSpeakers.Room.rich)
                     }
                     .pickerStyle(.segmented)
                     Button("初期値に戻す") {
@@ -47,8 +46,9 @@ struct SoundPage: View {
             .frame(maxHeight: 460)
         }
         .onChange(of: preferences.audio) { appModel.player.applyAudioPreferences() }
-        .onChange(of: room, initial: true) {
-            stage?.setRoom(SpatialSpeakers.Room(rawValue: room) ?? .standard)
+        // 映画館に入ったときの響きは TheaterStage が設定から付ける。ここでは変えたときだけ
+        .onChange(of: preferences.room) {
+            stage?.setRoom(preferences.room)
         }
     }
 

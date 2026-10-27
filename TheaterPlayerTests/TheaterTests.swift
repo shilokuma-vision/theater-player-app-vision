@@ -96,6 +96,18 @@ struct PreferencesTests {
         #expect(restored.seatID == "K-20")
         #expect(restored.audio.bassBoostDB == 9)
     }
+
+    /// 部屋の響きも保存する。以前 @AppStorage("room") で保存した値も読む
+    @Test func savesAndRestoresTheRoom() throws {
+        let suite = "PreferencesTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set(SpatialSpeakers.Room.rich.rawValue, forKey: "room")
+        let preferences = Preferences(defaults: defaults)
+        #expect(preferences.room == .rich)
+        preferences.room = .dry
+        #expect(Preferences(defaults: defaults).room == .dry)
+    }
 }
 
 struct RecentItemsTests {

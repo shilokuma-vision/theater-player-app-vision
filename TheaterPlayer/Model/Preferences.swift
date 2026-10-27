@@ -2,7 +2,7 @@
 //  Preferences.swift
 //  TheaterPlayer
 //
-//  利用者の設定（部屋の明るさ・座る席・音量・音響）。UserDefaults に保存する。
+//  利用者の設定（部屋の明るさ・座る席・音量・音響・部屋の響き）。UserDefaults に保存する。
 //
 
 import CinemaAudio
@@ -43,12 +43,17 @@ final class Preferences {
     var audio: CinemaAudioSettings {
         didSet { saveAudio() }
     }
+    /// 部屋の響き（映画館に入ったときから効かせる）
+    var room: SpatialSpeakers.Room {
+        didSet { save(room.rawValue, for: .room) }
+    }
 
     static let defaultSeat = "G-17"
     private let defaults: UserDefaults
 
     private enum Key: String {
-        case houseLevel, showLevel, autoDim, screenSpill, ambientLevel, seatID, volume, audio
+        // room は以前 @AppStorage("room") で保存していた。同じキーを読む
+        case houseLevel, showLevel, autoDim, screenSpill, ambientLevel, seatID, volume, audio, room
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -60,6 +65,7 @@ final class Preferences {
         ambientLevel = defaults.object(forKey: Key.ambientLevel.rawValue) as? Double ?? 1
         seatID = defaults.string(forKey: Key.seatID.rawValue) ?? Self.defaultSeat
         volume = defaults.object(forKey: Key.volume.rawValue) as? Double ?? 1
+        room = defaults.string(forKey: Key.room.rawValue).flatMap { SpatialSpeakers.Room(rawValue: $0) } ?? .standard
         if let data = defaults.data(forKey: Key.audio.rawValue),
            let decoded = try? JSONDecoder().decode(CinemaAudioSettings.self, from: data) {
             audio = decoded

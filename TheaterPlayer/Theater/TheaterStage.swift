@@ -41,7 +41,7 @@ final class TheaterStage {
         if let seat {
             environment.sit(at: seat)
         }
-        environment.root.components.set(ReverbComponent(reverb: SpatialSpeakers.Room.standard.reverb))
+        environment.root.components.set(ReverbComponent(reverb: preferences.room.reverb))
     }
 
     var root: Entity {
