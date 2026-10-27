@@ -33,6 +33,7 @@ extension MediaPlayer {
         guard let session = currentSession else {
             return
         }
+        lock.withLock { showsExternalSubtitles = false }
         subtitleStore.clear()
         guard let id else {
             session.setSubtitle(nil)
@@ -46,8 +47,12 @@ extension MediaPlayer {
     /// 別のファイル（.srt・.ass・.vtt など）の字幕を読み、それを出す
     public func loadExternalSubtitles(_ url: URL) async throws -> SubtitleTrack {
         let cues = try await Task.detached(priority: .userInitiated) { try ExternalSubtitles.load(url) }.value
-        currentSession?.setSubtitle(nil)
-        subtitleStore.replace(with: cues)
+        controlLock.withLock {
+            currentSession?.setSubtitle(nil)
+            subtitleStore.replace(with: cues)
+            // シークのたびに読み直さないので、シークで消さない
+            lock.withLock { showsExternalSubtitles = true }
+        }
         return SubtitleTrack(
             id: -1,
             codec: url.pathExtension.lowercased(),

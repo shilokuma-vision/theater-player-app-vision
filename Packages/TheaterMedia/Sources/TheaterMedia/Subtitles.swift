@@ -123,6 +123,13 @@ final class SubtitleDecoder: @unchecked Sendable {
         avcodec_free_context(&context)
     }
 
+    /// 今の画像の字幕の画面の大きさ。PGS・DVB はパケットごとにデコーダーの大きさを決め直すので、デコードのたびに読む
+    private var currentCanvas: CGSize {
+        let width = codec.pointee.width
+        let height = codec.pointee.height
+        return width > 0 && height > 0 ? CGSize(width: Int(width), height: Int(height)) : canvas
+    }
+
     func decode(_ packet: UnsafeMutablePointer<AVPacket>) {
         var subtitle = AVSubtitle()
         var got: Int32 = 0
@@ -163,6 +170,7 @@ final class SubtitleDecoder: @unchecked Sendable {
             }
         case SUBTITLE_BITMAP:
             if let image = SubtitleBitmap.image(rect) {
+                let canvas = currentCanvas
                 let frame = CGRect(
                     x: CGFloat(rect.pointee.x) / canvas.width,
                     y: CGFloat(rect.pointee.y) / canvas.height,
@@ -250,9 +258,13 @@ enum ExternalSubtitles {
             throw MediaError("字幕が見つかりません")
         }
         let store = SubtitleStore()
-        // UTF-8 でない文字の字幕は、日本語の Shift_JIS（CP932）とみなして変換する
-        let encoding: String? = (try? String(contentsOf: url, encoding: .utf8)) == nil ? "CP932" : nil
-        let decoder = try SubtitleDecoder(stream: streams[index], index: index, startTime: 0, store: store, characterEncoding: encoding)
+        let decoder = try SubtitleDecoder(
+            stream: streams[index],
+            index: index,
+            startTime: 0,
+            store: store,
+            characterEncoding: characterEncoding(of: url)
+        )
         guard let packet = av_packet_alloc() else {
             throw MediaError("字幕を読めません")
         }
@@ -265,5 +277,18 @@ enum ExternalSubtitles {
             av_packet_unref(packet)
         }
         return store.allCues()
+    }
+
+    /// 文字の符号化。BOM のある UTF-8・UTF-16 は FFmpeg の読み込みが UTF-8 にするので指定しない（指定すると二重に変換する）。
+    /// BOM が無く UTF-8 でもない文字は、日本語の Shift_JIS（CP932）とみなして変換する
+    static func characterEncoding(of url: URL) -> String? {
+        guard let data = try? Data(contentsOf: url) else {
+            return nil
+        }
+        let head = [UInt8](data.prefix(3))
+        if head.starts(with: [0xEF, 0xBB, 0xBF]) || head.starts(with: [0xFF, 0xFE]) || head.starts(with: [0xFE, 0xFF]) {
+            return nil
+        }
+        return String(data: data, encoding: .utf8) == nil ? "CP932" : nil
     }
 }
