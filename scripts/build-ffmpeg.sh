@@ -50,7 +50,7 @@ for platform in "${platforms[@]}"; do
   case "$platform" in
     xros | xrsimulator) ;;
     *)
-      echo "エラー: プラットフォームは xros か xrsimulator です（$platform）" >&2
+      echo "エラー: プラットフォームは xros か xrsimulator です（${platform}）" >&2
       exit 1
       ;;
   esac
@@ -64,11 +64,11 @@ if [[ "$without_dav1d" == 1 ]]; then
 fi
 stamp_content="ffmpeg=$FFMPEG_VERSION dav1d=$dav1d_label target=$deployment_target platforms=${platforms[*]} script=$script_hash"
 if [[ "${FFMPEG_FORCE:-0}" != 1 && -d "$output" && -f "$stamp" && "$(cat "$stamp")" == "$stamp_content" ]]; then
-  echo "FFmpeg.xcframework は最新です（$stamp_content）"
+  echo "FFmpeg.xcframework は最新です（${stamp_content}）"
   exit 0
 fi
 
-step "FFmpeg $FFMPEG_VERSION を作る（${platforms[*]}、dav1d：$dav1d_label、visionOS $deployment_target 以上）"
+step "FFmpeg $FFMPEG_VERSION を作る（${platforms[*]}、dav1d：${dav1d_label}、visionOS $deployment_target 以上）"
 mkdir -p "$work/src"
 step "ソースを確かめる（$work/src）"
 
@@ -91,7 +91,7 @@ if [[ "$without_dav1d" != 1 ]]; then
   # meson / ninja を仮想環境に入れる
   venv="$work/venv"
   if [[ ! -x "$venv/bin/meson" || ! -x "$venv/bin/ninja" ]]; then
-    step "meson $MESON_VERSION と ninja $NINJA_VERSION を仮想環境に入れる（$venv）"
+    step "meson $MESON_VERSION と ninja $NINJA_VERSION を仮想環境に入れる（${venv}）"
     python3 -m venv "$venv"
     "$venv/bin/pip" install --quiet --disable-pip-version-check "meson==$MESON_VERSION" "ninja==$NINJA_VERSION"
   fi
@@ -126,7 +126,7 @@ build_dav1d() {
   triple="$(target_triple "$platform")"
   rm -rf "$build"
   mkdir -p "$build"
-  step "$platform：dav1d をビルドする"
+  step "${platform}：dav1d をビルドする"
   cat > "$build/cross.ini" <<EOF
 [binaries]
 c = '$cc'
@@ -165,7 +165,7 @@ build_ffmpeg() {
   if [[ "$without_dav1d" == 1 ]]; then
     dav1d_option=--disable-libdav1d
   fi
-  step "$platform：FFmpeg を configure する"
+  step "${platform}：FFmpeg を configure する"
   (
     cd "$build"
     PKG_CONFIG_LIBDIR="$prefix/lib/pkgconfig" "$work/src/ffmpeg-$FFMPEG_VERSION/configure" \
@@ -185,7 +185,7 @@ build_ffmpeg() {
       --enable-videotoolbox --enable-audiotoolbox \
       --enable-zlib --enable-bzlib --enable-iconv \
       "$dav1d_option"
-    echo "==> $platform：FFmpeg をビルドする（make -j$jobs）"
+    echo "==> ${platform}：FFmpeg をビルドする（make -j${jobs}）"
     make -j"$jobs"
     make install
   )
@@ -195,7 +195,7 @@ build_ffmpeg() {
 build_platform() {
   local platform="$1"
   local prefix="$work/$platform/prefix"
-  echo "=== $platform（$(target_triple "$platform")）"
+  echo "=== ${platform}（$(target_triple "$platform")）"
   rm -rf "$prefix"
   local libraries=()
   if [[ "$without_dav1d" != 1 ]]; then
@@ -203,7 +203,7 @@ build_platform() {
     libraries+=("$prefix/lib/libdav1d.a")
   fi
   build_ffmpeg "$platform" "$prefix"
-  step "$platform：静的ライブラリを 1 つにまとめる"
+  step "${platform}：静的ライブラリを 1 つにまとめる"
   rm -f "$work/$platform/libffmpeg.a"
   xcrun libtool -static -o "$work/$platform/libffmpeg.a" \
     "$prefix/lib/libavformat.a" "$prefix/lib/libavcodec.a" "$prefix/lib/libavfilter.a" \
@@ -222,4 +222,4 @@ rm -rf "$output"
 mkdir -p "$vendor"
 xcodebuild -create-xcframework "${args[@]}" -output "$output"
 echo "$stamp_content" > "$stamp"
-echo "作成: $output（$stamp_content）"
+echo "作成: ${output}（${stamp_content}）"
