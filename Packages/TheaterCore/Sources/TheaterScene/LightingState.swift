@@ -7,6 +7,7 @@
 //  （マテリアルを付け直さない）。
 //
 
+import Dispatch
 import Metal
 import RealityKit
 
@@ -57,6 +58,8 @@ public final class LightingState {
     /// GPU がまだ前の内容を読んでいるあいだに書き換えないよう、受け渡しの領域を 3 つ順に使う
     private let staging: [MTLBuffer]
     private var stagingIndex = 0
+    /// 空いている受け渡しの領域の数（GPU が写し終えたら戻す）
+    private let available = DispatchSemaphore(value: 3)
 
     public init(spec: LightStateSpec, device: MTLDevice? = MTLCreateSystemDefaultDevice()) throws {
         let length = spec.width * MemoryLayout<SIMD4<Float16>>.stride
@@ -81,7 +84,7 @@ public final class LightingState {
         write(values)
     }
 
-    /// 値を変える（前と同じなら何もしない）
+    /// 値を変える（前と同じなら何もしない）。GPU が遅れて領域が空いていなければ、次に呼ばれたときに書く
     public func update(_ newValues: LightingValues) {
         guard newValues != values else {
             return
@@ -90,7 +93,10 @@ public final class LightingState {
     }
 
     private func write(_ newValues: LightingValues) {
-        values = newValues
+        // 待たずに確かめる（毎フレーム呼ばれるので止めない）。書けなければ values を変えず、次のフレームでもう一度書く
+        guard available.wait(timeout: .now()) == .success else {
+            return
+        }
         let texels = newValues.texels(order: spec.texels, width: spec.width)
         let buffer = staging[stagingIndex]
         stagingIndex = (stagingIndex + 1) % staging.count
@@ -99,6 +105,7 @@ public final class LightingState {
             pointer[index] = SIMD4<Float16>(texel)
         }
         guard let commands = queue.makeCommandBuffer(), let blit = commands.makeBlitCommandEncoder() else {
+            available.signal()
             return
         }
         let target = lowLevel.replace(using: commands)
@@ -115,7 +122,11 @@ public final class LightingState {
             destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0)
         )
         blit.endEncoding()
+        commands.addCompletedHandler { [available] _ in
+            available.signal()
+        }
         commands.commit()
+        values = newValues
     }
 }
 
