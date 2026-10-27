@@ -10,15 +10,20 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct LibraryView: View {
+    /// ファイルの選択で選ぶ物（fileImporter は 1 つの View に 1 つしか効かないので、1 つを使い分ける）
+    private enum ImportTarget {
+        case media, subtitles
+    }
+
     @Environment(AppModel.self) private var appModel
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @Environment(\.dismissWindow) private var dismissWindow
     @State private var importing = false
+    @State private var importTarget = ImportTarget.media
     @State private var photoItem: PhotosPickerItem?
     @State private var loadingPhoto = false
 
     var body: some View {
-        @Bindable var appModel = appModel
         NavigationStack {
             VStack(spacing: 24) {
                 header
@@ -32,16 +37,17 @@ struct LibraryView: View {
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.item]) { result in
             if case let .success(url) = result {
-                Task { await play { await appModel.player.open(url: url) } }
+                imported(url)
             }
         }
-        .fileImporter(isPresented: $appModel.requestSubtitleFile, allowedContentTypes: [.item]) { result in
-            if case let .success(url) = result {
-                Task {
-                    await appModel.player.loadSubtitles(from: url)
-                    closeIfInTheater()
-                }
+        // 映画館の中から字幕ファイルを頼まれたら、同じ fileImporter で選ぶ（ウィンドウを開いたときに頼まれていることもある）
+        .onChange(of: appModel.requestSubtitleFile, initial: true) {
+            guard appModel.requestSubtitleFile else {
+                return
             }
+            appModel.requestSubtitleFile = false
+            importTarget = .subtitles
+            importing = true
         }
         .onAppear {
             appModel.isLibraryOpen = true
@@ -76,6 +82,7 @@ struct LibraryView: View {
         let photoTitle = loadingPhoto ? String(localized: "読み込み中…") : String(localized: "写真から選ぶ")
         return HStack(spacing: 16) {
             Button {
+                importTarget = .media
                 importing = true
             } label: {
                 Label("ファイルを選ぶ", systemImage: "folder")
@@ -99,6 +106,18 @@ struct LibraryView: View {
     }
 
     // MARK: - 再生と映画館
+
+    private func imported(_ url: URL) {
+        switch importTarget {
+        case .media:
+            Task { await play { await appModel.player.open(url: url) } }
+        case .subtitles:
+            Task {
+                await appModel.player.loadSubtitles(from: url)
+                closeIfInTheater()
+            }
+        }
+    }
 
     /// 映画館に入ってから、open でファイルを開いて再生する（入れなければ開かない。映画館が無いと操作できないため）
     private func play(_ open: () async -> Void) async {
