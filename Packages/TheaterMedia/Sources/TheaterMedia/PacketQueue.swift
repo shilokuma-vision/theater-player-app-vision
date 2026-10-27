@@ -42,6 +42,12 @@ final class PacketQueue: @unchecked Sendable {
         return items.count
     }
 
+    var isEmpty: Bool {
+        condition.lock()
+        defer { condition.unlock() }
+        return items.isEmpty
+    }
+
     /// パケットの複製を入れる（packet は呼び出し側がそのまま使い続けてよい）
     func put(copyOf packet: UnsafeMutablePointer<AVPacket>, serial: Int) {
         guard let copy = av_packet_alloc() else {

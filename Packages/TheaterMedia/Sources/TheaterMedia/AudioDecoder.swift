@@ -20,6 +20,8 @@ final class AudioTimeline: @unchecked Sendable {
         let time: Double
         /// 1 サンプルで進むメディアの時刻（再生の速さ ÷ 48 kHz）
         let secondsPerFrame: Double
+        /// この区間のシークの番号
+        let serial: Int
     }
 
     private let lock = NSLock()
@@ -43,12 +45,13 @@ final class AudioTimeline: @unchecked Sendable {
         return base
     }
 
-    /// 輪のバッファの位置（出力のサンプル）のメディアの時刻。音響処理の遅れの分を引く
-    func time(atRingIndex index: Int) -> Double? {
-        guard let base = current else {
+    /// 輪のバッファの位置（出力のサンプル）のメディアの時刻。音響処理の遅れの分を引く。番号 serial の区間でなければ nil
+    func time(atRingIndex index: Int, serial: Int) -> Double? {
+        guard let base = current, base.serial == serial else {
             return nil
         }
-        let frames = index - base.ringIndex - CinemaProcessor.latencyFrames
+        // 区間の最初の音が出るまで（音響処理の遅れの分・前の区間の古い位置）は、区間の始まりの時刻
+        let frames = max(index - base.ringIndex - CinemaProcessor.latencyFrames, 0)
         return base.time + Double(frames) * base.secondsPerFrame
     }
 }
@@ -70,8 +73,17 @@ final class AudioDecoder: @unchecked Sendable {
     private var writtenInSegment = 0
     private let feeds: PlanarFeeds
     private var tempo: AudioTempo?
-    /// 再生の速さ（1 以外なら atempo を通す）
-    var playbackRate: Double = 1
+    private let rateBits = Atomic<UInt64>(Double(1).bitPattern)
+    /// 音の時刻のずれの許し（超えたら無音で埋める・重なりを捨てる。FFmpeg の aresample の min_hard_comp と同じ）
+    private static let driftTolerance = 0.1
+    /// これより大きく飛んだら、埋めずに時刻の対応を決め直す（時刻の不連続）
+    private static let maxGap = 5.0
+
+    /// 再生の速さ（1 以外なら atempo を通す。操作のスレッドが書き、デコードのスレッドが読む）
+    var playbackRate: Double {
+        get { Double(bitPattern: rateBits.load(ordering: .relaxed)) }
+        set { rateBits.store(newValue.bitPattern, ordering: .relaxed) }
+    }
 
     init(
         stream: UnsafeMutablePointer<AVStream>,
@@ -116,6 +128,11 @@ final class AudioDecoder: @unchecked Sendable {
         queue.abort()
     }
 
+    /// 番号 serial の区間を続けてよいか（シーク・閉じた・トラックを替えたら false。古いデコーダーが輪のバッファに書かないため）
+    private func isCurrent(_ serial: Int) -> Bool {
+        serial == control.serial && !control.isStopped && active.load(ordering: .acquiring)
+    }
+
     func run() {
         while !control.isStopped, active.load(ordering: .acquiring) {
             guard let item = queue.take() else {
@@ -158,11 +175,13 @@ final class AudioDecoder: @unchecked Sendable {
         processor.reset()
         ring.flush()
         timeline.reset()
+        // atempo の中にたまった前の位置の音を捨てる
+        tempo = nil
         writtenInSegment = 0
     }
 
     private func receiveFrames(serial: Int) {
-        while serial == control.serial, avcodec_receive_frame(codec, frame) >= 0 {
+        while isCurrent(serial), avcodec_receive_frame(codec, frame) >= 0 {
             defer { av_frame_unref(frame) }
             handle(serial: serial)
         }
@@ -176,63 +195,62 @@ final class AudioDecoder: @unchecked Sendable {
         let stamp = frame.pointee.best_effort_timestamp != tp_no_pts() ? frame.pointee.best_effort_timestamp : frame.pointee.pts
         let time = stamp != tp_no_pts() ? Double(stamp) * av_q2d(timeBase) - startTime : nil
         let duration = Double(frame.pointee.nb_samples) / rate
-        // 正確なシーク：シーク先より前の音は捨て、またぐフレームは頭を切る
-        var skip = 0
-        if let target = control.seekTarget(for: serial), let time {
-            if time + duration <= target {
-                return
-            }
-            if timeline.current == nil, time < target {
-                skip = Int((target - time) * Double(AudioResampler.sampleRate))
-            }
+        // 正確なシーク：シーク先より前の音は捨てる（またぐフレームの頭は、書くときに切る）
+        if let target = control.seekTarget(for: serial), let time, time + duration <= target {
+            return
         }
         let speed = playbackRate
         guard abs(speed - 1) > 0.001 else {
-            convert(frame, skip: skip, time: time, serial: serial)
+            convert(frame, time: time, speed: 1, serial: serial)
             return
         }
-        // 速さを変える：atempo を通してから変換する（シークの頭の切り落としも速さで割る）
+        // 速さを変える：atempo を通してから変換する。出てきた音の時刻は atempo の側で数える
         if tempo == nil || !(tempo?.matches(frame, tempo: speed) ?? false) {
             tempo = try? AudioTempo(like: frame, tempo: speed)
         }
         guard let tempo else {
-            convert(frame, skip: skip, time: time, serial: serial)
+            convert(frame, time: time, speed: 1, serial: serial)
             return
         }
-        var remainingSkip = Int(Double(skip) / speed)
-        tempo.process(frame) { output in
-            convert(output, skip: remainingSkip, time: time, serial: serial)
-            remainingSkip = max(0, remainingSkip - Int(output.pointee.nb_samples))
+        tempo.process(frame, time: time) { output, outputTime in
+            convert(output, time: outputTime, speed: speed, serial: serial)
         }
     }
 
-    private func convert(_ source: UnsafeMutablePointer<AVFrame>, skip: Int, time: Double?, serial: Int) {
+    /// 48 kHz の float にして書く。speed はこの音の再生の速さ（1 サンプルで進むメディアの時刻を決める）
+    private func convert(_ source: UnsafeMutablePointer<AVFrame>, time: Double?, speed: Double, serial: Int) {
         do {
             try resampler.convert(source) { channels, count, changed in
                 if changed {
                     processor.configure(input: resampler.layout)
                 }
-                write(channels, count: count, skip: min(skip, count), time: time, serial: serial)
+                write(channels, count: count, time: time, speed: speed, serial: serial)
             }
         } catch {
             return
         }
     }
 
-    /// 音響処理に通して輪のバッファへ書く。区間の始まりなら、時刻の対応を決める
-    private func write(_ channels: [UnsafePointer<Float>], count: Int, skip: Int, time: Double?, serial: Int) {
-        let frames = count - skip
-        guard frames > 0 else {
-            return
-        }
-        let sampleRate = Double(AudioResampler.sampleRate)
+    /// 音響処理に通して輪のバッファへ書く。区間の始まりなら時刻の対応を決め、途中なら時刻とのずれを直す
+    private func write(_ channels: [UnsafePointer<Float>], count: Int, time: Double?, speed: Double, serial: Int) {
+        let secondsPerFrame = speed / Double(AudioResampler.sampleRate)
+        var skip = 0
         if timeline.current == nil {
-            let start = (time ?? 0) + Double(skip) / sampleRate
-            timeline.set(AudioTimeline.Base(ringIndex: ring.writtenFrames, time: start, secondsPerFrame: playbackRate / sampleRate))
+            // 正確なシーク：シーク先をまたぐフレームは頭を切る（鳴らすサンプルの数で）
+            if let target = control.seekTarget(for: serial), let time, time < target {
+                skip = Int((target - time) / secondsPerFrame)
+            }
+            guard skip < count else {
+                return
+            }
+            let start = (time ?? 0) + Double(skip) * secondsPerFrame
+            timeline.set(AudioTimeline.Base(ringIndex: ring.writtenFrames, time: start, secondsPerFrame: secondsPerFrame, serial: serial))
             writtenInSegment = 0
+        } else if let time {
+            skip = followTimestamp(time, serial: serial)
         }
         var offset = skip
-        while offset < count, serial == control.serial, !control.isStopped {
+        while offset < count, isCurrent(serial) {
             let chunk = min(count - offset, feeds.frames)
             processor.process(input: channels.map { $0 + offset }, frames: chunk, output: feeds.pointers)
             guard push(frames: chunk, serial: serial) else {
@@ -243,11 +261,46 @@ final class AudioDecoder: @unchecked Sendable {
         }
     }
 
-    /// 輪のバッファに書く。空きが無ければ待つ（シーク・閉じたら false）
+    /// 区間の途中で、音の時刻（pts）と書いた数から決まる時刻がずれたとき：音の切れ目は無音で埋め、重なった分は捨てる
+    /// （捨てる数を返す）。大きく飛んだときは、時刻の対応を決め直す
+    private func followTimestamp(_ time: Double, serial: Int) -> Int {
+        guard let base = timeline.current else {
+            return 0
+        }
+        let spacing = base.secondsPerFrame
+        let drift = time - (base.time + Double(writtenInSegment) * spacing)
+        if abs(drift) > Self.maxGap {
+            timeline.set(AudioTimeline.Base(ringIndex: ring.writtenFrames, time: time, secondsPerFrame: spacing, serial: serial))
+            writtenInSegment = 0
+        } else if drift > Self.driftTolerance {
+            writeSilence(frames: Int(drift / spacing), serial: serial)
+        } else if drift < -Self.driftTolerance {
+            return Int(-drift / spacing)
+        }
+        return 0
+    }
+
+    /// 無音を音響処理に通して書く（音の切れ目・ファイルの終わりで音響処理の中に残った分を押し出す）
+    private func writeSilence(frames: Int, serial: Int) {
+        let silence = PlanarFeeds(count: max(resampler.channelCount, 1), frames: feeds.frames)
+        let input = silence.pointers.map { UnsafePointer($0) }
+        var remaining = frames
+        while remaining > 0, isCurrent(serial) {
+            let chunk = min(remaining, feeds.frames)
+            processor.process(input: input, frames: chunk, output: feeds.pointers)
+            guard push(frames: chunk, serial: serial) else {
+                return
+            }
+            remaining -= chunk
+            writtenInSegment += chunk
+        }
+    }
+
+    /// 輪のバッファに書く。空きが無ければ待つ（シーク・閉じた・トラックを替えたら false）
     private func push(frames: Int, serial: Int) -> Bool {
         var done = 0
         while done < frames {
-            if control.isStopped || serial != control.serial {
+            if !isCurrent(serial) {
                 return false
             }
             let written = ring.write(feeds.pointers.map { UnsafePointer($0 + done) }, frames: frames - done)
@@ -261,9 +314,7 @@ final class AudioDecoder: @unchecked Sendable {
 
     /// ファイルの終わり：音響処理の中に残った分（遅れの分）を、無音を入れて押し出す
     private func flushProcessorTail(serial: Int) {
-        let silence = PlanarFeeds(count: max(resampler.channelCount, 1), frames: CinemaProcessor.latencyFrames)
-        processor.process(input: silence.pointers.map { UnsafePointer($0) }, frames: CinemaProcessor.latencyFrames, output: feeds.pointers)
-        _ = push(frames: CinemaProcessor.latencyFrames, serial: serial)
+        writeSilence(frames: CinemaProcessor.latencyFrames, serial: serial)
     }
 }
 

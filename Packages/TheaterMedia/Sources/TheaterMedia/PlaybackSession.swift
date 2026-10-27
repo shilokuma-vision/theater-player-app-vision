@@ -131,33 +131,56 @@ final class PlaybackSession: @unchecked Sendable {
         var pointer: UnsafeMutablePointer<AVPacket>? = packet
         defer { av_packet_free(&pointer) }
         var ended = false
+        var failures = 0
         while !control.isStopped {
             if let seek = takePendingSeek() {
                 perform(seek)
                 ended = false
+                failures = 0
                 continue
             }
             if ended || isBackedUp {
                 Thread.sleep(forTimeInterval: 0.01)
                 continue
             }
-            do {
-                if try container.read(into: packet) {
-                    route(packet)
-                } else {
-                    endOfStream()
-                    ended = true
-                }
-            } catch {
+            ended = read(into: packet, failures: &failures)
+            if ended {
                 endOfStream()
-                ended = true
             }
+        }
+    }
+
+    /// 1 つ読んで振り分ける。ファイルの終わりなら true
+    private func read(into packet: UnsafeMutablePointer<AVPacket>, failures: inout Int) -> Bool {
+        do {
+            guard try container.read(into: packet) else {
+                return true
+            }
+            failures = 0
+            route(packet)
+            return false
+        } catch {
+            // 壊れたデータなどは読み直す。ファイルの終わりに着いた・読めない状態が続くなら終わりとする
+            failures += 1
+            if container.isAtEnd || failures >= 100 {
+                return true
+            }
+            Thread.sleep(forTimeInterval: 0.01)
+            return false
         }
     }
 
     /// 待ち行列がいっぱい（デコードが追いつくまで読まない）
     private var isBackedUp: Bool {
         (video?.queue.isFull ?? false) || (audio?.queue.isFull ?? false)
+    }
+
+    /// 映像の待ち行列がいっぱいで読み込みが止まり、音声のパケットが来ない（音の無い所。音を待つと進まない）
+    var isStarvingAudio: Bool {
+        guard let video, let audio else {
+            return false
+        }
+        return video.queue.isFull && audio.queue.isEmpty
     }
 
     private func perform(_ seek: (time: Double, serial: Int)) {

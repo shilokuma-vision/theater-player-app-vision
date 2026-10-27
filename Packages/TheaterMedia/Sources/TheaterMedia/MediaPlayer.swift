@@ -6,7 +6,8 @@
 //
 //  - 映像：videoRenderer（AVSampleBufferVideoRenderer）を RealityKit の VideoMaterial に渡すと、スクリーンに映る
 //  - 音声：映画館の音響処理（processor）を通した、スピーカーごとの信号が ring に入る。RealityKit の空間オーディオの音源が ring から読む
-//  - 時計：音が鳴っていれば音の時計（ring が実際に鳴らした位置）に、映像の時計を合わせる（音が主）。音が無ければ映像の時計で進む
+//  - 時計：音が鳴っていれば音の時計（ring が実際に鳴らした位置）に、映像の時計を合わせる（音が主）。音が無い・鳴り終えた・
+//    データが来ないときは映像の時計で進む
 //
 
 @preconcurrency import AVFoundation
@@ -29,11 +30,21 @@ public final class MediaPlayer: @unchecked Sendable {
     let audioTimeline = AudioTimeline()
     let subtitleStore = SubtitleStore()
     let lock = NSLock()
+    /// 再生の操作（開く・閉じる・再生・一時停止・シーク・時計の 1 回）を 1 つずつ行う（時計のスレッドが一時停止を上書きしないため）
+    let controlLock = NSRecursiveLock()
     var session: PlaybackSession?
     var stateValue: PlaybackState = .idle
     var rateValue: Float = 1
     var pausedTime: Double = 0
     var clockThread: Thread?
+    /// 開く・閉じるたびに増える番号。後から別のファイルを開いたら、前の open の結果は捨てる
+    var openGeneration = 0
+    /// 別のファイルの字幕を出している（シークで消さない）
+    var showsExternalSubtitles = false
+    /// 音のデータが来ず、映像の時計で進めている（音がたまる・シークで戻す）
+    var audioStarved = false
+    /// 輪のバッファを鳴らし始めたホストの時刻（それより前の描画の回は、止める前の古い位置）
+    var ringStartHost: UInt64 = 0
     var settings = PlayerTiming()
     public let events: AsyncStream<MediaPlayerEvent>
     let continuation: AsyncStream<MediaPlayerEvent>.Continuation

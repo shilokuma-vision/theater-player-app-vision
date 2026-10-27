@@ -17,6 +17,9 @@ final class AudioTempo {
     private var source: UnsafeMutablePointer<AVFilterContext>?
     private var sink: UnsafeMutablePointer<AVFilterContext>?
     private let output: UnsafeMutablePointer<AVFrame>
+    /// 最初に入れた音のメディアの時刻と、出した数（atempo の中にたまる分で入力の時刻とずれるので、出した数から時刻を決める）
+    private var origin: Double?
+    private var producedFrames = 0
 
     init(like frame: UnsafeMutablePointer<AVFrame>, tempo: Double) throws {
         guard let output = av_frame_alloc(), let graph = avfilter_graph_alloc() else {
@@ -54,13 +57,18 @@ final class AudioTempo {
             && channels == frame.pointee.ch_layout.nb_channels
     }
 
-    /// frame を入れ、出てきたフレームを body に渡す
-    func process(_ frame: UnsafeMutablePointer<AVFrame>, _ body: (UnsafeMutablePointer<AVFrame>) -> Void) {
+    /// frame（メディアの時刻 time）を入れ、出てきたフレームとその最初のサンプルのメディアの時刻を body に渡す
+    func process(_ frame: UnsafeMutablePointer<AVFrame>, time: Double?, _ body: (UnsafeMutablePointer<AVFrame>, Double?) -> Void) {
+        if origin == nil, let time {
+            origin = time - Double(producedFrames) * tempo / Double(sampleRate)
+        }
         guard av_buffersrc_add_frame_flags(source, frame, Int32(AV_BUFFERSRC_FLAG_KEEP_REF)) >= 0 else {
             return
         }
         while av_buffersink_get_frame(sink, output) >= 0 {
-            body(output)
+            // 出した 1 サンプルは、入力の tempo サンプル分のメディアの時刻に当たる
+            body(output, origin.map { $0 + Double(producedFrames) * tempo / Double(sampleRate) })
+            producedFrames += Int(output.pointee.nb_samples)
             av_frame_unref(output)
         }
     }

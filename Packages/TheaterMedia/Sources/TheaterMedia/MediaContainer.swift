@@ -96,6 +96,14 @@ final class MediaContainer: @unchecked Sendable {
         return true
     }
 
+    /// 読み込みがファイルの終わりに着いた、または読めなくなった（av_read_frame の失敗を終わりとみなす）
+    var isAtEnd: Bool {
+        guard let io = context.pointee.pb else {
+            return false
+        }
+        return avio_feof(io) != 0 || io.pointee.error != 0
+    }
+
     /// seconds の手前のキーフレームへ移る
     func seek(to seconds: Double) throws {
         let target = Int64(max(0, seconds) * Double(tp_time_base()))

@@ -13,49 +13,66 @@ extension MediaPlayer {
     // MARK: - 再生の操作
 
     public func play() {
-        guard let session = currentSession, state == .paused || state == .ended else {
-            return
+        controlLock.withLock {
+            guard let session = currentSession else {
+                return
+            }
+            switch state {
+            case .ended:
+                // 頭から。シークの後、データがそろってから鳴らし始める（startIfReady）
+                seek(to: 0)
+            case .paused:
+                session.control.isPaused = false
+                // シークの直後などで、今の位置の音がまだそろっていなければ、そろってから鳴らす
+                if !startIfReady(session) {
+                    setState(.buffering)
+                }
+            default:
+                break
+            }
         }
-        if state == .ended {
-            seek(to: 0)
-        }
-        session.control.isPaused = false
-        let time = currentTime
-        ring.setPaused(false)
-        videoOutput.setRate(rate, time: time)
-        setState(.playing)
     }
 
     public func pause() {
-        guard let session = currentSession, state == .playing || state == .buffering else {
-            return
+        controlLock.withLock {
+            guard let session = currentSession, state == .playing || state == .buffering else {
+                return
+            }
+            let time = currentTime
+            session.control.isPaused = true
+            ring.setPaused(true)
+            videoOutput.setRate(0, time: time)
+            lock.lock()
+            pausedTime = time
+            lock.unlock()
+            setState(.paused)
         }
-        let time = currentTime
-        session.control.isPaused = true
-        ring.setPaused(true)
-        videoOutput.setRate(0, time: time)
-        lock.lock()
-        pausedTime = time
-        lock.unlock()
-        setState(.paused)
     }
 
     /// time（秒）へ移る。再生中なら、データがそろってから続ける
     public func seek(to time: Double) {
-        guard let session = currentSession else {
-            return
-        }
-        let target = max(0, min(time, (session.info.duration ?? .infinity) - 0.05))
-        _ = session.requestSeek(to: target)
-        subtitleStore.clear()
-        lock.lock()
-        pausedTime = target
-        lock.unlock()
-        videoOutput.setRate(0, time: target)
-        if state == .playing || state == .ended {
-            ring.setPaused(true)
-            session.control.isPaused = false
-            setState(.buffering)
+        controlLock.withLock {
+            guard let session = currentSession else {
+                return
+            }
+            let target = max(0, min(time, (session.info.duration ?? .infinity) - 0.05))
+            _ = session.requestSeek(to: target)
+            // ファイルの中の字幕は読み直すので消す。別のファイルの字幕は読み直さないので残す
+            if !lock.withLock({ showsExternalSubtitles }) {
+                subtitleStore.clear()
+            }
+            // 前の位置の音の時刻の対応は使わない（新しい区間の音が入ったら決め直す）
+            audioTimeline.reset()
+            lock.lock()
+            pausedTime = target
+            audioStarved = false
+            lock.unlock()
+            videoOutput.setRate(0, time: target)
+            if state == .playing || state == .ended {
+                ring.setPaused(true)
+                session.control.isPaused = false
+                setState(.buffering)
+            }
         }
     }
 
@@ -67,16 +84,18 @@ extension MediaPlayer {
             return rateValue
         }
         set {
-            let clamped = max(0.5, min(newValue, 2))
-            lock.lock()
-            rateValue = clamped
-            lock.unlock()
-            currentSession?.audio?.playbackRate = Double(clamped)
-            // 音の時刻の対応（1 サンプルで進む時刻）が変わるので、今の位置から鳴らし直す
-            if currentSession?.audio != nil {
-                seek(to: currentTime)
-            } else if state == .playing {
-                videoOutput.setRate(clamped, time: currentTime)
+            controlLock.withLock {
+                let clamped = max(0.5, min(newValue, 2))
+                lock.lock()
+                rateValue = clamped
+                lock.unlock()
+                currentSession?.audio?.playbackRate = Double(clamped)
+                // 音の時刻の対応（1 サンプルで進む時刻）が変わるので、今の位置から鳴らし直す
+                if currentSession?.audio != nil {
+                    seek(to: currentTime)
+                } else if state == .playing {
+                    videoOutput.setRate(clamped, time: currentTime)
+                }
             }
         }
     }
@@ -128,15 +147,23 @@ extension MediaPlayer {
         currentSession?.info.duration
     }
 
-    /// 音の時計：ring が最後に鳴らした位置の時刻 + そこからの経過 − 出力の遅れ − 利用者の遅れの調整
+    /// 音の時計：ring が最後に鳴らした位置の時刻 + そこからの経過 − 出力の遅れ + 利用者の遅れの調整。
+    /// 音を鳴らし終えた・音のデータが来ないときは nil（映像の時計で進める）
     func audioClock() -> Double? {
-        guard currentSession?.audio != nil, let render = ring.lastRender(),
-              let mediaTime = audioTimeline.time(atRingIndex: render.index) else {
+        guard let session = currentSession, session.audio != nil, !isAudioSilent(session),
+              let render = ring.lastRender(), render.hostTime == 0 || render.hostTime >= lock.withLock({ ringStartHost }),
+              let mediaTime = audioTimeline.time(atRingIndex: render.index, serial: session.control.serial) else {
             return nil
         }
         let elapsed = min(HostClock.seconds(from: render.hostTime, to: mach_absolute_time()), 0.2)
         let timing = timing
-        return mediaTime + elapsed * Double(rate) - timing.audioOutputLatency - timing.audioDelay
+        // 出力の遅れは実際の時間なので速さを掛ける。音を遅らせる（正）なら、同じ音のときに映像を先へ進める
+        return mediaTime + (elapsed - timing.audioOutputLatency) * Double(rate) + timing.audioDelay
+    }
+
+    /// 音が鳴っていない：最後まで鳴らし終えた、またはデータが来ず待っても進まない
+    private func isAudioSilent(_ session: PlaybackSession) -> Bool {
+        (ring.pendingFrames < 256 && session.control.hasEnded(.audio)) || lock.withLock { audioStarved }
     }
 
     /// 表示中の映像の時刻（スクリーンの光・字幕に使う）
@@ -172,21 +199,27 @@ extension MediaPlayer {
     }
 
     private func tick() {
-        guard let session = currentSession else {
-            return
-        }
-        switch state {
-        case .playing:
-            if let audioTime = audioClock() {
-                follow(audioTime)
+        controlLock.withLock {
+            guard let session = currentSession else {
+                return
             }
-            if session.control.isFinished(hasVideo: session.video != nil, hasAudio: session.audio != nil), ring.pendingFrames < 256 {
-                finish()
+            switch state {
+            case .playing:
+                updateAudioStarved(session)
+                if let audioTime = audioClock() {
+                    follow(audioTime)
+                } else if videoOutput.rate != rate {
+                    // 音の時計が無い：映像の時計で進める（ずれを詰めるための速さの調整を戻す）
+                    videoOutput.adjustRate(rate)
+                }
+                if session.control.isFinished(hasVideo: session.video != nil, hasAudio: session.audio != nil), ring.pendingFrames < 256 {
+                    finish()
+                }
+            case .buffering:
+                startIfReady(session)
+            default:
+                break
             }
-        case .buffering:
-            resumeIfReady(session)
-        default:
-            break
         }
     }
 
@@ -201,20 +234,41 @@ extension MediaPlayer {
         }
     }
 
-    /// シークの後、データがそろったら再生を続ける
-    private func resumeIfReady(_ session: PlaybackSession) {
-        let target = lock.withLock { pausedTime }
-        if session.audio != nil {
-            // 音の区間が決まり、0.25 秒分たまったら鳴らし始める
-            guard let base = audioTimeline.current, ring.pendingFrames > 12_000 else {
-                return
+    /// 音が尽き、映像の待ち行列がいっぱいで読み込みが止まった（音の無い所）：音を待つと進まないので映像の時計で進める。
+    /// 音がまたたまったら音の時計に戻す
+    private func updateAudioStarved(_ session: PlaybackSession) {
+        let pending = ring.pendingFrames
+        let starving = pending < 256 && session.isStarvingAudio
+        lock.withLock {
+            if starving {
+                audioStarved = true
+            } else if pending > 12_000 {
+                audioStarved = false
             }
-            ring.setPaused(false)
-            videoOutput.setRate(rate, time: max(base.time, target))
-        } else {
-            videoOutput.setRate(rate, time: target)
         }
+    }
+
+    /// データがそろっていれば鳴らし始める（シークの後・再生を始めるとき）。始めたら true
+    @discardableResult
+    private func startIfReady(_ session: PlaybackSession) -> Bool {
+        let target = lock.withLock { pausedTime }
+        var start = target
+        if session.audio != nil {
+            let base = audioTimeline.current.flatMap { $0.serial == session.control.serial ? $0 : nil }
+            // 音の区間が決まり、0.25 秒分たまったら鳴らし始める。音が最後まで出た（シーク先の後に音が少ない・無い）、
+            // 音のパケットが来ない（音の無い所）なら、たまるのを待たない
+            guard (base != nil && ring.pendingFrames > 12_000) || session.control.hasEnded(.audio) || session.isStarvingAudio else {
+                return false
+            }
+            if let base {
+                start = max(base.time, target)
+            }
+            lock.withLock { ringStartHost = mach_absolute_time() }
+            ring.setPaused(false)
+        }
+        videoOutput.setRate(rate, time: start)
         setState(.playing)
+        return true
     }
 
     private func finish() {

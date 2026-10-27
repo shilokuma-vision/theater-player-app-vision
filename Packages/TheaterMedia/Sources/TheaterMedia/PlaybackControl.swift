@@ -82,6 +82,21 @@ final class PlaybackControl: @unchecked Sendable {
         }
     }
 
+    /// track が、今の番号で最後まで出たか
+    func hasEnded(_ track: Track) -> Bool {
+        let current = serial
+        return state.withLock { shared in
+            switch track {
+            case .demux:
+                shared.demuxEnded == current
+            case .video:
+                shared.videoEnded == current
+            case .audio:
+                shared.audioEnded == current
+            }
+        }
+    }
+
     /// 映像・音声（あるものだけ）が、今の番号で最後まで出たか
     func isFinished(hasVideo: Bool, hasAudio: Bool) -> Bool {
         let current = serial
