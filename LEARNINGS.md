@@ -10,3 +10,7 @@
 - Swift 6：構造体のプロパティ（`scratch.windowed`）を読みながら、同じ構造体の別のプロパティを `inout`（`&scratch.leftReal`）で渡すと、実行時に「Fatal access conflict detected」で落ちる（構造体全体への同時アクセスになる）。作業領域はクラスにする（2026-10-27）
 - テストの雑音に SplitMix64 を使うとき、種を 1・2 のように近くすると、1 サンプルずれただけの（相関の強い）列になる。無相関の 2 本が要るときは種を大きく離す（2026-10-27）
 - visionOS の SDK では `TARGET_OS_IPHONE` が 1、`TARGET_OS_IOS` が 0、`TARGET_OS_VISION` が 1。iOS 向けの分岐（`#if TARGET_OS_IPHONE`）で OpenGL ES の API（`kCVPixelBufferOpenGLESCompatibilityKey` など）を使うライブラリは、visionOS ではビルドできない。逆に `TARGET_OS_IOS` で分けた処理は visionOS で素通りになる。FFmpeg 9.0.2 の VideoToolbox まわりがこれに当たる（`scripts/ffmpeg/patches/`）（2026-10-27）
+- visionOS 26.5 の Simulator の XCUITest：ImmersiveSpace の RealityView の添付（Attachment）の中のボタンは、`app.buttons[...]` などの問い合わせでは見つからない（`app.debugDescription` には出る。一覧を取ってから問い合わせても見つからない）。添付を操作する UI テストは書けないので、入ったあとに落ちないか（`app.state`）までを確かめる（2026-10-28）
+- visionOS の Simulator では `XCUIScreen.main.screenshot()` が真っ黒（1280 × 1280）になる。画面は `xcrun simctl io <UDID> screenshot` で撮る（2026-10-28）
+- GitHub Actions の macOS ランナー（仮想マシン）の visionOS Simulator では、この映画館を描くと描画サーバー（backboardd）が `re::createArgumentBuffer` で落ち、アプリと UI テストがまとめて signal 9 で止められる（手元の Mac の Simulator では落ちない）。仮想マシンかは `sysctlbyname("kern.hv_vmm_present")` で見分ける（Simulator の中の GPU の名前は手元も CI も「Apple xrOS simulator GPU」で見分けられない）（2026-10-28）
+- CI の UI テストの失敗の原因は、`TestResults.xcresult` を `xcrun xcresulttool export diagnostics` で書き出すと追える（アプリの標準出力・Simulator のクラッシュの記録・システムのログ）（2026-10-28）
