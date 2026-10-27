@@ -43,6 +43,33 @@ struct SpeakerFeedRingTests {
         #expect(next == (8..<16).map { Float($0) + 1_000 })
     }
 
+    /// 書き手が輪を満杯に保っていても、同じ描画の回のあとの読み手が読む範囲は上書きされない
+    @Test func writerDoesNotOverwriteTheCycleBeingRead() {
+        let ring = SpeakerFeedRing(feeds: 2, capacity: 16)
+        write(ring, values: (0..<16).map(Float.init))
+        ring.setPaused(false)
+        var gains: [Float] = [1, 1]
+        _ = read(ring, feed: 0, frames: 8, sampleTime: 100, gain: &gains[0])
+        write(ring, values: (16..<24).map(Float.init))
+        let second = read(ring, feed: 1, frames: 8, sampleTime: 100, gain: &gains[1])
+        #expect(second == (0..<8).map { Float($0) + 1_000 })
+        // 次の回になれば、前の回の分は書き手に渡る
+        _ = read(ring, feed: 1, frames: 8, sampleTime: 108, gain: &gains[1])
+        #expect(ring.writableFrames == 8)
+    }
+
+    /// 描画の時刻が戻ったら（オーディオのエンジンの再起動など）、前の回の続きから鳴らす
+    @Test func sampleTimeGoingBackResumesFromTheLastPosition() {
+        let ring = SpeakerFeedRing(feeds: 2, capacity: 64)
+        write(ring, values: (0..<32).map(Float.init))
+        ring.setPaused(false)
+        var gain: Float = 1
+        _ = read(ring, feed: 0, frames: 8, sampleTime: 1_000, gain: &gain)
+        _ = read(ring, feed: 0, frames: 8, sampleTime: 1_008, gain: &gain)
+        let restarted = read(ring, feed: 0, frames: 8, sampleTime: 0, gain: &gain)
+        #expect(restarted == (16..<24).map(Float.init))
+    }
+
     @Test func underrunPlaysSilenceAndResumesWhereTheDataEnds() {
         let ring = SpeakerFeedRing(feeds: 2, capacity: 64)
         write(ring, values: (0..<4).map(Float.init))

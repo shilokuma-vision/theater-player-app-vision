@@ -9,6 +9,10 @@
 //  描画の時刻（AudioTimeStamp の mSampleTime）から決める：位置 = 基準の位置 + (mSampleTime - 基準の mSampleTime)。
 //  同じ描画の回の読み手は同じ mSampleTime を受け取るので、同じ範囲を読む。
 //  データが足りないとき（デコードが追いつかない・再生の始め）は無音を出し、次の回から、書けている所に基準を合わせ直す。
+//  描画の時刻が戻った・大きく飛んだとき（オーディオのエンジンの再起動など）は、続きの位置に基準を合わせ直す。
+//
+//  読み終えた位置（consumed）は、描画の回が変わったときに、その回の頭まで進める（どの読み手でもよい）。
+//  回の終わりまで進めると、同じ回のまだ読んでいないスピーカーの範囲を書き手が上書きしてしまう。
 //
 
 import Foundation
@@ -20,7 +24,7 @@ public final class SpeakerFeedRing: @unchecked Sendable {
     private let storage: UnsafeMutablePointer<Float>
     /// 書いたサンプルの数（書き手だけが増やす）
     private let written = Atomic<Int>(0)
-    /// 読んだ位置（最初の読み手が進める。書き手は、ここより capacity 先までしか書かない）
+    /// 読んだ位置（いまの描画の回の頭。書き手は、ここより capacity 先までしか書かない）
     private let consumed = Atomic<Int>(0)
     private let timeline = Mutex(Timeline())
     private let volumeBits = Atomic<UInt32>(Float(1).bitPattern)
@@ -88,11 +92,11 @@ public final class SpeakerFeedRing: @unchecked Sendable {
     /// 書いた物を捨て、通しの番号を from からにする（シークのとき）。読み手は無音になり、次に書いた所から鳴らす
     public func flush() {
         timeline.withLock { line in
+            let now = written.load(ordering: .acquiring)
             line.anchorSampleTime = nil
             line.reanchorIndex = nil
+            consumed.store(now, ordering: .releasing)
         }
-        let now = written.load(ordering: .acquiring)
-        consumed.store(now, ordering: .releasing)
     }
 
     // MARK: - 再生の制御
@@ -149,7 +153,7 @@ extension SpeakerFeedRing {
             return
         }
         let available = written.load(ordering: .acquiring)
-        let oldest = available - capacity
+        let oldest = max(0, available - capacity)
         let base = storage + feed * capacity
         let target = volume
         let step = (target - previousGain) / Float(max(frames, 1))
@@ -165,22 +169,33 @@ extension SpeakerFeedRing {
     /// 読み出しの始まりの位置（鳴らさないときは nil）
     private func readStart(feed: Int, frames: Int, sampleTime: Double, hostTime: UInt64) -> Int? {
         let available = written.load(ordering: .acquiring)
-        let start: Int? = timeline.withLock { line in
+        return timeline.withLock { line in
             guard !line.paused else {
                 return nil
             }
-            if line.anchorSampleTime == nil || (line.reanchorIndex != nil && sampleTime != line.lastSampleTime) {
+            let newCycle = sampleTime != line.lastSampleTime
+            if newCycle, line.anchorSampleTime != nil, line.lastSampleTime >= 0, line.reanchorIndex == nil,
+               sampleTime < line.lastSampleTime || sampleTime - line.lastSampleTime > Double(capacity) {
+                // 時刻が戻った・大きく飛んだ：前の回の続きから鳴らす
+                line.reanchorIndex = line.lastIndex + line.lastFrames
+            }
+            if line.anchorSampleTime == nil || (line.reanchorIndex != nil && newCycle) {
                 let index = line.reanchorIndex ?? consumed.load(ordering: .acquiring)
                 line.anchorSampleTime = sampleTime
-                line.anchorIndex = index
+                line.anchorIndex = min(max(index, available - capacity, 0), available)
                 line.reanchorIndex = nil
             }
             let start = line.anchorIndex + Int((sampleTime - (line.anchorSampleTime ?? sampleTime)).rounded())
-            if sampleTime != line.lastSampleTime {
+            if newCycle {
                 line.lastSampleTime = sampleTime
                 line.lastIndex = start
                 line.lastHostTime = hostTime
                 line.lastFrames = frames
+                // 前の回までは鳴らし終えた。この回の範囲（start から）は、残りのスピーカーが読むまで書き手に渡さない
+                let done = min(start, available)
+                if done > consumed.load(ordering: .relaxed) {
+                    consumed.store(done, ordering: .releasing)
+                }
             }
             // 足りない：無音を出し、次の回から、書けている所の終わりに基準を合わせ直す（同じ所をくり返さない）
             if start + frames > available, line.reanchorIndex == nil {
@@ -188,12 +203,5 @@ extension SpeakerFeedRing {
             }
             return start
         }
-        if feed == 0, let start {
-            let end = min(start + frames, available)
-            if end > consumed.load(ordering: .relaxed) {
-                consumed.store(end, ordering: .releasing)
-            }
-        }
-        return start
     }
 }
