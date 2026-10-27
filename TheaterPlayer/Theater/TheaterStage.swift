@@ -20,7 +20,7 @@ final class TheaterStage {
     private(set) var screenFrame: ScreenFrame
     private let speakers = SpatialSpeakers()
     let lighting: LightingDirector
-    private var currentFormat: VideoFormat?
+    @ObservationIgnored private var currentFormat: VideoFormat?
     /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点（表示は、さらに曲面の出っ張りの分だけ手前に置く。overlayDepth）
     let screenAnchor = Entity()
 
@@ -99,8 +99,12 @@ final class TheaterStage {
     /// 映像が無いとき（開いていない・音楽）のマスキング：最大の範囲
     func resetMasking() {
         currentFormat = nil
-        screenFrame = ScreenFrame(aspect: 2.0, spec: layout.screen)
-        environment.setMasking(frame: screenFrame)
+        let frame = ScreenFrame(aspect: 2.0, spec: layout.screen)
+        // RealityView の update から何度も呼ばれるので、変わったときだけ書き換える（見ている View を作り直させない）
+        if screenFrame != frame {
+            screenFrame = frame
+        }
+        environment.setMasking(frame: frame)
     }
 
     /// 幅 width の平らな表示（字幕など）を、screenAnchor からどれだけ手前に置くか。

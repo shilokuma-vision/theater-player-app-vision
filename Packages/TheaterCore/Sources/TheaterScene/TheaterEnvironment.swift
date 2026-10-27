@@ -30,6 +30,8 @@ public final class TheaterEnvironment {
     /// 今の席
     public private(set) var currentSeat: Seat?
     private var maskingRest: [String: SIMD3<Float>] = [:]
+    /// マスキングの行き先（最後に setMasking に渡した範囲）
+    private var maskingFrame: ScreenFrame?
 
     /// アプリ（bundle）の Theater.usdz と TheaterLayout.json を読む
     public static func load(bundle: Bundle = .main, subdirectory: String? = nil) async throws -> TheaterEnvironment {
@@ -145,8 +147,12 @@ public final class TheaterEnvironment {
 
     // MARK: - マスキング
 
-    /// 映像の範囲に合わせてマスキングを動かす
+    /// 映像の範囲に合わせてマスキングを動かす（行き先が今と同じなら何もしない。動かし直すと動きが始めからになり、なかなか開かない）
     public func setMasking(frame: ScreenFrame, duration: TimeInterval = 2.5) {
+        guard frame != maskingFrame else {
+            return
+        }
+        maskingFrame = frame
         let offsets = frame.maskingOffsets(spec: layout.screen)
         let names = layout.screen.masking
         let moves: [(String, SIMD3<Float>)] = [
