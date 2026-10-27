@@ -51,7 +51,7 @@ jobs:
 
       - name: Restore FFmpeg
         # FFmpeg（Packages/TheaterMedia/Vendor/FFmpeg.xcframework）はリポジトリに入れず、scripts/build-ffmpeg.sh でソースから作る。
-        # スクリプト・Xcode・最低サポート OS が同じあいだはキャッシュを使う（作るのは初回だけ。M1 の 3 コアで 10 分ほど）。
+        # スクリプト・パッチ・Xcode・最低サポート OS が同じあいだはキャッシュを使う（作るのは初回だけ。数分）。
         # 依存のキャッシュは完全一致のキーだけにする（restore-keys で古い物を戻さない）
         id: ffmpeg
         uses: actions/cache@v6
