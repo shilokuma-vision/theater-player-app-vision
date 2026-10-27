@@ -13,22 +13,28 @@ import Metal
 import RealityKit
 
 /// 座席のメッシュの頂点（位置・法線・UV0・UV1）
-struct SeatVertex {
+struct SeatVertex: Sendable {
     var position: SIMD3<Float>
     var normal: SIMD3<Float>
     var uv0: SIMD2<Float>
     var uv1: SIMD2<Float>
 }
 
-/// ひな形の 1 つのメッシュ（1 つのマテリアル）
-struct SeatTemplatePiece {
+/// ひな形の 1 つのメッシュ（1 つのマテリアル）。MainActor の外で並べるので、マテリアルは番号で持つ
+struct SeatTemplatePiece: Sendable {
     /// 部品（Body・SeatPlate・RowPlate）
     let part: String
-    /// マテリアルの名前（seat_fabric など）
-    let materialName: String
-    let material: any Material
+    /// マテリアルの番号（SeatMeshBuilder の materials の並び）
+    let materialIndex: Int
     let vertices: [SeatVertex]
     let indices: [UInt32]
+}
+
+/// 並べた座席の形（LowLevelMesh に入れる前の頂点と、マテリアルごとの三角形・範囲）
+struct SeatMeshData: Sendable {
+    var vertices: [SeatVertex] = []
+    var indicesByMaterial: [[UInt32]]
+    var bounds: [BoundingBox] = []
 }
 
 @MainActor
@@ -45,12 +51,9 @@ public final class SeatMeshBuilder {
         for kindEntity in templateRoot.children {
             var pieces: [SeatTemplatePiece] = []
             for child in kindEntity.children {
-                pieces += try Self.pieces(of: child)
+                pieces += try self.pieces(of: child)
             }
             templates[kindEntity.name] = pieces
-            for piece in pieces where !materials.contains(where: { $0.name == piece.materialName }) {
-                materials.append((piece.materialName, piece.material))
-            }
         }
         if templates.isEmpty {
             throw TheaterSceneError.templateMissing(templateRoot.name)
@@ -62,30 +65,42 @@ public final class SeatMeshBuilder {
         templates.keys.sorted()
     }
 
-    /// 単位の並びから、1 つの LOD のメッシュのエンティティを作る
-    public func makeEntity(name: String, units: [SeatUnit], lod: Int) throws -> ModelEntity {
-        var vertices: [SeatVertex] = []
-        var indicesByMaterial = [[UInt32]](repeating: [], count: materials.count)
+    /// 単位の並びから、1 つの LOD のメッシュのエンティティを作る。
+    /// 頂点を並べるのは MainActor の外で行う（全部で数十万の三角形があり、映画館を開くときに画面が止まるため）
+    public func makeEntity(name: String, units: [SeatUnit], lod: Int) async throws -> ModelEntity {
+        let data = try await Self.arrange(units: units, lod: lod, templates: templates, spec: spec, materialCount: materials.count)
+        let mesh = try Self.lowLevelMesh(data)
+        let entity = ModelEntity(mesh: try await MeshResource(from: mesh), materials: materials.map(\.material))
+        entity.name = name
+        return entity
+    }
+
+    /// ひな形を単位の位置に並べて、1 つのメッシュの頂点と、マテリアルごとの三角形・範囲にする
+    @concurrent
+    nonisolated private static func arrange(
+        units: [SeatUnit],
+        lod: Int,
+        templates: [String: [SeatTemplatePiece]],
+        spec: SeatTemplateSpec,
+        materialCount: Int
+    ) async throws -> SeatMeshData {
+        var data = SeatMeshData(indicesByMaterial: [[UInt32]](repeating: [], count: materialCount))
         for unit in units {
             guard let pieces = templates["\(unit.kind)_LOD\(lod)"] else {
                 throw TheaterSceneError.templateMissing("\(unit.kind)_LOD\(lod)")
             }
             for piece in pieces {
-                let base = UInt32(vertices.count)
-                vertices += piece.vertices.map { place($0, unit: unit, part: piece.part) }
-                if let slot = materials.firstIndex(where: { $0.name == piece.materialName }) {
-                    indicesByMaterial[slot] += piece.indices.map { $0 + base }
-                }
+                let base = UInt32(data.vertices.count)
+                data.vertices += piece.vertices.map { place($0, unit: unit, part: piece.part, spec: spec) }
+                data.indicesByMaterial[piece.materialIndex] += piece.indices.map { $0 + base }
             }
         }
-        let mesh = try Self.lowLevelMesh(vertices: vertices, indicesByMaterial: indicesByMaterial)
-        let entity = ModelEntity(mesh: try MeshResource(from: mesh), materials: materials.map(\.material))
-        entity.name = name
-        return entity
+        data.bounds = data.indicesByMaterial.map { bounds(of: data.vertices, indices: $0) }
+        return data
     }
 
     /// ひな形の頂点を単位の位置へ置き、UV1 を単位のマスへ、番号の板の UV0 を番号のマスへ移す
-    private func place(_ vertex: SeatVertex, unit: SeatUnit, part: String) -> SeatVertex {
+    nonisolated private static func place(_ vertex: SeatVertex, unit: SeatUnit, part: String, spec: SeatTemplateSpec) -> SeatVertex {
         var out = vertex
         out.position += unit.position
         let grid = Float(spec.atlasGrid)
@@ -108,7 +123,7 @@ public final class SeatMeshBuilder {
 
     // MARK: - ひな形を読む
 
-    private static func pieces(of entity: Entity) throws -> [SeatTemplatePiece] {
+    private func pieces(of entity: Entity) throws -> [SeatTemplatePiece] {
         guard let model = entity.components[ModelComponent.self], let material = model.materials.first else {
             return []
         }
@@ -116,17 +131,26 @@ public final class SeatMeshBuilder {
         guard names.count == 2 else {
             throw TheaterSceneError.templateMissing(entity.name)
         }
+        let materialIndex = index(ofMaterial: names[1], material: material)
         var out: [SeatTemplatePiece] = []
         for meshModel in model.mesh.contents.models {
             for part in meshModel.parts {
-                out.append(try piece(part, name: names[0], materialName: names[1], material: material))
+                out.append(try Self.piece(part, name: names[0], materialIndex: materialIndex))
             }
         }
         return out
     }
 
-    private static func piece(_ part: MeshResource.Part, name: String, materialName: String, material: any Material) throws
-        -> SeatTemplatePiece {
+    /// マテリアルの番号（初めて出てきた名前なら足す）
+    private func index(ofMaterial name: String, material: any Material) -> Int {
+        if let index = materials.firstIndex(where: { $0.name == name }) {
+            return index
+        }
+        materials.append((name, material))
+        return materials.count - 1
+    }
+
+    private static func piece(_ part: MeshResource.Part, name: String, materialIndex: Int) throws -> SeatTemplatePiece {
         let positions = part.positions.elements
         let normals = part.normals?.elements ?? []
         let uv0 = buffer(part, named: "st") ?? []
@@ -138,7 +162,7 @@ public final class SeatMeshBuilder {
         let vertices = positions.indices.map { index in
             SeatVertex(position: positions[index], normal: normals[index], uv0: uv0[index], uv1: uv1[index])
         }
-        return SeatTemplatePiece(part: name, materialName: materialName, material: material, vertices: vertices, indices: indices)
+        return SeatTemplatePiece(part: name, materialIndex: materialIndex, vertices: vertices, indices: indices)
     }
 
     /// USD の primvar（st・st1）を読む。RealityKit は USD の値をそのまま持っている
@@ -148,7 +172,8 @@ public final class SeatMeshBuilder {
 
     // MARK: - LowLevelMesh
 
-    private static func lowLevelMesh(vertices: [SeatVertex], indicesByMaterial: [[UInt32]]) throws -> LowLevelMesh {
+    /// 並べた形を LowLevelMesh に写す（MainActor。写すだけにして軽くする）
+    private static func lowLevelMesh(_ data: SeatMeshData) throws -> LowLevelMesh {
         let stride = MemoryLayout<SeatVertex>.stride
         let attributes: [LowLevelMesh.Attribute] = [
             .init(semantic: .position, format: .float3, offset: MemoryLayout<SeatVertex>.offset(of: \.position) ?? 0),
@@ -156,9 +181,9 @@ public final class SeatMeshBuilder {
             .init(semantic: .uv0, format: .float2, offset: MemoryLayout<SeatVertex>.offset(of: \.uv0) ?? 32),
             .init(semantic: .uv1, format: .float2, offset: MemoryLayout<SeatVertex>.offset(of: \.uv1) ?? 40)
         ]
-        let indexCount = indicesByMaterial.reduce(0) { $0 + $1.count }
+        let indexCount = data.indicesByMaterial.reduce(0) { $0 + $1.count }
         let descriptor = LowLevelMesh.Descriptor(
-            vertexCapacity: vertices.count,
+            vertexCapacity: data.vertices.count,
             vertexAttributes: attributes,
             vertexLayouts: [.init(bufferIndex: 0, bufferStride: stride)],
             indexCapacity: indexCount,
@@ -166,22 +191,20 @@ public final class SeatMeshBuilder {
         )
         let mesh = try LowLevelMesh(descriptor: descriptor)
         mesh.withUnsafeMutableBytes(bufferIndex: 0) { raw in
-            vertices.withUnsafeBytes { raw.copyMemory(from: $0) }
+            data.vertices.withUnsafeBytes { raw.copyMemory(from: $0) }
         }
         var parts: [LowLevelMesh.Part] = []
         var offset = 0
         mesh.withUnsafeMutableIndices { raw in
-            let target = raw.bindMemory(to: UInt32.self)
-            for (slot, indices) in indicesByMaterial.enumerated() where !indices.isEmpty {
-                for (index, value) in indices.enumerated() {
-                    target[offset + index] = value
-                }
+            for (slot, indices) in data.indicesByMaterial.enumerated() where !indices.isEmpty {
+                let byteOffset = offset * MemoryLayout<UInt32>.size
+                indices.withUnsafeBytes { UnsafeMutableRawBufferPointer(rebasing: raw[byteOffset...]).copyMemory(from: $0) }
                 parts.append(LowLevelMesh.Part(
-                    indexOffset: offset * MemoryLayout<UInt32>.size,
+                    indexOffset: byteOffset,
                     indexCount: indices.count,
                     topology: .triangle,
                     materialIndex: slot,
-                    bounds: bounds(of: vertices, indices: indices)
+                    bounds: data.bounds[slot]
                 ))
                 offset += indices.count
             }
@@ -190,7 +213,7 @@ public final class SeatMeshBuilder {
         return mesh
     }
 
-    private static func bounds(of vertices: [SeatVertex], indices: [UInt32]) -> BoundingBox {
+    nonisolated private static func bounds(of vertices: [SeatVertex], indices: [UInt32]) -> BoundingBox {
         var box = BoundingBox.empty
         for index in indices {
             box.formUnion(vertices[Int(index)].position)

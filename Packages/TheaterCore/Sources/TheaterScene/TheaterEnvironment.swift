@@ -47,17 +47,17 @@ public final class TheaterEnvironment {
     public static func load(usdz: URL, layout: URL) async throws -> TheaterEnvironment {
         let model = try await Entity(contentsOf: usdz)
         let layout = try TheaterLayout.load(from: layout)
-        return try TheaterEnvironment(model: model, layout: layout)
+        return try await TheaterEnvironment(model: model, layout: layout)
     }
 
-    init(model: Entity, layout: TheaterLayout) throws {
+    init(model: Entity, layout: TheaterLayout) async throws {
         self.model = model
         self.layout = layout
         lighting = try LightingState(spec: layout.lightState)
         root.name = "TheaterRoot"
         root.addChild(model)
         bindLighting(model)
-        try buildSeats()
+        try await buildSeats()
         for name in [layout.screen.masking.top, layout.screen.masking.bottom, layout.screen.masking.left, layout.screen.masking.right] {
             if let entity = model.findEntity(named: name) {
                 maskingRest[name] = entity.position
@@ -90,7 +90,7 @@ public final class TheaterEnvironment {
 
     // MARK: - 座席
 
-    private func buildSeats() throws {
+    private func buildSeats() async throws {
         guard let templates = model.findEntity(named: layout.seatTemplates.entity) else {
             throw TheaterSceneError.templateMissing(layout.seatTemplates.entity)
         }
@@ -104,8 +104,9 @@ public final class TheaterEnvironment {
             guard let units = grouped[name] else {
                 continue
             }
-            let lods = try (0..<3).map { lod in
-                try builder.makeEntity(name: "\(name)_LOD\(lod)", units: units, lod: lod)
+            var lods: [ModelEntity] = []
+            for lod in 0..<3 {
+                lods.append(try await builder.makeEntity(name: "\(name)_LOD\(lod)", units: units, lod: lod))
             }
             let groupEntity = Entity()
             groupEntity.name = name
