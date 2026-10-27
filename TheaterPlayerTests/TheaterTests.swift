@@ -110,6 +110,46 @@ struct RecentItemsTests {
         #expect(item.resumePosition == nil)
     }
 
+    /// 同じ名前でも、別のフォルダーのファイルは別の項目にする。同じファイルを開き直したら、同じ項目を先頭へ
+    @Test func distinguishesFilesWithTheSameName() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("RecentItemsTests.\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let first = try makeFile(folder.appendingPathComponent("Season1/01.mkv"))
+        let second = try makeFile(folder.appendingPathComponent("Season2/01.mkv"))
+        let recents = RecentItems(file: folder.appendingPathComponent("recents.json"))
+        let firstItem = try #require(recents.add(url: first))
+        recents.update(firstItem.id, position: 600, duration: 1_800, isAudioOnly: false)
+        let secondItem = try #require(recents.add(url: second))
+        #expect(recents.items.count == 2)
+        #expect(secondItem.id != firstItem.id)
+        #expect(secondItem.position == 0)
+        let reopened = try #require(recents.add(url: first))
+        #expect(reopened.id == firstItem.id)
+        #expect(reopened.position == 600)
+        #expect(recents.items.map(\.id) == [firstItem.id, secondItem.id])
+    }
+
+    /// 一覧から開いたときは、その項目を書き換える（ファイルが動いて、ブックマークから別の場所が返ってきても）
+    @Test func updatesTheChosenItem() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("RecentItemsTests.\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let file = try makeFile(folder.appendingPathComponent("movie.mkv"))
+        let moved = try makeFile(folder.appendingPathComponent("Moved/movie (1).mkv"))
+        let recents = RecentItems(file: folder.appendingPathComponent("recents.json"))
+        let item = try #require(recents.add(url: file))
+        let updated = try #require(recents.add(url: moved, replacing: item.id))
+        #expect(updated.id == item.id)
+        #expect(updated.name == "movie (1).mkv")
+        #expect(updated.path == RecentItems.path(of: moved))
+        #expect(recents.items.count == 1)
+    }
+
+    private func makeFile(_ url: URL) throws -> URL {
+        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try Data([0]).write(to: url)
+        return url
+    }
+
     @Test func formatsClockTime() {
         #expect(TimeFormat.clock(65) == "1:05")
         #expect(TimeFormat.clock(3_725) == "1:02:05")

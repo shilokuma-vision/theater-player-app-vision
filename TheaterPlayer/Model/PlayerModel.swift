@@ -61,19 +61,24 @@ final class PlayerModel {
 
     /// ファイルを開いて再生する（最近の一覧に入れ、前回の続きから）
     func open(url: URL) async {
-        close()
-        let accessing = url.startAccessingSecurityScopedResource()
-        accessedURL = accessing ? url : nil
-        let item = recents.add(url: url)
-        await start(url: url, title: url.deletingPathExtension().lastPathComponent, item: item)
+        await open(url: url, recentID: nil)
     }
 
+    /// 最近の一覧から開く（その項目を書き換える）
     func open(_ item: RecentItems.Item) async {
         guard let url = recents.resolve(item) else {
             errorMessage = String(localized: "ファイルが見つかりません。もう一度選んでください。")
             return
         }
-        await open(url: url)
+        await open(url: url, recentID: item.id)
+    }
+
+    private func open(url: URL, recentID: UUID?) async {
+        close()
+        let accessing = url.startAccessingSecurityScopedResource()
+        accessedURL = accessing ? url : nil
+        let item = recents.add(url: url, replacing: recentID)
+        await start(url: url, title: url.deletingPathExtension().lastPathComponent, item: item)
     }
 
     private func start(url: URL, title: String, item: RecentItems.Item?) async {

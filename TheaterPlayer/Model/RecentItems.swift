@@ -15,6 +15,9 @@ final class RecentItems {
         var id = UUID()
         var name: String
         var bookmark: Data
+        /// ファイルの場所（同じファイルかを比べる。名前だけだと Season1/01.mkv と Season2/01.mkv を取り違える）。
+        /// 場所を持つ前に保存した項目では nil
+        var path: String?
         /// 前回やめた位置（秒）
         var position: Double = 0
         var duration: Double?
@@ -45,17 +48,21 @@ final class RecentItems {
         }
     }
 
-    /// 開いたファイルを先頭に入れる（同じファイルなら位置を引き継ぐ）
+    /// 開いたファイルを先頭に入れる（同じファイルなら位置を引き継ぐ）。一覧から開いたときは、その項目（id）を書き換える
     @discardableResult
-    func add(url: URL) -> Item? {
+    func add(url: URL, replacing id: UUID? = nil) -> Item? {
         guard let bookmark = try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil) else {
             return nil
         }
-        let name = url.lastPathComponent
-        var item = items.first { $0.name == name } ?? Item(name: name, bookmark: bookmark)
+        let path = Self.path(of: url)
+        let existing = items.first { $0.id == id } ?? items.first { ($0.path ?? Self.resolvedPath($0.bookmark)) == path }
+        var item = existing ?? Item(name: url.lastPathComponent, bookmark: bookmark)
+        item.name = url.lastPathComponent
         item.bookmark = bookmark
+        item.path = path
         item.playedAt = Date()
-        items.removeAll { $0.id == item.id }
+        // 同じ場所の項目が別にあれば（一覧の項目を開き直したら、別の項目と同じファイルだった）1 つにまとめる
+        items.removeAll { $0.id == item.id || $0.path == path }
         items.insert(item, at: 0)
         items = Array(items.prefix(30))
         save()
@@ -89,6 +96,18 @@ final class RecentItems {
             save()
         }
         return url
+    }
+
+    /// 比べるためのファイルの場所
+    static func path(of url: URL) -> String {
+        url.standardizedFileURL.path
+    }
+
+    /// 場所を持たない古い項目の場所（ブックマークから引く。比べるだけなので、外部ストレージをつなぎに行かない）
+    private static func resolvedPath(_ bookmark: Data) -> String? {
+        var stale = false
+        let options: URL.BookmarkResolutionOptions = [.withoutUI, .withoutMounting]
+        return (try? URL(resolvingBookmarkData: bookmark, options: options, relativeTo: nil, bookmarkDataIsStale: &stale)).map(path)
     }
 
     private func save() {
