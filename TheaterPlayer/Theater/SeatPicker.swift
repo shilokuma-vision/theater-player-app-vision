@@ -17,16 +17,17 @@ struct SeatPicker: View {
         VStack(spacing: 12) {
             PageHeader(title: "座席", page: $page)
             if let stage {
+                let current = currentSeat(on: stage)
                 quickPicks(stage)
                 Text("スクリーン")
                     .font(.caption)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
                     .background(.white.opacity(0.25), in: Capsule())
-                SeatMap(layout: stage.layout, current: stage.currentSeat) { seat in
+                SeatMap(layout: stage.layout, current: current) { seat in
                     choose(seat, on: stage)
                 }
-                if let seat = stage.currentSeat {
+                if let seat = current {
                     Text("いまの席：\(seat.row) 列 \(seat.number) 番").font(.footnote).foregroundStyle(.secondary)
                 }
             } else {
@@ -53,6 +54,11 @@ struct SeatPicker: View {
     private static let picks: [(id: String, title: LocalizedStringKey)] = [
         ("C-17", "前方"), ("G-17", "中央（おすすめ）"), ("K-17", "後方"), ("N-18", "最後列")
     ]
+
+    /// 選んでいる席。設定（Observable）から引く：移るのは暗転のあとで、映画館の側の席は View が見ていないため
+    private func currentSeat(on stage: TheaterStage) -> Seat? {
+        stage.layout.seat(id: appModel.preferences.seatID) ?? stage.currentSeat
+    }
 
     private func choose(_ seat: Seat, on stage: TheaterStage) {
         appModel.preferences.seatID = seat.id
