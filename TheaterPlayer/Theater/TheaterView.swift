@@ -11,6 +11,7 @@ import TheaterScene
 
 struct TheaterView: View {
     @Environment(AppModel.self) private var appModel
+    @Environment(\.openWindow) private var openWindow
     @State private var stage: TheaterStage?
     @State private var updates: EventSubscription?
     @State private var loadError: String?
@@ -74,9 +75,19 @@ struct TheaterView: View {
                 NowPlayingScreen()
             }
         }
+        // open / closed は実際に表示・非表示になったときにだけ書き換える（システムの操作でも開閉するため）
+        .onAppear {
+            appModel.immersiveSpaceState = .open
+        }
         .onDisappear {
             stage?.detach()
             appModel.player.close()
+            // 「映画館を出る」は .inTransition にして、ライブラリを開いてから閉じる。
+            // それ以外（Digital Crown などシステムの操作で閉じた）は、ウィンドウが 1 つも無くなるので、ここでライブラリを開き直す
+            if appModel.immersiveSpaceState != .inTransition, !appModel.isLibraryOpen {
+                openWindow(id: appModel.libraryWindowID)
+            }
+            appModel.immersiveSpaceState = .closed
         }
     }
 

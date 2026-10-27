@@ -20,16 +20,10 @@ struct TheaterPlayer: App {
         .defaultSize(width: 980, height: 720)
 
         // 映画館。開閉はライブラリの「映画館に入る」と、操作パネルの「映画館を出る」から行う。
-        // open / closed は実際に表示・非表示になったときにだけ書き換える（システムの操作でも開閉するため）
+        // open / closed は TheaterView が、表示・非表示になったときに書き換える（閉じたあとの片付けと順番をそろえるため）
         ImmersiveSpace(id: appModel.immersiveSpaceID) {
             TheaterView()
                 .environment(appModel)
-                .onAppear {
-                    appModel.immersiveSpaceState = .open
-                }
-                .onDisappear {
-                    appModel.immersiveSpaceState = .closed
-                }
         }
         .immersionStyle(selection: $immersion, in: .full)
     }

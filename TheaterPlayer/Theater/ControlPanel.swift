@@ -105,15 +105,29 @@ struct ControlPanel: View {
                 }
                 Spacer()
                 Button(role: .destructive) {
-                    Task {
-                        openWindow(id: appModel.libraryWindowID)
-                        await dismissImmersiveSpace()
-                    }
+                    leave()
                 } label: {
                     Label("映画館を出る", systemImage: "door.left.hand.open")
                 }
                 .accessibilityIdentifier("leaveTheater")
             }
+        }
+    }
+
+    /// 映画館を出る：ライブラリを開いてから、映画館を閉じる
+    private func leave() {
+        // 2 度押したときに、ライブラリを 2 つ開かない
+        guard appModel.immersiveSpaceState != .inTransition else {
+            return
+        }
+        // 閉じ終わる（TheaterView の onDisappear）までは .inTransition にしておく。
+        // 開き直したライブラリで「映画館に入る」・再生を押しても、閉じ終わるのを待ってから開く
+        appModel.immersiveSpaceState = .inTransition
+        if !appModel.isLibraryOpen {
+            openWindow(id: appModel.libraryWindowID)
+        }
+        Task {
+            await dismissImmersiveSpace()
         }
     }
 

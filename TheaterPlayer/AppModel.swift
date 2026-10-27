@@ -23,6 +23,8 @@ final class AppModel {
     let libraryWindowID = "Library"
 
     var immersiveSpaceState = ImmersiveSpaceState.closed
+    /// ライブラリのウィンドウが開いているか（LibraryView が書き換える。映画館を閉じたときに開き直すかを決める）
+    var isLibraryOpen = false
     /// 映画館の中から「字幕ファイルを選ぶ」を頼まれた（ライブラリのウィンドウがファイルの選択を出す）
     var requestSubtitleFile = false
     let preferences: Preferences

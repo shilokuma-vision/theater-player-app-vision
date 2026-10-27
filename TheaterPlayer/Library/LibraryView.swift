@@ -43,6 +43,12 @@ struct LibraryView: View {
                 }
             }
         }
+        .onAppear {
+            appModel.isLibraryOpen = true
+        }
+        .onDisappear {
+            appModel.isLibraryOpen = false
+        }
         .onChange(of: photoItem) {
             guard let photoItem else {
                 return
@@ -94,9 +100,11 @@ struct LibraryView: View {
 
     // MARK: - 再生と映画館
 
-    /// 映画館に入ってから、open でファイルを開いて再生する
+    /// 映画館に入ってから、open でファイルを開いて再生する（入れなければ開かない。映画館が無いと操作できないため）
     private func play(_ open: () async -> Void) async {
-        await enterTheater()
+        guard await enterTheater() else {
+            return
+        }
         await open()
     }
 
@@ -112,21 +120,30 @@ struct LibraryView: View {
         await play { await appModel.player.open(url: movie.url) }
     }
 
-    /// 映画館（ImmersiveSpace）を開き、ライブラリのウィンドウを閉じる
-    private func enterTheater() async {
+    /// 映画館（ImmersiveSpace）を開き、ライブラリのウィンドウを閉じる。映画館に入れたら true
+    @discardableResult
+    private func enterTheater() async -> Bool {
+        // 開け閉めの途中（「映画館を出る」で閉じている途中など）なら、終わるのを待つ（最大 5 秒）。
+        // 閉じている途中で開くと、閉じたあとの片付けで、開いたファイルが閉じられる
+        for _ in 0..<50 where appModel.immersiveSpaceState == .inTransition {
+            try? await Task.sleep(for: .milliseconds(100))
+        }
         switch appModel.immersiveSpaceState {
         case .open:
             closeIfInTheater()
+            return true
         case .closed:
             appModel.immersiveSpaceState = .inTransition
             switch await openImmersiveSpace(id: appModel.immersiveSpaceID) {
             case .opened:
                 closeIfInTheater()
+                return true
             default:
                 appModel.immersiveSpaceState = .closed
+                return false
             }
         case .inTransition:
-            break
+            return false
         }
     }
 
