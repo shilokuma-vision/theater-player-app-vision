@@ -9,3 +9,4 @@
 - SwiftLint：ローカルパッケージや道具（`Packages/*`・`Tools/*/`）で `swift build` すると、その中の `.build` の生成ファイル（`test_entry_point.swift` など）まで lint される。`.swiftlint.yml` の `excluded` に `"**/.build"` を入れる（2026-10-27）
 - Swift 6：構造体のプロパティ（`scratch.windowed`）を読みながら、同じ構造体の別のプロパティを `inout`（`&scratch.leftReal`）で渡すと、実行時に「Fatal access conflict detected」で落ちる（構造体全体への同時アクセスになる）。作業領域はクラスにする（2026-10-27）
 - テストの雑音に SplitMix64 を使うとき、種を 1・2 のように近くすると、1 サンプルずれただけの（相関の強い）列になる。無相関の 2 本が要るときは種を大きく離す（2026-10-27）
+- visionOS の SDK では `TARGET_OS_IPHONE` が 1、`TARGET_OS_IOS` が 0、`TARGET_OS_VISION` が 1。iOS 向けの分岐（`#if TARGET_OS_IPHONE`）で OpenGL ES の API（`kCVPixelBufferOpenGLESCompatibilityKey` など）を使うライブラリは、visionOS ではビルドできない。逆に `TARGET_OS_IOS` で分けた処理は visionOS で素通りになる。FFmpeg 9.0.2 の VideoToolbox まわりがこれに当たる（`scripts/ffmpeg/patches/`）（2026-10-27）

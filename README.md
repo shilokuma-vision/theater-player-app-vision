@@ -75,10 +75,13 @@ FFmpeg（と AV1 の dav1d）は、リポジトリに入れずにソースから
 scripts/build-ffmpeg.sh
 ```
 
-- 公式の配布物（ffmpeg.org・videolan.org）を取得し、SHA-256 を確かめてから、visionOS の実機（xros）と Simulator（xrsimulator）向けにビルドします
+- 公式の配布物（ffmpeg.org・videolan.org）を取得し、SHA-256 を確かめてから、visionOS の実機（xros）と Simulator（xrsimulator）向けにビルドします。Simulator の分だけなら `scripts/build-ffmpeg.sh xrsimulator`
+- FFmpeg のソースには `scripts/ffmpeg/patches/` のパッチを当てます（visionOS に無い OpenGL ES の指定を Metal に替えるなど。中身は各パッチの先頭の説明）
 - できあがるのは `Packages/TheaterMedia/Vendor/FFmpeg.xcframework`（git には入りません）。これが無いと Xcode がパッケージを読めません
 - FFmpeg は LGPL 2.1 以降の構成です（GPL・nonfree のコンポーネントは有効にしません）。dav1d は BSD 2-Clause です
-- CI ではキャッシュし、スクリプト・Xcode・Deployment Target が変わったときだけ作り直します
+- CI ではキャッシュし、スクリプト・パッチ・Xcode・Deployment Target が変わったときだけ作り直します
+- セキュリティソフトがスクリプトの直接の実行を止める（`zsh: killed`）Mac では、`bash scripts/build-ffmpeg.sh` で実行します
+- dav1d のビルドには Python の仮想環境に meson・ninja を入れます（pip を使います）。pip が使えないときは `FFMPEG_WITHOUT_DAV1D=1` を付けると dav1d を入れずに作れます（AV1 は VideoToolbox で扱える端末でだけ再生できます）
 
 ## リポジトリの運用（テンプレートから引き継いだもの）
 
