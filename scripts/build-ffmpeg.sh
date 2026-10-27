@@ -8,6 +8,7 @@
 #   作った内容は Vendor/FFmpeg.stamp に書く。同じ内容のものがあれば何もしない（作り直すときは FFMPEG_FORCE=1）
 #   FFMPEG_WITHOUT_DAV1D=1 で dav1d（AV1 のソフトウェアデコード）を入れずに作る（Python・pip を使わない。
 #   AV1 は VideoToolbox で扱える端末でだけ再生できる）
+#   FFmpeg のソースには scripts/ffmpeg/patches/ のパッチを当てる（visionOS に無い API を避けるため。中身は各パッチの説明を参照）
 #
 # ライセンス: FFmpeg は LGPL 2.1 以降、dav1d は BSD 2-Clause。GPL・nonfree のコンポーネントは有効にしない
 #   （configure に --enable-gpl / --enable-nonfree を渡さない。--disable-autodetect で意図しない外部ライブラリも入れない。
@@ -57,7 +58,8 @@ for platform in "${platforms[@]}"; do
 done
 
 # 同じ設定で作ったものがあれば作り直さない（スクリプトの中身・バージョン・OS・プラットフォームが同じとき）
-script_hash="$(cat "$0" "$root/scripts/ffmpeg/pkg-config" | shasum -a 256 | cut -d' ' -f1)"
+patches=("$root"/scripts/ffmpeg/patches/*.patch)
+script_hash="$(cat "$0" "$root/scripts/ffmpeg/pkg-config" "${patches[@]}" | shasum -a 256 | cut -d' ' -f1)"
 dav1d_label="$DAV1D_VERSION"
 if [[ "$without_dav1d" == 1 ]]; then
   dav1d_label=none
@@ -106,6 +108,10 @@ extract() {
 }
 step "ソースを展開する"
 extract "ffmpeg-$FFMPEG_VERSION"
+for patch_file in "${patches[@]}"; do
+  step "パッチを当てる（$(basename "$patch_file")）"
+  patch -d "$work/src/ffmpeg-$FFMPEG_VERSION" -p1 --forward --quiet < "$patch_file"
+done
 if [[ "$without_dav1d" != 1 ]]; then
   extract "dav1d-$DAV1D_VERSION"
 fi
