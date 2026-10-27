@@ -86,6 +86,19 @@ struct ProcessorTests {
         #expect(peak > 0.5)
     }
 
+    /// 急に大きな音が来ても、倍率を段差で変えない（クリックを出さない）。上限も超えない
+    @Test func limiterChangesTheGainSmoothly() {
+        var limiter = LookaheadLimiter(channels: 1, sampleRate: 48_000)
+        let input = [Float](repeating: 0.5, count: 1_000) + [Float](repeating: 2, count: 1_000)
+        var signal = input
+        signal.withUnsafeMutableBufferPointer { limiter.process([$0.baseAddress!], frames: $0.count) }
+        let delay = LookaheadLimiter.lookahead
+        let gains = (delay..<signal.count).map { signal[$0] / input[$0 - delay] }
+        let largestStep = zip(gains, gains.dropFirst()).map { abs($1 - $0) }.max() ?? 0
+        #expect((signal.map(abs).max() ?? 0) <= limiter.threshold + 1e-5)
+        #expect(largestStep < 0.02)
+    }
+
     /// 低音の量を変えても、フィルターの途中の状態を捨てない（音が跳ばない）
     @Test func changingBassBoostDoesNotClick() throws {
         let processor = try CinemaProcessor(speakers: speakers)

@@ -54,19 +54,31 @@ struct DynamicRangeController {
 }
 
 /// 先読みのリミッター（約 2 ms 先を見て、超える前に下げる）
+///
+/// 倍率は段差にしない（大きな音の最中に倍率が急に変わるとクリックが出る）。
+/// 1. 各入力のサンプルが求める倍率（上限 ÷ ピーク）の、直近 lookahead + 1 サンプルの最小値を取る
+/// 2. それをゆっくり戻す（下げるときはそのまま）
+/// 3. 直近 lookahead サンプルの平均を倍率にする
+/// 出力は lookahead サンプル遅れるので、あるサンプルが出るときの平均の範囲は、どれもそのサンプルの最小値の範囲に入る。
+/// そのため倍率はそのサンプルの求める倍率以下になり、上限を超えない
 struct LookaheadLimiter {
     static let lookahead = 96
     /// 上限（-1 dBFS）
     let threshold: Float = 0.89
     private var delayed: [[Float]]
+    /// 入力のサンプルごとの求める倍率（直近 lookahead + 1 サンプル）
     private var required: [Float]
+    private var requiredPosition = 0
+    /// 最小値をゆっくり戻した倍率（直近 lookahead サンプル。平均を取る）
+    private var held: [Float]
+    private var hold: Float = 1
     private var position = 0
-    private var gain: Float = 1
     private let release: Float
 
     init(channels: Int, sampleRate: Float) {
         delayed = [[Float]](repeating: [Float](repeating: 0, count: Self.lookahead), count: channels)
-        required = [Float](repeating: 1, count: Self.lookahead)
+        required = [Float](repeating: 1, count: Self.lookahead + 1)
+        held = [Float](repeating: 1, count: Self.lookahead)
         release = exp(-1 / (0.08 * sampleRate))
     }
 
@@ -78,10 +90,12 @@ struct LookaheadLimiter {
             for channel in 0..<channels {
                 peak = max(peak, abs(buffers[channel][frame]))
             }
-            required[position] = peak > threshold ? threshold / peak : 1
-            // 先読みの範囲でいちばん強く下げる必要のある倍率まで、すぐ下げる。戻すときはゆっくり
-            let target = required.min() ?? 1
-            gain = target < gain ? target : release * gain + (1 - release) * target
+            required[requiredPosition] = peak > threshold ? threshold / peak : 1
+            requiredPosition = (requiredPosition + 1) % required.count
+            let minimum = required.min() ?? 1
+            hold = minimum < hold ? minimum : release * hold + (1 - release) * minimum
+            held[position] = hold
+            let gain = held.reduce(0, +) / Float(held.count)
             for channel in 0..<channels {
                 let input = buffers[channel][frame]
                 buffers[channel][frame] = delayed[channel][position] * gain
@@ -100,7 +114,11 @@ struct LookaheadLimiter {
         for index in required.indices {
             required[index] = 1
         }
-        gain = 1
+        for index in held.indices {
+            held[index] = 1
+        }
+        hold = 1
+        requiredPosition = 0
         position = 0
     }
 }
