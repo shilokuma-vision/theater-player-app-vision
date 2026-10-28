@@ -262,6 +262,8 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 | App のプライバシー（収集するデータの申告） | API がありません。[TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) とプライバシーポリシーに合わせて「App のプライバシー」で答え、公開します |
 | ビルドの選択と審査への提出 | リリースの判断なので人が行います。輸出コンプライアンスは [TheaterPlayer/Info.plist](TheaterPlayer/Info.plist) の `ITSAppUsesNonExemptEncryption`（`false`）で申告済みなので、聞かれません |
 | デジタルサービス法（EU）の取引業者の情報 | アプリごとではなくアカウントで一度だけ行います（「ビジネス」）。登録済みなら不要です |
+| 使用許諾契約（EULA） | 初めて出すときに一度だけ。[docs/EULA.md](docs/EULA.md) の文を「App 情報」→「使用許諾契約」に設定します（LGPL の FFmpeg を使うため。下の「ライセンス」） |
+| この版の Release | 審査に出すたびに作ります（下の「ライセンス」の「審査に出すときにすること」） |
 
 流す順は、`Metadata/App Store` を dry-run で実行して Job Summary の差分を確かめ → `dry_run` を外して実行 → 最後に出る「審査に出す前に App Store Connect で入力が要るもの」を App Store Connect で埋める、です。
 
@@ -272,7 +274,9 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 | [TheaterPlayer/Library](TheaterPlayer/Library) | ライブラリ（最初のウィンドウ）。「ファイル」・写真から選ぶ、最近の一覧から続きを再生する |
 | [TheaterPlayer/Theater](TheaterPlayer/Theater) | 映画館（`ImmersiveSpace`、Full）。映画館のモデル・スクリーンの映像（`VideoMaterial(videoRenderer:)`）・空間オーディオのスピーカー・照明の演出・手元の操作パネル・座席表・字幕 |
 | [TheaterPlayer/Model](TheaterPlayer/Model) | 再生の状態（`PlayerModel`）・設定（`Preferences`）・最近の一覧（`RecentItems`） |
+| [TheaterPlayer/About](TheaterPlayer/About) | ライセンス（ライブラリのウィンドウのツールバーから開く）。使っているオープンソースのソフトウェアと、この版のソースの入手先 |
 | [TheaterPlayer/Resources/Theater](TheaterPlayer/Resources/Theater) | 映画館のモデル（`Theater.usdz`）と配置（`TheaterLayout.json`）。[Tools/Theater](Tools/Theater/README.md) のスクリプトが書く |
+| [TheaterPlayer/Resources/Licenses](TheaterPlayer/Resources/Licenses) | ライセンスの画面に出す全文（FFmpeg の LGPL 2.1・dav1d の BSD・このアプリの MIT） |
 | [Packages/TheaterMedia](Packages/TheaterMedia) | 再生のエンジン。FFmpeg で開いてデコードし、映像は `AVSampleBufferVideoRenderer` へ、音声は映画館の音響処理へ。音の時計に映像を合わせる |
 | [Packages/TheaterCore](Packages/TheaterCore) | `CinemaAudio`（映画館の音響処理：系統への振り分け・アップミックス・ベースマネジメント・低音・リミッター・スピーカーへの輪のバッファ）と、`TheaterScene`（映画館の空間：照明の状態・座席の組み立て・マスキング・スクリーンの曲面）。macOS でもテストできる |
 | [Tools/Theater](Tools/Theater) | 映画館を作る Blender のスクリプトと、RealityKit で確かめる道具 |
@@ -304,7 +308,7 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 ├── Tools/
 │   ├── Theater/                  # 映画館のモデル（Blender のスクリプト・RealityKit で確かめる道具）
 │   └── …                         # スクリーンショットの撮影と App Store Connect への反映
-├── docs/                         # ExportOptions.plist のサンプル
+├── docs/                         # ExportOptions.plist のサンプル・使用許諾契約（EULA）の文案
 ├── scripts/                      # build-ffmpeg.sh・rename.sh
 ├── .swiftlint.yml                # SwiftLint 設定
 └── .github/                      # Issue・PR のテンプレートと、ワークフロー（_build.yml・_archive.yml は FFmpeg を作ってキャッシュする）
@@ -318,5 +322,36 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 ## ライセンス
 
 - このアプリ：[MIT License](LICENSE)
-- FFmpeg：[LGPL 2.1 以降](https://ffmpeg.org/legal.html)（静的にリンクします。このアプリのソースと、FFmpeg を作るスクリプトを公開しているので、差し替えた FFmpeg で作り直せます）
+- FFmpeg：[LGPL 2.1 以降](https://ffmpeg.org/legal.html)（LGPL の構成。GPL・nonfree の部品は使いません）
 - dav1d：[BSD 2-Clause](https://code.videolan.org/videolan/dav1d/-/blob/master/COPYING)
+
+### FFmpeg（LGPL）の扱い
+
+FFmpeg はアプリに静的にリンクしています。LGPL 2.1 の条件は、次のようにして満たします（法律の助言を受けて決めたものではありません。商用で配るときは法務に確認してください）。
+
+| LGPL 2.1 が求めること | このアプリでの対応 |
+|---|---|
+| FFmpeg を使っていること・LGPL であることを示し、ライセンスの全文を付ける | アプリの「ライセンス」の画面（ライブラリのウィンドウのツールバー）に、使い方・著作権・全文を出す |
+| 配ったバイナリと同じ FFmpeg のソースを渡す | 審査に出す版ごとに GitHub の Release を作り、FFmpeg・dav1d のソースの配布物を添付する。パッチとビルドのスクリプトは、その版のタグのリポジトリにある |
+| 利用者が FFmpeg を差し替えて作り直せる（第 6 条） | このアプリのソースをすべて公開しているので、差し替えた FFmpeg でビルドし直せる |
+| 使用許諾契約で、改変とデバッグのための解析を禁じない・LGPL の権利を制限しない | App Store Connect に [docs/EULA.md](docs/EULA.md) の使用許諾契約を設定する（Apple の標準使用許諾契約を使い、オープンソースの部品のライセンスを優先させる） |
+
+### 審査に出すときにすること
+
+アプリの「ライセンス」の画面は、その版の Release（`v<MARKETING_VERSION>`）へ案内します。審査に出すたびに、出すビルドのコミット（App Store Connect に上げた Upload の実行のコミット）に、タグと Release を作ってください。
+
+```bash
+git tag v1.0.0 <コミット>
+```
+
+```bash
+git push origin v1.0.0
+```
+
+```bash
+gh release create v1.0.0 .build/ffmpeg/src/ffmpeg-9.0.2.tar.xz .build/ffmpeg/src/dav1d-1.5.4.tar.xz --title "v1.0.0" --notes "App Store に出した版のソースです。FFmpeg 9.0.2（LGPL 2.1 以降）と dav1d 1.5.4（BSD 2-Clause）のソースの配布物を添付しています。FFmpeg に当てたパッチとビルドのスクリプトは、このタグの scripts/ にあります。"
+```
+
+- 添付する 2 つは、`scripts/build-ffmpeg.sh` が公式の配布物を取得し、SHA-256 を確かめて置いたものです（一度ビルドすると `.build/ffmpeg/src/` にあります）
+- 同じ版でビルドを出し直したときは、タグと Release を作り直してください
+- FFmpeg・dav1d の版を上げたら、[TheaterPlayer/About/OpenSourceLicenses.swift](TheaterPlayer/About/OpenSourceLicenses.swift) の版も直します（`scripts/build-ffmpeg.sh` が食い違いを確かめて止まります）
