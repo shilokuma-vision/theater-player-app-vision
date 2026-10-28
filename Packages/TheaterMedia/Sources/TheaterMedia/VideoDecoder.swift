@@ -22,6 +22,8 @@ final class VideoDecoder: @unchecked Sendable {
     private let stream: UnsafeMutablePointer<AVStream>
     /// VideoToolbox で、前のコマが出てから送ったパケットの数（多すぎたらソフトウェアに替える）
     private var packetsWithoutFrame = 0
+    /// 診断用の数（時計のスレッドが読む）
+    let stats = Mutex(VideoStats())
     private let frame: UnsafeMutablePointer<AVFrame>
     private let interlaced: Bool
     private let rotation: Int
@@ -157,6 +159,11 @@ final class VideoDecoder: @unchecked Sendable {
         while serial == control.serial, avcodec_receive_frame(codec, frame) >= 0 {
             defer { av_frame_unref(frame) }
             packetsWithoutFrame = 0
+            let hardware = tp_uses_videotoolbox(codec) != 0
+            stats.withLock {
+                $0.decoded += 1
+                $0.usesVideoToolbox = hardware
+            }
             if interlaced, frame.pointee.flags & AV_FRAME_FLAG_INTERLACED != 0 || deinterlacer != nil {
                 deinterlace(frame, serial: serial)
             } else {
@@ -233,9 +240,11 @@ final class VideoDecoder: @unchecked Sendable {
         let duration = decoded.pointee.duration > 0 ? Double(decoded.pointee.duration) * av_q2d(base) : frameDuration
         lastTime = time
         if let target = control.seekTarget(for: serial), time + duration < target {
+            stats.withLock { $0.droppedBeforeSeekTarget += 1 }
             return
         }
         guard let buffer = pixelBuffer(of: decoded) else {
+            stats.withLock { $0.noPixelBuffer += 1 }
             return
         }
         report(decoded)
@@ -245,7 +254,15 @@ final class VideoDecoder: @unchecked Sendable {
         }
         // 遅れたフレームは飛ばす（デコードが追いつかないとき）。シーク直後の 1 枚目は必ず出す
         if !waitingFirstFrame, !control.isPaused, time + duration < output.time - 0.15 {
+            stats.withLock {
+                $0.droppedLate += 1
+                $0.lastFrameTime = time
+            }
             return
+        }
+        stats.withLock {
+            $0.enqueued += 1
+            $0.lastFrameTime = time
         }
         lights.append(time: time, light: light)
         output.enqueue(DecodedVideoFrame(pixelBuffer: buffer, time: time, duration: duration, serial: serial),
