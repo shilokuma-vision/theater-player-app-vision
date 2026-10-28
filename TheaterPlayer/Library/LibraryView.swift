@@ -80,7 +80,7 @@ struct LibraryView: View {
     private var header: some View {
         VStack(spacing: 8) {
             Image(systemName: "film.stack").font(.system(size: 56)).foregroundStyle(.secondary)
-            Text("映画館の大きなスクリーンで、手元の動画と音楽を")
+            Text("映画館の大きなスクリーンで、手元の動画・音楽・画像を")
                 .font(.title3)
             Text("MKV・MP4・AVI・WMV・TS などの動画と、FLAC・MP3・AAC・WAV などの音楽を再生できます。PNG・JPEG・HEIC などの画像と PDF も映せます")
                 .font(.footnote)
