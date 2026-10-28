@@ -2,7 +2,8 @@
 //  TheaterStage.swift
 //  TheaterPlayer
 //
-//  映画館の空間（RealityKit）。映画館のモデルと、スクリーンの映像・空間オーディオのスピーカー・照明の演出・席の移動をまとめる。
+//  映画館の空間（RealityKit）。映画館のモデルと、スクリーンの映像・静止画（画像・PDF）・空間オーディオのスピーカー・
+//  照明の演出・席の移動をまとめる。
 //
 
 import Foundation
@@ -17,6 +18,10 @@ final class TheaterStage {
     let environment: TheaterEnvironment
     /// スクリーンに映像を貼るエンティティ（映像を出すあいだだけ有効）
     private(set) var videoScreen: ModelEntity?
+    /// スクリーンに静止画（画像・PDF のページ）を貼るエンティティ（静止画を出すあいだだけ有効）
+    private(set) var stillScreen: ModelEntity?
+    /// スクリーンに貼った（貼っている途中の）静止画
+    @ObservationIgnored private var shownStill: StillPicture.ID?
     private(set) var screenFrame: ScreenFrame
     private let speakers = SpatialSpeakers()
     let lighting: LightingDirector
@@ -96,6 +101,47 @@ final class TheaterStage {
         environment.setMasking(frame: frame)
     }
 
+    /// 静止画（画像・PDF のページ）をスクリーンに貼る。nil なら外す。
+    /// RealityView の update から何度も呼ばれるので、貼る物が変わったときだけ作り直す
+    func show(still: StillPicture?) {
+        guard let still else {
+            stillScreen?.isEnabled = false
+            shownStill = nil
+            return
+        }
+        guard still.id != shownStill else {
+            return
+        }
+        shownStill = still.id
+        currentFormat = nil
+        let frame = ScreenFrame(aspect: Float(still.aspect), spec: layout.screen)
+        Task {
+            // 大きな画像を GPU へ送るのは重いので、非同期で作る
+            guard let texture = try? await TextureResource(image: still.image, options: .init(semantic: .color)),
+                  let mesh = try? ScreenMesh.make(frame: frame, spec: layout.screen),
+                  shownStill == still.id else {
+                return
+            }
+            // 部屋のマテリアルと同じく、トーンマップをかけない（画像の色のまま）
+            var material = UnlitMaterial(applyPostProcessToneMap: false)
+            material.color = .init(tint: .white, texture: .init(texture))
+            if let screen = stillScreen {
+                screen.model?.mesh = mesh
+                screen.model?.materials = [material]
+            } else {
+                let screen = ModelEntity(mesh: mesh, materials: [material])
+                screen.name = "StillScreen"
+                environment.model.addChild(screen)
+                stillScreen = screen
+            }
+            stillScreen?.isEnabled = true
+            if screenFrame != frame {
+                screenFrame = frame
+            }
+            environment.setMasking(frame: frame)
+        }
+    }
+
     /// 映像が無いとき（開いていない・音楽）のマスキング：最大の範囲
     func resetMasking() {
         currentFormat = nil
@@ -126,12 +172,14 @@ final class TheaterStage {
 
     func update(deltaTime: Double, player: PlayerModel, preferences: Preferences) {
         let hasVideo = player.info.map { !$0.isAudioOnly } ?? false
+        // 静止画を出しているあいだも、上映中と同じく客電を落とし、その画像の色で部屋を照らす
+        let still = player.still
         let values = lighting.step(
             deltaTime: deltaTime,
-            playing: player.isPlaying,
-            hasVideo: hasVideo,
+            playing: player.isPlaying || still != nil,
+            hasVideo: hasVideo || still != nil,
             preferences: preferences,
-            light: player.engine?.screenLight()
+            light: still?.light ?? player.engine?.screenLight()
         )
         environment.lighting.update(values)
     }
