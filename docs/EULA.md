@@ -4,7 +4,7 @@ App Store Connect の「App 情報」→「使用許諾契約」に設定する�
 このアプリは LGPL 2.1 以降の FFmpeg を静的にリンクしているため、App Store の使用許諾契約が LGPL の認める権利を制限しないことを明記します（README の「ライセンス」）。
 
 - 設定は、初めて App Store に出すときの 1 度だけです。文を変えたら、App Store Connect の設定も直してください
-- `<連絡先>` は、問い合わせを受けるメールアドレスか Web ページにしてください
+- 問い合わせ先（4）は、App Store で誰でも読めます。変えるときは、日本語と英語の両方を直してください
 - 日本語と英語を続けて 1 つの文として設定します（App Store Connect の使用許諾契約は、すべての国で同じ文が表示されます）
 - 法律の助言を受けて作った文ではありません。商用で配るときは、法務に確認してください
 
@@ -23,7 +23,7 @@ Theater Player 使用許諾契約
 3. 本アプリ自身のソースは MIT License で公開されています。各版のソース（本アプリ、FFmpeg を作るスクリプトとパッチ）と、FFmpeg・dav1d のソースの配布物は、次の場所から入手できます。本アプリの「ライセンス」の画面からも開けます。
    https://github.com/shilokuma-vision/theater-player-app-vision/releases
 
-4. 本アプリについての問い合わせ：<連絡先>
+4. 本アプリについての問い合わせ：mrs1669.develop@gmail.com
 
 ---
 
@@ -40,5 +40,5 @@ Theater Player End User License Agreement
    https://github.com/shilokuma-vision/theater-player-app-vision/releases
    You can also open this location from the "ライセンス" (Licenses) screen in the app.
 
-4. Contact: <contact>
+4. Contact: mrs1669.develop@gmail.com
 ```
