@@ -42,7 +42,13 @@ struct ControlPanel: View {
             }
         }
         .task(id: lastInteraction) {
-            try? await Task.sleep(for: .seconds(6))
+            // 操作し直すと前の待ちは取り消される。取り消されたら畳まない
+            // （try? で続けると、「操作を表示」を押した瞬間にまた畳んでしまう）
+            do {
+                try await Task.sleep(for: .seconds(6))
+            } catch {
+                return
+            }
             if appModel.player.isPlaying, page == .main {
                 withAnimation { collapsed = true }
             }
