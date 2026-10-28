@@ -34,6 +34,16 @@ struct LibraryView: View {
             }
             .padding(36)
             .navigationTitle("Theater Player")
+            .toolbar {
+                // LGPL・BSD が求める、使っているオープンソースのソフトウェアの表示
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        LicensesView()
+                    } label: {
+                        Label("ライセンス", systemImage: "doc.text")
+                    }
+                }
+            }
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.item]) { result in
             if case let .success(url) = result {
