@@ -22,6 +22,9 @@ final class TheaterStage {
     private(set) var stillScreen: ModelEntity?
     /// スクリーンに貼った（貼っている途中の）静止画
     @ObservationIgnored private var shownStill: StillPicture.ID?
+    /// 映像・静止画を出していないときのスクリーンの面。出しているあいだは隠す
+    /// （隠さないと、縦長の画像などで、マスキングで覆い切れない端にスクリーンの面が見える）
+    @ObservationIgnored private let screenSurface: Entity?
     private(set) var screenFrame: ScreenFrame
     private let speakers = SpatialSpeakers()
     let lighting: LightingDirector
@@ -38,6 +41,7 @@ final class TheaterStage {
         self.environment = environment
         lighting = LightingDirector(initialHouse: preferences.houseLevel)
         screenFrame = ScreenFrame(aspect: 2.0, spec: environment.layout.screen)
+        screenSurface = environment.screenSurface
         let screen = environment.layout.screen
         screenAnchor.name = "ScreenAnchor"
         screenAnchor.position = SIMD3(screen.center.x, screen.center.y, screen.center.z + 0.08)
@@ -88,6 +92,7 @@ final class TheaterStage {
     /// 映像の形式に合わせて、スクリーンの映像の範囲とマスキングを変える。映像が無ければ（音楽）映像を消す
     func update(format: VideoFormat?, hasVideo: Bool) {
         videoScreen?.isEnabled = hasVideo && format != nil
+        updateSurface()
         guard let format, format != currentFormat else {
             return
         }
@@ -107,6 +112,7 @@ final class TheaterStage {
         guard let still else {
             stillScreen?.isEnabled = false
             shownStill = nil
+            updateSurface()
             return
         }
         guard still.id != shownStill else {
@@ -135,10 +141,19 @@ final class TheaterStage {
                 stillScreen = screen
             }
             stillScreen?.isEnabled = true
+            updateSurface()
             if screenFrame != frame {
                 screenFrame = frame
             }
             environment.setMasking(frame: frame)
+        }
+    }
+
+    /// スクリーンの面は、映像・静止画を出していないときだけ見せる
+    private func updateSurface() {
+        let showing = videoScreen?.isEnabled == true || stillScreen?.isEnabled == true
+        if screenSurface?.isEnabled != !showing {
+            screenSurface?.isEnabled = !showing
         }
     }
 
