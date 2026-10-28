@@ -1,6 +1,6 @@
 # Theater Player
 
-Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を再生するアプリです。
+Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を再生し、画像・PDF を映すアプリです。
 
 - **VLC と同じくらい幅広い形式**：VLC が内部で使っている FFmpeg でファイルを開くので、MKV・MP4・MOV・AVI・WMV・FLV・WebM・TS・M2TS・VOB・OGG などの動画と、
   AAC・AC-3・E-AC-3・DTS・TrueHD・FLAC・ALAC・MP3・Opus・Vorbis・WMA・APE・DSD・WAV などの音声を再生できます。H.264・HEVC（HDR を含む）・ProRes などは VideoToolbox（ハードウェア）でデコードします。
@@ -9,6 +9,8 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
   照明は Cycles で層ごとに焼き付け、客電の明るさと、映像の色によるスクリーンの照り返しをアプリで変えます（[Tools/Theater](Tools/Theater/README.md)）
 - **映画館の空間オーディオ**：スクリーンの裏の L / C / R、サブウーファー、側壁・後方・天井のサラウンドの位置に、RealityKit の空間オーディオの音源を置いて鳴らします。
   5.1・7.1・7.1.4 はそのまま、ステレオは映画館向けに広げます。低音はサブウーファーへ集め、低音の量・低音の残響・体感の低音（倍音）を調整できます
+- **画像と PDF**：PNG・JPEG・HEIC・GIF・WebP などの画像と PDF も、スクリーンに映して見られます（縦横比に合わせてマスキングが動き、
+  画像の色で部屋が照らされます）。PDF は操作パネルでページを送れ、最近の一覧から開くと前回のページから見られます
 - **部屋の明るさと座る席**：再生を始めると客電がゆっくり落ち、止めると戻ります。座席表から好きな席に移れます
 
 ## Environment
