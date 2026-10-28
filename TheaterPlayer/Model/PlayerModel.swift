@@ -3,6 +3,7 @@
 //  TheaterPlayer
 //
 //  画面から使う再生の状態（MainActor）。TheaterMedia の MediaPlayer を包み、時刻・トラック・字幕を View に見せる。
+//  画像・PDF（静止画）は MediaPlayer を使わずに開き、スクリーンに貼る 1 枚（still）を持つ。
 //
 
 import CinemaAudio
@@ -24,6 +25,11 @@ final class PlayerModel {
     private(set) var externalSubtitle: SubtitleTrack?
     private(set) var errorMessage: String?
     private(set) var currentItem: RecentItems.Item?
+    /// スクリーンに出している静止画（画像・PDF のページ）。動画・音楽を開いているあいだは nil
+    private(set) var still: StillPicture?
+    @ObservationIgnored private var stillDocument: StillDocument?
+    /// ページを開く操作の番号（続けて押したとき、古いページの結果は捨てる）
+    @ObservationIgnored private var pageRequest = 0
     /// 映画館の空間オーディオの音源の系統（TheaterLayout.json のスピーカーの順）
     let speakers: [CinemaBus]
     /// 再生のエンジン（作れなければ nil。Metal・音声の準備に失敗したとき）
@@ -55,7 +61,13 @@ final class PlayerModel {
         state == .playing || state == .buffering
     }
 
+    /// 何か開いている（動画・音楽・画像・PDF）
     var hasMedia: Bool {
+        info != nil || still != nil
+    }
+
+    /// 再生できる物（動画・音楽）を開いている。再生の操作・音声・字幕・速さは、このときだけ
+    var hasPlayback: Bool {
         info != nil
     }
 
@@ -82,7 +94,12 @@ final class PlayerModel {
         accessedURL = accessing ? url : nil
         temporaryFile = temporary ? url : nil
         let item = temporary ? nil : recents.add(url: url, replacing: recentID)
-        await start(url: url, title: url.deletingPathExtension().lastPathComponent, item: item)
+        let title = url.deletingPathExtension().lastPathComponent
+        if StillDocument.kind(of: url) != nil {
+            await showStill(url: url, title: title, item: item)
+        } else {
+            await start(url: url, title: title, item: item)
+        }
     }
 
     private func start(url: URL, title: String, item: RecentItems.Item?) async {
@@ -122,11 +139,67 @@ final class PlayerModel {
         }
         temporaryFile = nil
         info = nil
+        still = nil
+        stillDocument = nil
+        pageRequest += 1
         videoFormat = nil
         subtitles = []
         externalSubtitle = nil
         currentItem = nil
         currentTime = 0
+    }
+
+    // MARK: - 静止画（画像・PDF）
+
+    /// 画像・PDF を開いてスクリーンに出す（PDF は前回見ていたページから）
+    private func showStill(url: URL, title: String, item: RecentItems.Item?) async {
+        errorMessage = nil
+        do {
+            let document = try await Task.detached(priority: .userInitiated) { try StillDocument.open(url) }.value
+            stillDocument = document
+            self.title = title
+            currentItem = item
+            await showPage(min(max(item?.page ?? 0, 0), document.pageCount - 1))
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    /// PDF の index ページ目（0 から）を出す
+    func showPage(_ index: Int) async {
+        guard let document = stillDocument, (0..<document.pageCount).contains(index) else {
+            return
+        }
+        pageRequest += 1
+        let request = pageRequest
+        do {
+            let picture = try await Task.detached(priority: .userInitiated) { try document.render(page: index) }.value
+            // 待っているあいだに、別のページ・別のファイルを開いた
+            guard request == pageRequest else {
+                return
+            }
+            still = picture
+            if let item = currentItem {
+                recents.updateStill(item.id, kind: document.kind, page: index)
+            }
+        } catch {
+            guard request == pageRequest else {
+                return
+            }
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func nextPage() async {
+        if let still {
+            await showPage(still.page + 1)
+        }
+    }
+
+    func previousPage() async {
+        if let still {
+            await showPage(still.page - 1)
+        }
     }
 
     // MARK: - 操作
