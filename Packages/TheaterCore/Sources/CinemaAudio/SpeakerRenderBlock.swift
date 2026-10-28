@@ -49,11 +49,4 @@ extension SpeakerFeedRing {
             return noErr
         }
     }
-
-    /// ホストの時刻（mach_absolute_time）の 1 単位の秒数
-    private static let hostTickSeconds: Double = {
-        var info = mach_timebase_info_data_t()
-        mach_timebase_info(&info)
-        return Double(info.numer) / Double(info.denom) / 1_000_000_000
-    }()
 }
