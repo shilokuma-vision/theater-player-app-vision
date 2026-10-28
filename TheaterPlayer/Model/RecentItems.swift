@@ -3,7 +3,7 @@
 //  TheaterPlayer
 //
 //  最近再生したファイル。「ファイル」App で選んだファイルはアプリの外にあるので、ブックマーク（場所の手がかり）で開き直す。
-//  前回の続きから再生できるよう、再生した位置も持つ。Application Support/recents.json に保存する。
+//  前回の続きから再生できるよう、再生した位置も持つ（PDF は見ていたページ）。Application Support/recents.json に保存する。
 //
 
 import Foundation
@@ -22,6 +22,10 @@ final class RecentItems {
         var position: Double = 0
         var duration: Double?
         var isAudioOnly = false
+        /// 画像・PDF なら、その種類（動画・音楽は nil。これを持つ前に保存した項目も nil）
+        var stillKind: StillDocument.Kind?
+        /// PDF の、前回見ていたページ（0 から）
+        var page: Int?
         var playedAt = Date()
 
         /// 続きから再生する位置（最後の 1 分は最初から）
@@ -76,6 +80,16 @@ final class RecentItems {
         items[index].position = position
         items[index].duration = duration
         items[index].isAudioOnly = isAudioOnly
+        save()
+    }
+
+    /// 画像・PDF の種類と、見ているページを書く
+    func updateStill(_ id: UUID, kind: StillDocument.Kind, page: Int) {
+        guard let index = items.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+        items[index].stillKind = kind
+        items[index].page = page
         save()
     }
 
