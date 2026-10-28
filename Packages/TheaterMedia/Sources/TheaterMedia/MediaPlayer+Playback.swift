@@ -259,10 +259,13 @@ extension MediaPlayer {
                 "noBuffer=\($0.noPixelBuffer) vt=\($0.usesVideoToolbox) last=\(String(format: "%.3f", $0.lastFrameTime))"
         } ?? "なし"
         let clock = audioClock().map { String(format: "%.3f", $0) } ?? "なし"
-        Diagnostics.log(
-            "state=\(state) video[\(videoText)] out.time=\(String(format: "%.3f", videoOutput.time)) out.rate=\(videoOutput.rate) " +
-                "renderer=\(status) error=\(renderer.error?.localizedDescription ?? "なし") audioClock=\(clock) ring=\(ring.pendingFrames)"
-        )
+        let spread = ring.readerSpread()
+        let readers = "readers=\(spread.readers) sampleTimeSpread=\(Int(spread.sampleTime)) " +
+            "hostSpread=\(String(format: "%.4f", spread.host))"
+        let output = "out.time=\(String(format: "%.3f", videoOutput.time)) out.rate=\(videoOutput.rate)"
+        let rendererText = "renderer=\(status) error=\(renderer.error?.localizedDescription ?? "なし")"
+        let audioText = "audioClock=\(clock) ring=\(ring.pendingFrames) \(readers)"
+        Diagnostics.log("state=\(state) video[\(videoText)] \(output) \(rendererText) \(audioText)")
     }
 
     /// 音が尽き、映像の待ち行列がいっぱいで読み込みが止まった（音の無い所）：音を待つと進まないので映像の時計で進める。
