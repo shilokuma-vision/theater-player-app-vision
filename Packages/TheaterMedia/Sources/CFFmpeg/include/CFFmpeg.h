@@ -49,8 +49,10 @@ void tp_interrupt_destroy(TPInterrupt *interrupt);
 void tp_interrupt_request(TPInterrupt *interrupt);
 void tp_set_interrupt(AVFormatContext *context, TPInterrupt *interrupt);
 
-/// デコーダーの get_format：VideoToolbox を選べるなら選ぶ（無ければソフトウェアの形式）
+/// デコーダーの get_format：VideoToolbox で解ける形式なら選ぶ（解けなければソフトウェアの形式）
 void tp_use_videotoolbox(AVCodecContext *context);
+/// 今のデコードで VideoToolbox を使っているか（get_format で選んだ後）
+int tp_uses_videotoolbox(const AVCodecContext *context);
 
 /// フレームの data[i]・linesize[i]（Swift では配列がタプルになるため）
 uint8_t *tp_frame_data(const AVFrame *frame, int plane);
