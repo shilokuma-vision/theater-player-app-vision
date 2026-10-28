@@ -38,6 +38,15 @@ if [[ -z "$deployment_target" ]]; then
   exit 1
 fi
 
+# アプリのライセンスの画面（LGPL・BSD が求める表示）の版と揃っているか確かめる（版を上げたら画面も直す）
+licenses="$root/TheaterPlayer/About/OpenSourceLicenses.swift"
+for pair in "ffmpegVersion=$FFMPEG_VERSION" "dav1dVersion=$DAV1D_VERSION"; do
+  if ! grep -q "static let ${pair%%=*} = \"${pair#*=}\"" "$licenses"; then
+    echo "エラー: ${licenses#"$root/"} の ${pair%%=*} を ${pair#*=} にしてください（このスクリプトの版と食い違っています）" >&2
+    exit 1
+  fi
+done
+
 without_dav1d="${FFMPEG_WITHOUT_DAV1D:-0}"
 step() {
   echo "==> $*"
