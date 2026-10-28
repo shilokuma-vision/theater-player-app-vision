@@ -249,7 +249,7 @@ final class VideoDecoder: @unchecked Sendable {
         }
         report(decoded)
         let light = ScreenLightSampler.sample(buffer)
-        guard waitUntilReady(serial: serial) else {
+        guard waitUntilReady(time: time, serial: serial) else {
             return
         }
         // 遅れたフレームは飛ばす（デコードが追いつかないとき）。シーク直後の 1 枚目は必ず出す
@@ -291,9 +291,15 @@ final class VideoDecoder: @unchecked Sendable {
     }
 
     /// 出口が受け取れるまで待つ（止まっている・シークした・閉じたら false）
-    private func waitUntilReady(serial: Int) -> Bool {
-        while !output.isReady {
-            if control.isStopped || serial != control.serial {
+    /// 表示の時計よりこれ以上先のコマは、まだ渡さない（秒）。renderer は isReadyForMoreMediaData が true のまま
+    /// 何十秒も先のコマを受け取ることがあり（シークの後など）、溜めすぎると近い時刻のコマが捨てられて画面が真っ黒になる。
+    /// VideoToolbox の画素の領域も、renderer が持ったままのコマで尽きてデコードが止まる
+    private static let maxAhead = 0.5
+
+    /// time のコマを渡してよくなるまで待つ（シーク・止める・トラックを替えたら false）。シーク直後の 1 枚目はすぐ渡す
+    private func waitUntilReady(time: Double, serial: Int) -> Bool {
+        while !output.isReady || (!waitingFirstFrame && time > output.time + Self.maxAhead) {
+            if control.isStopped || serial != control.serial || !active.load(ordering: .acquiring) {
                 return false
             }
             Thread.sleep(forTimeInterval: 0.004)
