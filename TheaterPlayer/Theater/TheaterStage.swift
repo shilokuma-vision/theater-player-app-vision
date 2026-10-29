@@ -33,6 +33,8 @@ final class TheaterStage {
     let lighting: LightingDirector
     @ObservationIgnored private var currentFormat: VideoFormat?
     @ObservationIgnored private var currentStereo = StereoPacking.mono
+    /// スクリーンの VideoMaterial が映している renderer（3D と 2D を切り替えると、エンジンが作り直す）
+    @ObservationIgnored private var screenRenderer: AVSampleBufferVideoRenderer?
     /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点（表示は、さらに曲面の出っ張りの分だけ手前に置く。overlayDepth）
     let screenAnchor = Entity()
 
@@ -73,15 +75,11 @@ final class TheaterStage {
 
     /// 再生のエンジンの映像・音声を、スクリーンとスピーカーにつなぐ
     func attach(_ engine: MediaPlayer) {
-        let material = Self.videoMaterial(for: engine.videoRenderer)
+        let renderer = engine.videoRenderer
+        let material = Self.videoMaterial(for: renderer)
+        screenRenderer = renderer
         if let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
-            let screen = ModelEntity(mesh: mesh, materials: [material])
-            screen.name = "VideoScreen"
-            // 無効にしない（有効に戻すと RealityKit が renderer に映す先を足し直し、コマを渡している最中だと足せずに真っ黒になる）。
-            // 映像が無いときは透明にして隠す
-            screen.components.set(OpacityComponent(opacity: 0))
-            environment.model.addChild(screen)
-            videoScreen = screen
+            let screen = makeVideoScreen(mesh: mesh, material: material)
             Diagnostics.log("VideoScreen を作った position=\(screen.position) bounds=\(screen.visualBounds(relativeTo: nil).extents)")
         }
         speakers.build(layout: layout, ring: engine.ring, parent: environment.model)
@@ -93,21 +91,48 @@ final class TheaterStage {
         speakers.remove()
         videoScreen?.removeFromParent()
         videoScreen = nil
+        screenRenderer = nil
         isShowingVideo = false
     }
 
-    /// renderer ごとに 1 つだけ作る VideoMaterial（舞台を作り直しても使い回す）。
+    /// 映像を映すスクリーンを作って部屋に置く
+    @discardableResult
+    private func makeVideoScreen(mesh: MeshResource, material: VideoMaterial) -> ModelEntity {
+        let screen = ModelEntity(mesh: mesh, materials: [material])
+        screen.name = "VideoScreen"
+        // 無効にしない（有効に戻すと RealityKit が renderer に映す先を足し直し、コマを渡している最中だと足せずに真っ黒になる）。
+        // 映像が無いときは透明にして隠す
+        screen.components.set(OpacityComponent(opacity: isShowingVideo ? 1 : 0))
+        environment.model.addChild(screen)
+        videoScreen = screen
+        return screen
+    }
+
+    /// エンジンが renderer を作り直したら（3D と 2D の切り替え）、新しい renderer の VideoMaterial を貼ったスクリーンに替える。
+    /// 同じスクリーンのまま VideoMaterial を差し替えると、1 回おきに映らなかった（Simulator）ので、スクリーンごと作り直す。
+    /// 新しい renderer は映す先ができるまでコマを受け取らないので、ここで作っても渡している最中にはならない
+    private func followRenderer(of engine: MediaPlayer) {
+        let renderer = engine.videoRenderer
+        guard let old = videoScreen, renderer !== screenRenderer, let mesh = old.model?.mesh else {
+            return
+        }
+        old.removeFromParent()
+        makeVideoScreen(mesh: mesh, material: Self.videoMaterial(for: renderer))
+        screenRenderer = renderer
+        Diagnostics.log("VideoScreen を作り直した（renderer を付け替えた）")
+    }
+
+    /// 今の renderer の VideoMaterial（renderer ごとに 1 つだけ作り、舞台を作り直しても使い回す）。
     /// VideoMaterial を作ると renderer に「映す先」が足されるが、コマを渡している最中は足せない（例外で落ちる）。
-    /// 最初の舞台をつなぐときは、映す先が無いうちは renderer がコマを受け取らないので、まだ渡していない
-    private static var videoMaterials: [ObjectIdentifier: VideoMaterial] = [:]
+    /// 新しい renderer は、映す先が無いうちはコマを受け取らないので、まだ渡していない
+    private static var videoMaterial: (renderer: AVSampleBufferVideoRenderer, material: VideoMaterial)?
 
     private static func videoMaterial(for renderer: AVSampleBufferVideoRenderer) -> VideoMaterial {
-        let key = ObjectIdentifier(renderer)
-        if let material = videoMaterials[key] {
-            return material
+        if let cached = videoMaterial, cached.renderer === renderer {
+            return cached.material
         }
         let material = VideoMaterial(videoRenderer: renderer)
-        videoMaterials[key] = material
+        videoMaterial = (renderer, material)
         return material
     }
 
@@ -219,6 +244,9 @@ final class TheaterStage {
     // MARK: - 毎フレーム
 
     func update(deltaTime: Double, player: PlayerModel, preferences: Preferences) {
+        if let engine = player.engine {
+            followRenderer(of: engine)
+        }
         let hasVideo = player.info.map { !$0.isAudioOnly } ?? false
         // 静止画を出しているあいだも、上映中と同じく客電を落とし、その画像の色で部屋を照らす
         let still = player.still

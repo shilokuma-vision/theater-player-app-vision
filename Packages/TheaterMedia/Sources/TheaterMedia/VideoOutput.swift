@@ -5,6 +5,8 @@
 //  映像の出口。デコードしたフレームを AVSampleBufferVideoRenderer に時刻付きで渡す。
 //  RealityKit の VideoMaterial(videoRenderer:) がこの renderer をスクリーンに貼る。表示の時刻は AVSampleBufferRenderSynchronizer の
 //  時計で決まり（フレームの間隔・HDR の表示はシステムが受け持つ）、音の時計に合わせてこの時計を動かす（MediaClock）。
+//  3D と 2D を切り替えるときは renderer を作り直し、VideoMaterial を付け替える（実機では、3D のコマを渡した renderer が、
+//  あとの 2D の映像も映さなくなった）
 //
 
 @preconcurrency import AVFoundation
@@ -21,15 +23,15 @@ struct DecodedVideoFrame: @unchecked Sendable {
 }
 
 final class VideoOutput: @unchecked Sendable {
-    let renderer = AVSampleBufferVideoRenderer()
     let synchronizer = AVSampleBufferRenderSynchronizer()
+    private var rendererValue = AVSampleBufferVideoRenderer()
     private var format: CMVideoFormatDescription?
     private let lock = NSLock()
     private var currentRate: Float = 0
     private var stereoValue = StereoPacking.mono
 
     init() {
-        synchronizer.addRenderer(renderer)
+        synchronizer.addRenderer(rendererValue)
         synchronizer.delaysRateChangeUntilHasSufficientMediaData = false
     }
 
@@ -61,27 +63,51 @@ final class VideoOutput: @unchecked Sendable {
         synchronizer.rate = rate
     }
 
+    /// 今の renderer。3D と 2D を切り替えると作り直すので、RealityKit の VideoMaterial はこれに付け替える
+    var renderer: AVSampleBufferVideoRenderer {
+        lock.withLock { rendererValue }
+    }
+
     var isReady: Bool {
         renderer.isReadyForMoreMediaData
     }
 
-    /// 渡すフレームの左右の目の並べ方（左右・上下なら、映像の形式に立体の指定を付ける）
+    /// 渡すフレームの左右の目の並べ方（左右・上下なら、映像の形式に立体の指定を付ける）。
+    /// 3D と 2D を切り替えるときは renderer を作り直す（新しい renderer は、VideoMaterial に付けられて映す先ができるまでコマを受け取らない）
     var stereo: StereoPacking {
         get { lock.withLock { stereoValue } }
         set {
-            lock.withLock {
-                if stereoValue != newValue {
-                    stereoValue = newValue
-                    // 次のフレームで、立体の指定を付けた形式を作り直す
-                    format = nil
+            let replaced: AVSampleBufferVideoRenderer? = lock.withLock {
+                guard stereoValue != newValue else {
+                    return nil
                 }
+                let wasStereo = stereoValue != .mono
+                stereoValue = newValue
+                // 次のフレームで、形式を作り直す
+                format = nil
+                guard wasStereo != (newValue != .mono) else {
+                    return nil
+                }
+                let old = rendererValue
+                rendererValue = AVSampleBufferVideoRenderer()
+                return old
+            }
+            if let replaced {
+                synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
+                replaced.flush()
+                synchronizer.addRenderer(renderer)
             }
         }
     }
 
     /// フレームを渡す。displayImmediately なら時刻を待たずに表示する（止まっているときのシーク）
     func enqueue(_ frame: DecodedVideoFrame, displayImmediately: Bool = false) {
-        let (cached, stereo) = lock.withLock { (self.format, stereoValue) }
+        let (cached, stereo, target) = lock.withLock { (self.format, stereoValue, rendererValue) }
+        // renderer を作り直した直後は、スクリーンにつながる（VideoMaterial が映す先を足す）まで渡さない。
+        // 映す先が無いうちに渡すと、そのあと映す先を足せなくなる
+        guard target.isReadyForMoreMediaData else {
+            return
+        }
         let format: CMVideoFormatDescription
         if let cached, CMVideoFormatDescriptionMatchesImageBuffer(cached, imageBuffer: frame.pixelBuffer) {
             // 同じ形式のまま
@@ -118,7 +144,7 @@ final class VideoOutput: @unchecked Sendable {
                 Unmanaged.passUnretained(kCFBooleanTrue).toOpaque()
             )
         }
-        renderer.enqueue(sample)
+        target.enqueue(sample)
     }
 
     /// 画素のバッファの形式。左右・上下に並べた立体なら、左右の目の絵があること・並べ方・投影（ふつうの平面）を付ける。
