@@ -42,7 +42,6 @@ LIB = {
     "downlight_lens": dict(color=(0.9, 0.9, 0.9), emit=((1.0, 0.80, 0.58), 1.6, "house")),
     "led_warm": dict(color=(0.9, 0.9, 0.9), emit=((1.0, 0.72, 0.42), 0.85, "house")),
     "led_step": dict(color=(0.9, 0.9, 0.9), emit=((1.0, 0.55, 0.20), 1.8, "ambient")),
-    "led_stage": dict(color=(0.9, 0.9, 0.9), emit=((0.35, 0.45, 1.0), 0.6, "ambient")),
     "exit_sign": dict(tex="exit_sign.png", uv="mesh", emit=("texture", 1.4, "ambient")),
     "booth_glow": dict(color=(0.03, 0.03, 0.035), emit=((0.30, 0.34, 0.45), 0.05, "ambient")),
     "projector_lens": dict(color=(0.1, 0.1, 0.1), emit=((1.0, 1.0, 1.0), 2.0, "screen")),
