@@ -35,7 +35,7 @@ final class PlayerModel {
     let speakers: [CinemaBus]
     /// 再生のエンジン（作れなければ nil。Metal・音声の準備に失敗したとき）
     let engine: MediaPlayer?
-    /// 上映の進行（開演の流れ）
+    /// 上映の進行（開演の流れ・エンドロール）
     let show = ShowDirector()
     private let preferences: Preferences
     private let recents: RecentItems
@@ -67,7 +67,13 @@ final class PlayerModel {
 
     /// 今の上映の段階（客電・幕を決める）
     var showPhase: ShowPhase {
-        ShowPhase.resolve(ceremony: show.ceremony, state: state, showingStill: still != nil)
+        ShowPhase.resolve(
+            ceremony: show.ceremony,
+            state: state,
+            showingStill: still != nil,
+            inCredits: show.isCredits(at: currentTime),
+            showtime: preferences.showtime && info.map { !$0.isAudioOnly } ?? false
+        )
     }
 
     /// 何か開いている（動画・音楽・画像・PDF）
@@ -122,6 +128,7 @@ final class PlayerModel {
             info = opened
             self.title = opened.title ?? title
             currentItem = item
+            show.prepare(duration: opened.duration, chapters: opened.chapters, isVideo: !opened.isAudioOnly)
             selectedAudioTrack = engine.selectedAudioTrack
             selectedSubtitleTrack = engine.selectedSubtitleTrack
             if let resume = item?.resumePosition {
@@ -145,7 +152,7 @@ final class PlayerModel {
     /// 再生をやめる（位置を保存する）
     func close() {
         saveProgress()
-        show.cancel()
+        show.reset()
         refreshTask?.cancel()
         refreshTask = nil
         engine?.close()
@@ -355,6 +362,10 @@ final class PlayerModel {
         }
         currentTime = engine.currentTime
         subtitles = engine.subtitles(at: engine.displayTime)
+        // 本編のあいだ、エンドロールの始まりを探す（チャプターが無いとき、終わり近くの暗い画面で）
+        if showPhase == .feature, let light = engine.screenLight() {
+            show.observe(time: currentTime, light: light)
+        }
     }
 
     private func saveProgress(position: Double? = nil) {

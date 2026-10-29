@@ -46,6 +46,8 @@ final class LightingDirector {
 
     /// 開演の流れで、客電を 1 段目に落とす所（開場と上映中の明るさのあいだの割合）
     static let preShowShare = 0.5
+    /// エンドロールで客電を上げる所（上映中の明るさから、開場の明るさまでのあいだの割合）
+    static let creditsShare = 0.15
 
     /// 上映の段階ごとの客電。「再生すると暗くする」を切にしていれば、いつも開場の明るさ
     static func cue(for phase: ShowPhase, preferences: Preferences) -> HouseCue {
@@ -62,6 +64,12 @@ final class LightingDirector {
             return HouseCue(level: show + (house - show) * preShowShare)
         case .feature:
             return HouseCue(level: show)
+        case .credits:
+            // 字幕・クレジットが読みにくくならないよう少しだけ、ゆっくり（約 3 秒）上げる
+            return HouseCue(level: max(show, show + (house - show) * creditsShare), rise: 20)
+        case .ended:
+            // 終映：開場の明るさへ、ふだん（約 4 秒）よりゆっくり戻す
+            return HouseCue(level: house, rise: 8)
         }
     }
 

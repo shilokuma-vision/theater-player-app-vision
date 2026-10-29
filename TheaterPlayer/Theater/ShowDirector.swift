@@ -5,6 +5,7 @@
 //  上映の進行。再生を「上映」として進め、客電・マスキング（幕）の段階を決める。
 //  - 開演の流れ（動画を開いて頭から再生するとき）：開演のブザー → 客電を半分まで落とす → 幕が開く → 客電を消して本編。
 //    続きから・シーク・一時停止からの再開では流さない（今どおり客電を落とすだけ）
+//  - エンドロール：客電を少し上げる。本編が終わったら、ゆっくり開場の明るさに戻す（エンドロールの見つけ方は CreditsFinder）
 //
 
 import Foundation
@@ -22,14 +23,25 @@ enum ShowPhase: Equatable {
     case opening
     /// 本編（静止画を出しているときも）
     case feature
+    /// エンドロール（客電を少し上げる）
+    case credits
+    /// 終映（本編が終わった。ゆっくり開場の明るさに戻す）
+    case ended
 
     /// 幕を閉じておく段階
     var closesCurtain: Bool {
         self == .buzzer || self == .dimming
     }
 
-    /// 再生の状態から、今の段階を決める。ceremony：開演の流れの段階（流していなければ nil）
-    static func resolve(ceremony: ShowPhase?, state: PlaybackState, showingStill: Bool) -> ShowPhase {
+    /// 再生の状態から、今の段階を決める。
+    /// ceremony：開演の流れの段階（流していなければ nil）。showtime：上映の演出をするファイル（動画で、設定が入）
+    static func resolve(
+        ceremony: ShowPhase?,
+        state: PlaybackState,
+        showingStill: Bool,
+        inCredits: Bool,
+        showtime: Bool
+    ) -> ShowPhase {
         if let ceremony {
             return ceremony
         }
@@ -39,7 +51,9 @@ enum ShowPhase: Equatable {
         }
         switch state {
         case .playing, .buffering:
-            return .feature
+            return showtime && inCredits ? .credits : .feature
+        case .ended:
+            return showtime ? .ended : .lobby
         default:
             return .lobby
         }
@@ -78,7 +92,10 @@ final class ShowDirector {
     private(set) var ceremony: ShowPhase?
     /// 開演の流れを始めた回数（舞台が、開演ごとに 1 回だけブザーを鳴らすため）
     private(set) var performance = 0
+    /// エンドロールの始まり（秒。分からなければ nil）
+    private(set) var creditsStart: Double?
     @ObservationIgnored private var task: Task<Void, Never>?
+    @ObservationIgnored private var finder = CreditsFinder(duration: nil)
     /// 映画館が最後に描いた時刻
     @ObservationIgnored private var theaterFrame: ContinuousClock.Instant?
 
@@ -142,6 +159,34 @@ final class ShowDirector {
         ceremony = nil
         task = nil
         start()
+    }
+
+    // MARK: - エンドロール
+
+    /// 開いたファイルに合わせて、エンドロールの見つけ方を用意する（チャプターで見つかれば、それを使う）
+    func prepare(duration: Double?, chapters: [Chapter], isVideo: Bool) {
+        creditsStart = isVideo ? CreditsFinder.chapterStart(chapters, duration: duration) : nil
+        finder = CreditsFinder(duration: isVideo ? duration : nil)
+    }
+
+    /// 本編のあいだ、スクリーンの光を見てエンドロールの始まりを探す（チャプターで見つかっていれば探さない）
+    func observe(time: Double, light: ScreenLight) {
+        guard creditsStart == nil, let start = finder.observe(time: time, light: light) else {
+            return
+        }
+        creditsStart = start
+    }
+
+    /// time がエンドロールの中か（エンドロールの前へシークして戻ったら、本編に戻る）
+    func isCredits(at time: Double) -> Bool {
+        creditsStart.map { time >= $0 } ?? false
+    }
+
+    /// 閉じた：開演の流れをやめ、エンドロールの手がかりを捨てる
+    func reset() {
+        cancel()
+        creditsStart = nil
+        finder = CreditsFinder(duration: nil)
     }
 
     private func isTheaterRendering(at now: ContinuousClock.Instant) -> Bool {
