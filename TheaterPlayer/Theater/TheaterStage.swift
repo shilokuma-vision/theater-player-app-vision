@@ -32,6 +32,7 @@ final class TheaterStage {
     private let speakers = SpatialSpeakers()
     let lighting: LightingDirector
     @ObservationIgnored private var currentFormat: VideoFormat?
+    @ObservationIgnored private var currentStereo = StereoPacking.mono
     /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点（表示は、さらに曲面の出っ張りの分だけ手前に置く。overlayDepth）
     let screenAnchor = Entity()
 
@@ -115,7 +116,8 @@ final class TheaterStage {
     }
 
     /// 映像の形式に合わせて、スクリーンの映像の範囲とマスキングを変える。映像が無ければ（音楽）映像を消す
-    func update(format: VideoFormat?, hasVideo: Bool) {
+    /// stereo は左右の目の並べ方（3D の映像なら、スクリーンとマスキングを片目の絵の縦横比に合わせる）
+    func update(format: VideoFormat?, hasVideo: Bool, stereo: StereoPacking) {
         let visible = hasVideo && format != nil
         if let screen = videoScreen, visible != isShowingVideo {
             Diagnostics.log("VideoScreen visible=\(visible) format=\(String(describing: format))")
@@ -123,11 +125,12 @@ final class TheaterStage {
             isShowingVideo = visible
         }
         updateSurface()
-        guard let format, format != currentFormat else {
+        guard let format, format != currentFormat || stereo != currentStereo else {
             return
         }
         currentFormat = format
-        let frame = ScreenFrame(aspect: Float(format.visibleAspect), spec: layout.screen)
+        currentStereo = stereo
+        let frame = ScreenFrame(aspect: Float(stereo.eyeAspect(frameAspect: format.visibleAspect)), spec: layout.screen)
         screenFrame = frame
         let rotation = VideoRotation(rawValue: format.rotation) ?? .none
         if let mesh = try? ScreenMesh.make(frame: frame, spec: layout.screen, rotation: rotation) {

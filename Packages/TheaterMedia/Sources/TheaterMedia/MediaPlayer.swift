@@ -41,6 +41,10 @@ public final class MediaPlayer: @unchecked Sendable {
     var openGeneration = 0
     /// 別のファイルの字幕を出している（シークで消さない）
     var showsExternalSubtitles = false
+    /// 3D の選び方と、今のファイルを映す並べ方・ファイルの名前（MediaPlayer+Stereo）
+    var stereoModeValue = StereoMode.auto
+    var stereoValue = StereoPacking.mono
+    var fileName = ""
     /// 音のデータが来ず、映像の時計で進めている（音がたまる・シークで戻す）
     var audioStarved = false
     /// 輪のバッファを鳴らし始めたホストの時刻（それより前の描画の回は、止める前の古い位置）
@@ -89,6 +93,7 @@ public final class MediaPlayer: @unchecked Sendable {
     /// ファイルを開き、最初の画を出して止まった状態にする
     public func open(_ url: URL) async throws -> MediaInfo {
         let generation = closeSession()
+        lock.withLock { fileName = url.lastPathComponent }
         setState(.opening)
         do {
             let opened = try await Task.detached(priority: .userInitiated) { try Self.makeSession(url: url) }.value
@@ -154,6 +159,8 @@ public final class MediaPlayer: @unchecked Sendable {
         showsExternalSubtitles = false
         audioStarved = false
         lock.unlock()
+        // 最初のフレームから立体の指定を付けるよう、読み始める前に並べ方を決める
+        applyStereo()
         newSession.control.isPaused = true
         newSession.startReading()
         startClock()

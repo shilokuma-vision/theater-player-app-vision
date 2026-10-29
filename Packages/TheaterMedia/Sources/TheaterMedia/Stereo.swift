@@ -29,7 +29,11 @@ public enum StereoPacking: String, Sendable, Codable, CaseIterable {
     /// 片目の絵の縦横比。frameAspect はフレーム全体の表示の縦横比。
     /// 片目ずつ縮めずに並べた（フル）か、半分に縮めて元の大きさに収めた（ハーフ）かは、フレームの形で見分ける
     public func eyeAspect(frameAspect: Double) -> Double {
-        switch output {
+        // 空間ビデオの形式（VideoFormat）は片目の層の大きさで分かるので、そのまま
+        if self == .multiview {
+            return frameAspect
+        }
+        return switch output {
         case .sideBySide:
             // フルの左右（16:9 なら 3.56）は半分に、ハーフ（16:9 のまま）はそのまま
             frameAspect >= 2.5 ? frameAspect / 2 : frameAspect

@@ -26,6 +26,7 @@ final class VideoOutput: @unchecked Sendable {
     private var format: CMVideoFormatDescription?
     private let lock = NSLock()
     private var currentRate: Float = 0
+    private var stereoValue = StereoPacking.mono
 
     init() {
         synchronizer.addRenderer(renderer)
@@ -64,17 +65,33 @@ final class VideoOutput: @unchecked Sendable {
         renderer.isReadyForMoreMediaData
     }
 
+    /// 渡すフレームの左右の目の並べ方（左右・上下なら、映像の形式に立体の指定を付ける）
+    var stereo: StereoPacking {
+        get { lock.withLock { stereoValue } }
+        set {
+            lock.withLock {
+                if stereoValue != newValue {
+                    stereoValue = newValue
+                    // 次のフレームで、立体の指定を付けた形式を作り直す
+                    format = nil
+                }
+            }
+        }
+    }
+
     /// フレームを渡す。displayImmediately なら時刻を待たずに表示する（止まっているときのシーク）
     func enqueue(_ frame: DecodedVideoFrame, displayImmediately: Bool = false) {
-        if let current = format, CMVideoFormatDescriptionMatchesImageBuffer(current, imageBuffer: frame.pixelBuffer) {
+        let (cached, stereo) = lock.withLock { (self.format, stereoValue) }
+        let format: CMVideoFormatDescription
+        if let cached, CMVideoFormatDescriptionMatchesImageBuffer(cached, imageBuffer: frame.pixelBuffer) {
             // 同じ形式のまま
+            format = cached
         } else {
-            var created: CMVideoFormatDescription?
-            CMVideoFormatDescriptionCreateForImageBuffer(allocator: nil, imageBuffer: frame.pixelBuffer, formatDescriptionOut: &created)
+            guard let created = Self.makeFormat(for: frame.pixelBuffer, stereo: stereo) else {
+                return
+            }
+            lock.withLock { self.format = created }
             format = created
-        }
-        guard let format else {
-            return
         }
         var timing = CMSampleTimingInfo(
             duration: CMTime(seconds: max(frame.duration, 0.001), preferredTimescale: 90_000),
@@ -102,6 +119,40 @@ final class VideoOutput: @unchecked Sendable {
             )
         }
         renderer.enqueue(sample)
+    }
+
+    /// 画素のバッファの形式。左右・上下に並べた立体なら、左右の目の絵があること・並べ方・投影（ふつうの平面）を付ける。
+    /// RealityKit の VideoMaterial は、これを見て左右の目に分けて映す
+    static func makeFormat(for buffer: CVPixelBuffer, stereo: StereoPacking) -> CMVideoFormatDescription? {
+        var created: CMVideoFormatDescription?
+        CMVideoFormatDescriptionCreateForImageBuffer(allocator: nil, imageBuffer: buffer, formatDescriptionOut: &created)
+        guard let base = created else {
+            return nil
+        }
+        let packing: CFString
+        switch stereo.output {
+        case .sideBySide:
+            packing = kCMFormatDescriptionViewPackingKind_SideBySide
+        case .overUnder:
+            packing = kCMFormatDescriptionViewPackingKind_OverUnder
+        case .mono, .multiview:
+            return base
+        }
+        var extensions = (CMFormatDescriptionGetExtensions(base) as? [CFString: Any]) ?? [:]
+        extensions[kCMFormatDescriptionExtension_HasLeftStereoEyeView] = true
+        extensions[kCMFormatDescriptionExtension_HasRightStereoEyeView] = true
+        extensions[kCMFormatDescriptionExtension_ViewPackingKind] = packing
+        extensions[kCMFormatDescriptionExtension_ProjectionKind] = kCMFormatDescriptionProjectionKind_Rectilinear
+        var stereoFormat: CMVideoFormatDescription?
+        CMVideoFormatDescriptionCreate(
+            allocator: nil,
+            codecType: CMFormatDescriptionGetMediaSubType(base),
+            width: Int32(CVPixelBufferGetWidth(buffer)),
+            height: Int32(CVPixelBufferGetHeight(buffer)),
+            extensions: extensions as CFDictionary,
+            formatDescriptionOut: &stereoFormat
+        )
+        return stereoFormat ?? base
     }
 
     /// 渡したフレームを捨てる（シークのとき）。removingImage なら、表示中の画も消す
