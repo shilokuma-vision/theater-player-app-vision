@@ -168,8 +168,8 @@ struct StereoTests {
         // フルの上下（1920×2160）は片目 16:9、シネスコのフルの上下（2.39 を縦に 2 つ）も 2.39 に戻る
         #expect(abs(StereoPacking.overUnder.eyeAspect(frameAspect: 1920.0 / 2160) - 16.0 / 9) < 0.001)
         #expect(abs(StereoPacking.overUnder.eyeAspect(frameAspect: 2.39 / 2) - 2.39) < 0.001)
-        // 空間ビデオは左右に並べてから渡すので、左右のフルと同じ
-        #expect(StereoPacking.multiview.output == .sideBySide)
+        // 空間ビデオの形式は片目の層の大きさなので、そのまま
+        #expect(StereoPacking.multiview.eyeAspect(frameAspect: 16.0 / 9) == 16.0 / 9)
     }
 
     @Test func modeChoosesTheContainerFirstThenTheName() {

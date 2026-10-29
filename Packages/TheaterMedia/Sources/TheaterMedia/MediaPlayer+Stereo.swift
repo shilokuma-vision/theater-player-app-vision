@@ -30,8 +30,8 @@ extension MediaPlayer {
         let (mode, name) = lock.withLock { (stereoModeValue, fileName) }
         let packing = session == nil ? StereoPacking.mono : mode.resolve(track: track, fileName: name)
         lock.withLock { stereoValue = packing }
-        videoOutput.stereo = packing.output
-        // 空間ビデオは、3D なら左右を並べて、2D なら左目だけを渡す
+        videoOutput.stereo = packing
+        // 空間ビデオは、3D なら左右の層を組にして、2D なら左目だけを渡す
         session?.video?.composesStereo.store(packing == .multiview, ordering: .relaxed)
     }
 }

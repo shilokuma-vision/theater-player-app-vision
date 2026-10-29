@@ -249,7 +249,7 @@ final class VideoDecoder: @unchecked Sendable {
 
     // MARK: - フレームを渡す
 
-    /// 空間ビデオの片目のコマ：3D なら左右がそろったら並べて渡し、2D なら左目だけ渡す
+    /// 空間ビデオの片目のコマ：3D なら左右がそろったら左目・右目の絵を渡し、2D なら左目だけ渡す
     private func deliverView(serial: Int) {
         guard composesStereo.load(ordering: .relaxed) else {
             if StereoViewPairer.isLeftEye(frame) {
@@ -257,17 +257,17 @@ final class VideoDecoder: @unchecked Sendable {
             }
             return
         }
-        if let buffer = pairer.add(frame) {
-            deliver(frame, timeBase: timeBase, serial: serial, buffer: buffer)
+        if let pair = pairer.add(frame) {
+            deliver(frame, timeBase: timeBase, serial: serial, eyes: pair)
         }
     }
 
-    /// buffer を渡すと、frame の画素の代わりにそれを映す（空間ビデオの左右を並べた絵）
+    /// eyes を渡すと、frame の画素の代わりに、その左目・右目の絵を映す（空間ビデオ）
     private func deliver(
         _ decoded: UnsafeMutablePointer<AVFrame>,
         timeBase base: AVRational,
         serial: Int,
-        buffer prepared: CVPixelBuffer? = nil
+        eyes: (left: CVPixelBuffer, right: CVPixelBuffer)? = nil
     ) {
         let time = frameTime(decoded, timeBase: base)
         let duration = decoded.pointee.duration > 0 ? Double(decoded.pointee.duration) * av_q2d(base) : frameDuration
@@ -276,7 +276,7 @@ final class VideoDecoder: @unchecked Sendable {
             stats.withLock { $0.droppedBeforeSeekTarget += 1 }
             return
         }
-        guard let buffer = prepared ?? pixelBuffer(of: decoded) else {
+        guard let buffer = eyes?.left ?? pixelBuffer(of: decoded) else {
             stats.withLock { $0.noPixelBuffer += 1 }
             return
         }
@@ -298,8 +298,10 @@ final class VideoDecoder: @unchecked Sendable {
             $0.lastFrameTime = time
         }
         lights.append(time: time, light: light)
-        output.enqueue(DecodedVideoFrame(pixelBuffer: buffer, time: time, duration: duration, serial: serial),
-                       displayImmediately: waitingFirstFrame && control.isPaused)
+        output.enqueue(
+            DecodedVideoFrame(pixelBuffer: buffer, rightEye: eyes?.right, time: time, duration: duration, serial: serial),
+            displayImmediately: waitingFirstFrame && control.isPaused
+        )
         waitingFirstFrame = false
     }
 
