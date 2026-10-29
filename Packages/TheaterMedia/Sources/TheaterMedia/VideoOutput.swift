@@ -60,8 +60,31 @@ final class VideoOutput: @unchecked Sendable {
         synchronizer.rate = rate
     }
 
+    /// スクリーン（RealityKit の VideoMaterial）がつながっているか。つながっている間だけコマを渡す。
+    /// renderer は、前のスクリーンを外したあとも「受け取れる」と答えてコマを受け取ることがあり、そのあと新しいスクリーンの
+    /// VideoMaterial を作っても、コマを渡している最中なので映す先を足せず、以後ずっと映らなかった（実機で確かめた）
+    private var screenAttached = false
+    /// enqueue と、スクリーンのつなぎ替えを 1 つずつ行う（つなぎ替えの間に、渡している途中のコマが無いように）
+    private let targetLock = NSLock()
+
     var isReady: Bool {
-        renderer.isReadyForMoreMediaData
+        targetLock.withLock { screenAttached } && renderer.isReadyForMoreMediaData
+    }
+
+    /// スクリーンをつなぐ：コマを渡していない間に body（VideoMaterial を作る）を行い、そのあとコマを渡し始める
+    func attachScreen(_ body: () -> Void) {
+        targetLock.withLock {
+            body()
+            screenAttached = true
+        }
+    }
+
+    /// スクリーンを外す：コマを渡すのをやめ、renderer に残ったコマを捨てる
+    func detachScreen() {
+        targetLock.withLock {
+            screenAttached = false
+            renderer.flush()
+        }
     }
 
     /// フレームを渡す。displayImmediately なら時刻を待たずに表示する（止まっているときのシーク）
@@ -101,7 +124,12 @@ final class VideoOutput: @unchecked Sendable {
                 Unmanaged.passUnretained(kCFBooleanTrue).toOpaque()
             )
         }
-        renderer.enqueue(sample)
+        targetLock.withLock {
+            // スクリーンを外した後（つなぎ替えの途中）は渡さない
+            if screenAttached {
+                renderer.enqueue(sample)
+            }
+        }
     }
 
     /// 渡したフレームを捨てる（シークのとき）。removingImage なら、表示中の画も消す
