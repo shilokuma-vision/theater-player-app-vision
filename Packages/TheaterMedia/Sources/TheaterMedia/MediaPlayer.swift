@@ -137,7 +137,9 @@ public final class MediaPlayer: @unchecked Sendable {
         audioTimeline.reset()
         ring.setPaused(true)
         ring.flush()
-        videoOutput.flush(removingImage: true)
+        // 表示中の絵は消さない（flush(removingDisplayedImage:) の後、RealityKit の VideoMaterial が次の絵を映さなくなることがあった）。
+        // 前のファイルの絵は、スクリーンを隠して見せない（TheaterStage）
+        videoOutput.flush()
         videoOutput.setRate(0, time: 0)
         do {
             try attachDecoders(newSession)
@@ -201,7 +203,7 @@ public final class MediaPlayer: @unchecked Sendable {
         ring.setPaused(true)
         ring.flush()
         videoOutput.setRate(0, time: 0)
-        videoOutput.flush(removingImage: true)
+        videoOutput.flush()
         if old != nil {
             setState(.idle)
         }
