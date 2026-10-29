@@ -50,9 +50,13 @@ struct ControlPanel: View {
                 return
             }
             // 再生中・静止画を出しているあいだは、畳んでスクリーンを見やすくする
-            if appModel.player.isPlaying || appModel.player.still != nil, page == .main {
+            if appModel.player.isPlaying || appModel.player.still != nil, page == .main, !appModel.isMovingPanel {
                 withAnimation { collapsed = true }
             }
+        }
+        // 下のつまみでパネルを動かし終えたら、畳むまでの待ちをやり直す
+        .onChange(of: appModel.panelInteraction) {
+            touch()
         }
         .simultaneousGesture(TapGesture().onEnded { touch() })
     }
@@ -114,6 +118,15 @@ struct ControlPanel: View {
                     Label("ライブラリ", systemImage: "rectangle.stack")
                 }
                 Spacer()
+                // 下のつまみで動かしたパネルを、座ったときのひざの上へ戻す
+                if appModel.preferences.panelPosition != nil {
+                    Button {
+                        appModel.preferences.panelPosition = nil
+                    } label: {
+                        Label("パネルを元の位置へ", systemImage: "arrow.uturn.down")
+                    }
+                    Spacer()
+                }
                 Button(role: .destructive) {
                     leave()
                 } label: {

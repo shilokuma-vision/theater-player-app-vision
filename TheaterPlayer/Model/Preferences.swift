@@ -2,7 +2,7 @@
 //  Preferences.swift
 //  TheaterPlayer
 //
-//  利用者の設定（部屋の明るさ・座る席・音量・音響・部屋の響き）。UserDefaults に保存する。
+//  利用者の設定（部屋の明るさ・座る席・音量・音響・部屋の響き・操作パネルの位置）。UserDefaults に保存する。
 //
 
 import CinemaAudio
@@ -11,7 +11,7 @@ import Observation
 
 @Observable
 final class Preferences {
-    /// 客電の明るさ（開場・休憩のとき。0〜1）
+    /// 客電の明るさ（開場・休憩のとき。0〜4。1 が照明を焼き付けたときの明るさで、1 を超えると開場らしく明るくする）
     var houseLevel: Double {
         didSet { save(houseLevel, for: .houseLevel) }
     }
@@ -47,18 +47,27 @@ final class Preferences {
     var room: SpatialSpeakers.Room {
         didSet { save(room.rawValue, for: .room) }
     }
+    /// 操作パネルの位置（映画館の中。nil なら既定の位置＝座ったときのひざの上）
+    var panelPosition: SIMD3<Float>? {
+        didSet { savePanelPosition() }
+    }
 
     static let defaultSeat = "G-17"
+    /// 開場（再生していないとき）の客電の既定。上映前でも暗く感じないよう、焼き付けたときより明るくする
+    /// （壁・天井・幕が黒っぽいので、3 倍の光でも見た目は約 2.5 倍。RKPreview で確かめた）
+    static let defaultHouseLevel = 3.0
+    /// 客電の明るさの上限（これより上げると、スクリーン・照明器具が白く飛ぶ）
+    static let maxHouseLevel = 4.0
     private let defaults: UserDefaults
 
     private enum Key: String {
         // room は以前 @AppStorage("room") で保存していた。同じキーを読む
-        case houseLevel, showLevel, autoDim, screenSpill, ambientLevel, seatID, volume, audio, room
+        case houseLevel, showLevel, autoDim, screenSpill, ambientLevel, seatID, volume, audio, room, panelPosition
     }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        houseLevel = defaults.object(forKey: Key.houseLevel.rawValue) as? Double ?? 0.8
+        houseLevel = defaults.object(forKey: Key.houseLevel.rawValue) as? Double ?? Self.defaultHouseLevel
         showLevel = defaults.object(forKey: Key.showLevel.rawValue) as? Double ?? 0
         autoDim = defaults.object(forKey: Key.autoDim.rawValue) as? Bool ?? true
         screenSpill = defaults.object(forKey: Key.screenSpill.rawValue) as? Double ?? 1
@@ -66,6 +75,11 @@ final class Preferences {
         seatID = defaults.string(forKey: Key.seatID.rawValue) ?? Self.defaultSeat
         volume = defaults.object(forKey: Key.volume.rawValue) as? Double ?? 1
         room = defaults.string(forKey: Key.room.rawValue).flatMap { SpatialSpeakers.Room(rawValue: $0) } ?? .standard
+        if let values = defaults.array(forKey: Key.panelPosition.rawValue) as? [Double], values.count == 3 {
+            panelPosition = SIMD3(Float(values[0]), Float(values[1]), Float(values[2]))
+        } else {
+            panelPosition = nil
+        }
         if let data = defaults.data(forKey: Key.audio.rawValue),
            let decoded = try? JSONDecoder().decode(CinemaAudioSettings.self, from: data) {
             audio = decoded
@@ -76,6 +90,14 @@ final class Preferences {
 
     private func save(_ value: Any, for key: Key) {
         defaults.set(value, forKey: key.rawValue)
+    }
+
+    private func savePanelPosition() {
+        if let panelPosition {
+            defaults.set([panelPosition.x, panelPosition.y, panelPosition.z].map(Double.init), forKey: Key.panelPosition.rawValue)
+        } else {
+            defaults.removeObject(forKey: Key.panelPosition.rawValue)
+        }
     }
 
     private func saveAudio() {

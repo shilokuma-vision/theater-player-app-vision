@@ -16,20 +16,18 @@ struct TheaterView: View {
     @State private var stage: TheaterStage?
     @State private var updates: EventSubscription?
     @State private var loadError: String?
-
-    /// 操作パネルの位置（座った目の前、ひざの少し上。目へ向けて傾ける）
-    static let panelPosition = SIMD3<Float>(0, 0.78, -0.6)
+    /// 操作パネルとつまみを入れる親（つまみをドラッグすると、これごと動かす）
+    @State private var panelRoot: Entity?
+    @State private var panelUpdates: EventSubscription?
+    /// ドラッグを始めたときの、つまみをつまんだ所からパネルの位置までの差
+    @State private var dragOffset: SIMD3<Float>?
 
     var body: some View {
         RealityView { content, attachments in
             let anchor = Entity()
             anchor.name = "ImmersiveRoot"
             content.add(anchor)
-            if let panel = attachments.entity(for: "controls") {
-                panel.position = Self.panelPosition
-                panel.orientation = simd_quatf(angle: -.pi / 5, axis: SIMD3(1, 0, 0))
-                content.add(panel)
-            }
+            addControlPanel(to: content, attachments: attachments)
             do {
                 let stage = try await TheaterStage.load(preferences: appModel.preferences)
                 anchor.addChild(stage.root)
@@ -50,6 +48,13 @@ struct TheaterView: View {
                 loadError = error.localizedDescription
             }
         } update: { _, attachments in
+            // 操作パネルを、覚えている位置（元に戻したら既定の位置）へ。動かしている間はドラッグに任せる
+            if let panelRoot, dragOffset == nil {
+                let position = appModel.preferences.panelPosition ?? PanelPlacement.defaultPosition
+                if panelRoot.position != position {
+                    PanelPlacement.place(panelRoot, at: position)
+                }
+            }
             guard let stage else {
                 return
             }
@@ -86,6 +91,7 @@ struct TheaterView: View {
                 NowPlayingScreen()
             }
         }
+        .gesture(panelDrag)
         // open / closed は実際に表示・非表示になったときにだけ書き換える（システムの操作でも開閉するため）
         .onAppear {
             appModel.immersiveSpaceState = .open
@@ -103,6 +109,53 @@ struct TheaterView: View {
             }
             appModel.immersiveSpaceState = .closed
         }
+    }
+
+    /// 操作パネル（添付）と、その下のつまみを置く。パネルの大きさが変わったら（畳む・ページを替える）、つまみを付いて行かせる
+    private func addControlPanel(to content: RealityViewContent, attachments: RealityViewAttachments) {
+        let root = Entity()
+        root.name = PanelPlacement.rootName
+        PanelPlacement.place(root, at: appModel.preferences.panelPosition ?? PanelPlacement.defaultPosition)
+        content.add(root)
+        let handle = PanelPlacement.makeHandle()
+        root.addChild(handle)
+        if let panel = attachments.entity(for: "controls") {
+            root.addChild(panel)
+            PanelPlacement.follow(handle: handle, panel: panel)
+            panelUpdates = content.subscribe(to: SceneEvents.Update.self) { [weak handle, weak panel] _ in
+                if let handle, let panel {
+                    PanelPlacement.follow(handle: handle, panel: panel)
+                }
+            }
+        }
+        panelRoot = root
+    }
+
+    /// つまみをドラッグして、操作パネルを動かす。離したら位置を覚える
+    private var panelDrag: some Gesture {
+        DragGesture()
+            .targetedToAnyEntity()
+            .onChanged { value in
+                guard value.entity.name == PanelPlacement.handleName, let panelRoot else {
+                    return
+                }
+                let location = value.convert(value.location3D, from: .local, to: .scene)
+                if dragOffset == nil {
+                    let start = value.convert(value.startLocation3D, from: .local, to: .scene)
+                    dragOffset = panelRoot.position(relativeTo: nil) - start
+                    appModel.isMovingPanel = true
+                }
+                PanelPlacement.place(panelRoot, at: location + (dragOffset ?? .zero))
+            }
+            .onEnded { value in
+                guard value.entity.name == PanelPlacement.handleName, let panelRoot else {
+                    return
+                }
+                appModel.preferences.panelPosition = panelRoot.position(relativeTo: nil)
+                dragOffset = nil
+                appModel.isMovingPanel = false
+                appModel.panelInteraction += 1
+            }
     }
 
     /// スクリーンの手前（曲面の端より手前）に、映像の幅に合わせた大きさで置く

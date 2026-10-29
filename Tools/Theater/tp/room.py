@@ -361,20 +361,15 @@ def _screen(col, mats, zones):
     top.build(col, mats, {"tp_group": "Screen/Drapes"})
 
 
-def _stage(col, mats, lights_amb):
-    """スクリーンの前の舞台：黒いカーペットの天板、吸音布の前面（奥にサブウーファー）、鼻先のアルミと LED。"""
+def _stage(col, mats):
+    """スクリーンの前の舞台：黒いカーペットの天板、吸音布の前面（奥にサブウーファー）、黒い布で包んだ鼻先。
+    鼻先には LED の帯もアルミの金物も付けない（客席からスクリーンの下に光る線として見え、映像の邪魔になったため）。"""
     p = Part("Stage")
     y0, y1, z, x = C.STAGE_FRONT_Y, C.ROOM_Y_FRONT, C.STAGE_Z, C.ROOM_X
     p.quad([(-x, y0, z), (x, y0, z), (x, y1, z), (-x, y1, z)], "stage_carpet", toward=UP)
     p.quad([(-x, y0, 0), (x, y0, 0), (x, y0, z - 0.05), (-x, y0, z - 0.05)], "velvet_black", toward=TO_REAR)
-    p.box_between((-x, y0 - 0.04, z - 0.05), (x, y0 + 0.02, z + 0.004), "aluminum")
+    p.box_between((-x, y0 - 0.04, z - 0.05), (x, y0 + 0.02, z + 0.004), "velvet_black")
     p.build(col, mats, {"tp_group": "Screen/Stage"})
-    led = Part("StageLed")
-    led.quad([(-x + 0.3, y0 - 0.041, z - 0.075), (x - 0.3, y0 - 0.041, z - 0.075), (x - 0.3, y0 - 0.041, z - 0.06),
-              (-x + 0.3, y0 - 0.041, z - 0.06)], "led_stage", toward=TO_REAR)
-    led.build(col, mats, {"tp_group": "Screen/Stage"})
-    lights_amb.append(dict(kind="AREA", name="stage_led", size=(2 * x - 0.6, 0.02), power=15.0, color=(0.35, 0.45, 1.0),
-                           location=(0, y0 - 0.06, z - 0.08), aim=(0, y0 - 1.5, 0)))
 
 
 def build(col, mats, lights_house, lights_amb, zones):
@@ -385,4 +380,4 @@ def build(col, mats, lights_house, lights_amb, zones):
     _rear_wall(col, mats, lights_house, lights_amb)
     _ceiling(col, mats, lights_house)
     _screen(col, mats, zones)
-    _stage(col, mats, lights_amb)
+    _stage(col, mats)

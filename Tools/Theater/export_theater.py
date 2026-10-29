@@ -42,7 +42,7 @@ DENSITY = {"Room/Floor": 1.25, "Room/WallL": 1.0, "Room/WallR": 1.0, "Room/WallR
            "Screen/Drapes": 0.45, "Screen/Stage": 0.8, "Screen/Surface": 0.5}
 MARGIN_PX = 2
 # ライトマップに島を持たせない物（小さい・光る灯具）。UV1 は右上の予約のマスを指し、そこには決まった光を入れる
-NO_LIGHTMAP = {"DownlightLenses", "Downlights", "WallLedsL", "WallLedsR", "AisleStepLights", "StageLed"}
+NO_LIGHTMAP = {"DownlightLenses", "Downlights", "WallLedsL", "WallLedsR", "AisleStepLights"}
 RESERVED_PX = 8
 RESERVED_LIGHT = {"house": 0.5, "ambient": 0.03, "screen": 0.05}
 

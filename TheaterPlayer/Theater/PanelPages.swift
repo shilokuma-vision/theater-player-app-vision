@@ -184,13 +184,14 @@ struct LightingPage: View {
         @Bindable var preferences = appModel.preferences
         VStack(alignment: .leading, spacing: 14) {
             PageHeader(title: "部屋の明るさ", page: $page)
+            // 開場（止めているとき）の明るさと、上映中の明るさの組み合わせ
             HStack {
-                presetButton("明るい", house: 1, show: 0.25)
+                presetButton("明るい", house: Preferences.maxHouseLevel, show: 0.25)
+                presetButton("映画館", house: Preferences.defaultHouseLevel, show: 0)
                 presetButton("ほの暗い", house: 0.45, show: 0.08)
-                presetButton("映画館", house: 0.8, show: 0)
                 presetButton("真っ暗", house: 0, show: 0)
             }
-            LabeledSlider(title: "客電（止めているとき）", value: $preferences.houseLevel, range: 0...1)
+            LabeledSlider(title: "客電（止めているとき）", value: $preferences.houseLevel, range: 0...Preferences.maxHouseLevel)
             LabeledSlider(title: "客電（上映中）", value: $preferences.showLevel, range: 0...1)
             LabeledSlider(title: "足元灯・誘導灯", value: $preferences.ambientLevel, range: 0...1.5)
             LabeledSlider(title: "スクリーンの照り返し", value: $preferences.screenSpill, range: 0...2)
