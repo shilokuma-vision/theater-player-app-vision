@@ -222,14 +222,16 @@ final class TheaterStage {
 
     // MARK: - 毎フレーム
 
-    func update(deltaTime: Double, player: PlayerModel, preferences: Preferences) {
+    /// isShowingWeb：スクリーンの前に Web のページ（デバッグの YouTube）を出している。
+    /// 上映中と同じく客電を落とす。ページの色は分からないので、スクリーンの照り返しは無し
+    func update(deltaTime: Double, player: PlayerModel, preferences: Preferences, isShowingWeb: Bool = false) {
         let hasVideo = player.info.map { !$0.isAudioOnly } ?? false
         // 静止画を出しているあいだも、上映中と同じく客電を落とし、その画像の色で部屋を照らす
         let still = player.still
         let values = lighting.step(
             deltaTime: deltaTime,
-            playing: player.isPlaying || still != nil,
-            hasVideo: hasVideo || still != nil,
+            playing: player.isPlaying || still != nil || isShowingWeb,
+            hasVideo: (hasVideo || still != nil) && !isShowingWeb,
             preferences: preferences,
             light: still?.light ?? player.engine?.screenLight()
         )

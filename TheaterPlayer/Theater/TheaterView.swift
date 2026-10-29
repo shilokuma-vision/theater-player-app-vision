@@ -42,7 +42,12 @@ struct TheaterView: View {
                 }
                 self.stage = stage
                 updates = content.subscribe(to: SceneEvents.Update.self) { event in
-                    stage.update(deltaTime: event.deltaTime, player: appModel.player, preferences: appModel.preferences)
+                    stage.update(
+                        deltaTime: event.deltaTime,
+                        player: appModel.player,
+                        preferences: appModel.preferences,
+                        isShowingWeb: isShowingYouTube
+                    )
                 }
             } catch {
                 loadError = error.localizedDescription
@@ -59,14 +64,18 @@ struct TheaterView: View {
                 return
             }
             let player = appModel.player
-            let hasVideo = player.info.map { !$0.isAudioOnly } ?? false
-            stage.show(still: player.still)
+            // デバッグの YouTube を出しているあいだは、止めた動画・静止画を隠し、マスキングを YouTube のページ（16:9）に合わせる
+            let showsWeb = isShowingYouTube
+            let hasVideo = !showsWeb && (player.info.map { !$0.isAudioOnly } ?? false)
+            stage.show(still: showsWeb ? nil : player.still)
             if hasVideo {
                 stage.update(format: player.videoFormat, hasVideo: true)
             } else {
                 stage.update(format: nil, hasVideo: false)
-                // 静止画のときは、マスキングを静止画に合わせる（show(still:)）
-                if player.still == nil {
+                if showsWeb {
+                    stage.setMasking(aspect: 16 / 9)
+                } else if player.still == nil {
+                    // 静止画のときは、マスキングを静止画に合わせる（show(still:)）
                     stage.resetMasking()
                 }
             }
@@ -75,8 +84,11 @@ struct TheaterView: View {
                 attachments.entity(for: "nowPlaying"),
                 on: stage,
                 width: min(stage.screenFrame.width, 16),
-                enabled: player.info?.isAudioOnly ?? false
+                enabled: !showsWeb && player.info?.isAudioOnly == true
             )
+            #if DEBUG
+            place(attachments.entity(for: "youTube"), on: stage, width: stage.screenFrame.width, enabled: showsWeb)
+            #endif
         } attachments: {
             Attachment(id: "controls") {
                 ControlPanel(stage: stage, loadError: loadError)
@@ -90,8 +102,21 @@ struct TheaterView: View {
             Attachment(id: "nowPlaying") {
                 NowPlayingScreen()
             }
+            #if DEBUG
+            Attachment(id: "youTube") {
+                YouTubeScreen()
+            }
+            #endif
         }
         .gesture(panelDrag)
+        #if DEBUG
+        // 止めていた動画をまた再生したら（操作パネルの再生・ライブラリで開いた）、YouTube を閉じてスクリーンを返す
+        .onChange(of: appModel.player.isPlaying) {
+            if appModel.player.isPlaying {
+                appModel.youTube.close()
+            }
+        }
+        #endif
         // open / closed は実際に表示・非表示になったときにだけ書き換える（システムの操作でも開閉するため）
         .onAppear {
             appModel.immersiveSpaceState = .open
@@ -102,6 +127,9 @@ struct TheaterView: View {
                 appModel.activeStage = nil
             }
             appModel.player.close()
+            #if DEBUG
+            appModel.youTube.close()
+            #endif
             // 「映画館を出る」は .inTransition にして、ライブラリを開いてから閉じる。
             // それ以外（Digital Crown などシステムの操作で閉じた）は、ウィンドウが 1 つも無くなるので、ここでライブラリを開き直す
             if appModel.immersiveSpaceState != .inTransition, !appModel.isLibraryOpen {
@@ -109,6 +137,15 @@ struct TheaterView: View {
             }
             appModel.immersiveSpaceState = .closed
         }
+    }
+
+    /// デバッグの YouTube を、スクリーンの前に出している
+    private var isShowingYouTube: Bool {
+        #if DEBUG
+        appModel.youTube.isOpen
+        #else
+        false
+        #endif
     }
 
     /// 操作パネル（添付）と、その下のつまみを置く。パネルの大きさが変わったら（畳む・ページを替える）、つまみを付いて行かせる

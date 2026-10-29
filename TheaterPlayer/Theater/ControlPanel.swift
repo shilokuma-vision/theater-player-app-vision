@@ -13,6 +13,10 @@ import TheaterMedia
 struct ControlPanel: View {
     enum Page: Hashable {
         case main, audioTracks, subtitles, speed, lighting, seats, sound
+        #if DEBUG
+        /// デバッグ用：YouTube の検索
+        case youTube
+        #endif
     }
 
     let stage: TheaterStage?
@@ -82,6 +86,10 @@ struct ControlPanel: View {
             SeatPicker(stage: stage, page: $page)
         case .sound:
             SoundPage(stage: stage, page: $page)
+        #if DEBUG
+        case .youTube:
+            YouTubePage(page: $page)
+        #endif
         }
     }
 
@@ -110,6 +118,10 @@ struct ControlPanel: View {
                 pageButton("明るさ", systemImage: "lightbulb.max", page: .lighting)
                 pageButton("座席", systemImage: "chair", page: .seats)
                 pageButton("音響", systemImage: "hifispeaker.2", page: .sound)
+                #if DEBUG
+                pageButton("YouTube", systemImage: "play.rectangle", page: .youTube)
+                    .accessibilityIdentifier("youTubePage")
+                #endif
             }
             HStack {
                 Button {
