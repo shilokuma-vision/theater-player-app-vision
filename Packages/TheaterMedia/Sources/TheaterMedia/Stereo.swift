@@ -8,6 +8,8 @@
 //  見分け方：入れ物の立体の情報（MKV の StereoMode・MOV の vexu）→ ファイル名の印（SBS・TAB など）の順。操作パネルでも選べる
 //
 
+import CFFmpeg
+import CoreVideo
 import Foundation
 
 /// 左右の目の絵の並べ方
@@ -84,5 +86,57 @@ public enum StereoMode: String, Sendable, Codable, CaseIterable {
         case .overUnder:
             .overUnder
         }
+    }
+}
+
+/// 空間ビデオ（MV-HEVC）の、左右の目のコマを組にして、1 枚に左右に並べる（デコードのスレッドだけが使う）
+final class StereoViewPairer {
+    /// 組の相手を待っている片目のコマ（同じ時刻のもう片方が来たら並べる）
+    private var pending: UnsafeMutablePointer<AVFrame>?
+    private var pendingIsLeft = true
+    private let maker = PixelBufferMaker()
+
+    deinit {
+        reset()
+    }
+
+    /// 待っているコマを捨てる（シークのとき）
+    func reset() {
+        var frame = pending
+        av_frame_free(&frame)
+        pending = nil
+    }
+
+    /// 片目のコマを受け取る。同じ時刻の左右がそろったら、左右に並べた画素のバッファを返す
+    func add(_ view: UnsafeMutablePointer<AVFrame>) -> CVPixelBuffer? {
+        let isLeft = Self.isLeftEye(view)
+        if let waiting = pending, waiting.pointee.pts == view.pointee.pts, pendingIsLeft != isLeft {
+            let buffer = isLeft ? maker.makeSideBySide(left: view, right: waiting) : maker.makeSideBySide(left: waiting, right: view)
+            reset()
+            return buffer
+        }
+        // 組にならない（最初の片目・時刻が飛んだ）：今のコマを待つ
+        reset()
+        pending = av_frame_clone(view)
+        pendingIsLeft = isLeft
+        return nil
+    }
+
+    /// 左目のコマか。FFmpeg がコマに付ける立体の情報（左・右）→ 層の番号（0 が基本の層。空間ビデオでは左目）の順に見る
+    static func isLeftEye(_ frame: UnsafeMutablePointer<AVFrame>) -> Bool {
+        if let side = av_frame_get_side_data(frame, AV_FRAME_DATA_STEREO3D), let data = side.pointee.data,
+           side.pointee.size >= MemoryLayout<AVStereo3D>.size {
+            let stereo = UnsafeRawPointer(data).loadUnaligned(as: AVStereo3D.self)
+            if stereo.view == AV_STEREO3D_VIEW_LEFT {
+                return true
+            }
+            if stereo.view == AV_STEREO3D_VIEW_RIGHT {
+                return false
+            }
+        }
+        if let side = av_frame_get_side_data(frame, AV_FRAME_DATA_VIEW_ID), let data = side.pointee.data, side.pointee.size >= 4 {
+            return UnsafeRawPointer(data).loadUnaligned(as: Int32.self) == 0
+        }
+        return true
     }
 }

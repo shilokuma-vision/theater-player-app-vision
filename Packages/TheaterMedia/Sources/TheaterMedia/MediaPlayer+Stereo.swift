@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Synchronization
 
 extension MediaPlayer {
     /// 3D の選び方（操作パネルの「3D」）。変えると、今のファイルの並べ方を決め直す
@@ -30,5 +31,7 @@ extension MediaPlayer {
         let packing = session == nil ? StereoPacking.mono : mode.resolve(track: track, fileName: name)
         lock.withLock { stereoValue = packing }
         videoOutput.stereo = packing.output
+        // 空間ビデオは、3D なら左右を並べて、2D なら左目だけを渡す
+        session?.video?.composesStereo.store(packing == .multiview, ordering: .relaxed)
     }
 }

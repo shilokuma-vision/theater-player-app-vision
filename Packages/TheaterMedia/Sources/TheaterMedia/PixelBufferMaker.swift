@@ -4,6 +4,7 @@
 //
 //  ソフトウェアでデコードしたフレーム（yuv420p・yuv422p10・rgb24 など）を、表示に渡せる CVPixelBuffer にする。
 //  8 bit の YUV → NV12、10 bit 以上の YUV → P010、RGB → BGRA。色の情報（BT.709・BT.2020・PQ・HLG・範囲）は添付で付ける。
+//  空間ビデオ（左右が別の層）は、左右の目のフレームを 1 枚に左右に並べる（makeSideBySide）。
 //
 
 import CFFmpeg
@@ -16,6 +17,8 @@ final class PixelBufferMaker {
         let height: Int32
         let source: Int32
         let target: OSType
+        /// 横に並べるフレームの数（ふつうは 1、左右に並べるときは 2）
+        let count: Int32
     }
 
     private var key: Key?
@@ -28,13 +31,30 @@ final class PixelBufferMaker {
 
     /// frame を CVPixelBuffer にする（色の添付を付ける）
     func make(from frame: UnsafeMutablePointer<AVFrame>) -> CVPixelBuffer? {
-        let width = frame.pointee.width
-        let height = frame.pointee.height
-        let source = frame.pointee.format
-        let output = Self.outputFormat(for: AVPixelFormat(rawValue: source), fullRange: frame.pointee.color_range == AVCOL_RANGE_JPEG)
-        let newKey = Key(width: width, height: height, source: source, target: output.pixelFormat)
+        make(from: [frame])
+    }
+
+    /// 左右の目のフレーム（同じ大きさ・形式）を、1 枚に左右に並べる（左目が左）
+    func makeSideBySide(left: UnsafeMutablePointer<AVFrame>, right: UnsafeMutablePointer<AVFrame>) -> CVPixelBuffer? {
+        guard left.pointee.width == right.pointee.width, left.pointee.height == right.pointee.height,
+              left.pointee.format == right.pointee.format else {
+            return nil
+        }
+        return make(from: [left, right])
+    }
+
+    /// frames を横に並べた CVPixelBuffer にする。色の添付は 1 つ目のフレームから
+    private func make(from frames: [UnsafeMutablePointer<AVFrame>]) -> CVPixelBuffer? {
+        guard let first = frames.first else {
+            return nil
+        }
+        let width = first.pointee.width
+        let height = first.pointee.height
+        let source = first.pointee.format
+        let output = Self.outputFormat(for: AVPixelFormat(rawValue: source), fullRange: first.pointee.color_range == AVCOL_RANGE_JPEG)
+        let newKey = Key(width: width, height: height, source: source, target: output.pixelFormat, count: Int32(frames.count))
         if newKey != key {
-            guard prepare(newKey, output: output.ffmpeg, frame: frame) else {
+            guard prepare(newKey, output: output.ffmpeg, frame: first) else {
                 return nil
             }
             key = newKey
@@ -46,10 +66,12 @@ final class PixelBufferMaker {
         guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &created) == kCVReturnSuccess, let buffer = created else {
             return nil
         }
-        guard scale(frame, into: buffer) else {
-            return nil
+        for (index, frame) in frames.enumerated() {
+            guard scale(frame, into: buffer, column: index, target: output.pixelFormat) else {
+                return nil
+            }
         }
-        av_vt_pixbuf_set_attachments(nil, buffer, frame)
+        av_vt_pixbuf_set_attachments(nil, buffer, first)
         return buffer
     }
 
@@ -68,6 +90,10 @@ final class PixelBufferMaker {
         }
         let format = fullRange ? kCVPixelFormatType_420YpCbCr8BiPlanarFullRange : kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange
         return (format, AV_PIX_FMT_NV12)
+    }
+
+    private static func isTenBit(_ format: OSType) -> Bool {
+        format == kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange || format == kCVPixelFormatType_420YpCbCr10BiPlanarFullRange
     }
 
     private func prepare(_ key: Key, output: AVPixelFormat, frame: UnsafeMutablePointer<AVFrame>) -> Bool {
@@ -93,7 +119,7 @@ final class PixelBufferMaker {
         sws_setColorspaceDetails(scaler, coefficients, fullRange, coefficients, fullRange, 0, 1 << 16, 1 << 16)
         let attributes: [CFString: Any] = [
             kCVPixelBufferPixelFormatTypeKey: key.target,
-            kCVPixelBufferWidthKey: Int(key.width),
+            kCVPixelBufferWidthKey: Int(key.width * key.count),
             kCVPixelBufferHeightKey: Int(key.height),
             kCVPixelBufferIOSurfacePropertiesKey: [:] as [CFString: Any],
             kCVPixelBufferMetalCompatibilityKey: true
@@ -104,20 +130,24 @@ final class PixelBufferMaker {
         return created != nil
     }
 
-    private func scale(_ frame: UnsafeMutablePointer<AVFrame>, into buffer: CVPixelBuffer) -> Bool {
+    /// frame を buffer の column 番目（左から。フレームの幅ごと）に書く
+    private func scale(_ frame: UnsafeMutablePointer<AVFrame>, into buffer: CVPixelBuffer, column: Int, target: OSType) -> Bool {
         guard CVPixelBufferLockBaseAddress(buffer, []) == kCVReturnSuccess else {
             return false
         }
         defer { CVPixelBufferUnlockBaseAddress(buffer, []) }
+        // 横にずらす量（バイト）。NV12 は輝度も色差（半分の幅に 2 つずつ）も 1 画素 1 バイト分、P010 は 2 バイト、BGRA は 4 バイト
+        let bytesPerPixel = target == kCVPixelFormatType_32BGRA ? 4 : (Self.isTenBit(target) ? 2 : 1)
+        let offset = column * Int(frame.pointee.width) * bytesPerPixel
         var planes = [UnsafeMutablePointer<UInt8>?](repeating: nil, count: 4)
         var strides = [Int32](repeating: 0, count: 4)
         if CVPixelBufferIsPlanar(buffer) {
             for plane in 0..<CVPixelBufferGetPlaneCount(buffer) {
-                planes[plane] = CVPixelBufferGetBaseAddressOfPlane(buffer, plane)?.assumingMemoryBound(to: UInt8.self)
+                planes[plane] = CVPixelBufferGetBaseAddressOfPlane(buffer, plane)?.assumingMemoryBound(to: UInt8.self).advanced(by: offset)
                 strides[plane] = Int32(CVPixelBufferGetBytesPerRowOfPlane(buffer, plane))
             }
         } else {
-            planes[0] = CVPixelBufferGetBaseAddress(buffer)?.assumingMemoryBound(to: UInt8.self)
+            planes[0] = CVPixelBufferGetBaseAddress(buffer)?.assumingMemoryBound(to: UInt8.self).advanced(by: offset)
             strides[0] = Int32(CVPixelBufferGetBytesPerRow(buffer))
         }
         let source = FrameArrays(frame)
