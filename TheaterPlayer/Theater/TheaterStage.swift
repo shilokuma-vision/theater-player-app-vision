@@ -191,8 +191,13 @@ final class TheaterStage {
 
     /// 映像が無いとき（開いていない・音楽）のマスキング：最大の範囲
     func resetMasking() {
+        setMasking(aspect: 2.0)
+    }
+
+    /// 縦横比 aspect の範囲にマスキングを合わせる（映像の形式は忘れる。次に映像を出すときに合わせ直す）
+    func setMasking(aspect: Float) {
         currentFormat = nil
-        let frame = ScreenFrame(aspect: 2.0, spec: layout.screen)
+        let frame = ScreenFrame(aspect: aspect, spec: layout.screen)
         // RealityView の update から何度も呼ばれるので、変わったときだけ書き換える（見ている View を作り直させない）
         if screenFrame != frame {
             screenFrame = frame
