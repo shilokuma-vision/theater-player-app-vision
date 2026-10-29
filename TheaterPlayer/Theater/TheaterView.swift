@@ -7,6 +7,7 @@
 
 import RealityKit
 import SwiftUI
+import TheaterMedia
 import TheaterScene
 
 struct TheaterView: View {
@@ -32,6 +33,12 @@ struct TheaterView: View {
             do {
                 let stage = try await TheaterStage.load(preferences: appModel.preferences)
                 anchor.addChild(stage.root)
+                // 舞台は 1 つだけにする（RealityView の make が 2 回呼ばれて、舞台が 2 つできることがあった。
+                // 同じ renderer に VideoMaterial が 2 つ付くと、映らないほうに映像が行く）
+                appModel.activeStage?.detach()
+                appModel.activeStage = stage
+                appModel.stagesCreated += 1
+                Diagnostics.log("舞台を作った（\(appModel.stagesCreated) 回目）")
                 if let engine = appModel.player.engine {
                     stage.attach(engine)
                 }
@@ -85,6 +92,9 @@ struct TheaterView: View {
         }
         .onDisappear {
             stage?.detach()
+            if appModel.activeStage === stage {
+                appModel.activeStage = nil
+            }
             appModel.player.close()
             // 「映画館を出る」は .inTransition にして、ライブラリを開いてから閉じる。
             // それ以外（Digital Crown などシステムの操作で閉じた）は、ウィンドウが 1 つも無くなるので、ここでライブラリを開き直す

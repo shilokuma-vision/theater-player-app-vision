@@ -6,6 +6,7 @@
 //  照明の演出・席の移動をまとめる。
 //
 
+@preconcurrency import AVFoundation
 import Foundation
 import Observation
 import RealityKit
@@ -18,6 +19,8 @@ final class TheaterStage {
     let environment: TheaterEnvironment
     /// スクリーンに映像を貼るエンティティ（映像を出すあいだだけ有効）
     private(set) var videoScreen: ModelEntity?
+    /// スクリーンに映す renderer（attach で受け取る）
+    @ObservationIgnored private var renderer: AVSampleBufferVideoRenderer?
     /// スクリーンに静止画（画像・PDF のページ）を貼るエンティティ（静止画を出すあいだだけ有効）
     private(set) var stillScreen: ModelEntity?
     /// スクリーンに貼った（貼っている途中の）静止画
@@ -69,6 +72,7 @@ final class TheaterStage {
 
     /// 再生のエンジンの映像・音声を、スクリーンとスピーカーにつなぐ
     func attach(_ engine: MediaPlayer) {
+        renderer = engine.videoRenderer
         let material = VideoMaterial(videoRenderer: engine.videoRenderer)
         if let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
             let screen = ModelEntity(mesh: mesh, materials: [material])
@@ -76,13 +80,18 @@ final class TheaterStage {
             screen.isEnabled = false
             environment.model.addChild(screen)
             videoScreen = screen
+            Diagnostics.log("VideoScreen を作った position=\(screen.position) bounds=\(screen.visualBounds(relativeTo: nil).extents)")
         }
         speakers.build(layout: layout, ring: engine.ring, parent: environment.model)
         speakers.play()
     }
 
+    /// 再生のエンジンから外す（映画館を閉じた・別の舞台に替わった）。同じ renderer を、古い VideoMaterial が持ったままにしない
     func detach() {
-        speakers.stop()
+        speakers.remove()
+        videoScreen?.removeFromParent()
+        videoScreen = nil
+        renderer = nil
     }
 
     func setRoom(_ room: SpatialSpeakers.Room) {
@@ -91,7 +100,15 @@ final class TheaterStage {
 
     /// 映像の形式に合わせて、スクリーンの映像の範囲とマスキングを変える。映像が無ければ（音楽）映像を消す
     func update(format: VideoFormat?, hasVideo: Bool) {
-        videoScreen?.isEnabled = hasVideo && format != nil
+        let enabled = hasVideo && format != nil
+        if let screen = videoScreen, screen.isEnabled != enabled {
+            Diagnostics.log("VideoScreen enabled=\(enabled) format=\(String(describing: format)) parent=\(screen.parent?.name ?? "なし")")
+            // 映し始めるたびに VideoMaterial を作り直す（前の再生の後に、同じ renderer の絵を映さなくなることがあった）
+            if enabled, let renderer {
+                screen.model?.materials = [VideoMaterial(videoRenderer: renderer)]
+            }
+        }
+        videoScreen?.isEnabled = enabled
         updateSurface()
         guard let format, format != currentFormat else {
             return

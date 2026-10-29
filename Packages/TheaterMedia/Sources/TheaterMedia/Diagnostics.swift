@@ -3,16 +3,16 @@
 //  TheaterMedia
 //
 //  実機で再生の様子を調べるためのログ。起動の引数に -tp-diagnostics を付けたときだけ、標準エラーに書く
-//  （xcrun devicectl device process launch --console … jp.shilokuma.TheaterPlayer -tp-diagnostics で読める）。
+//  （xcrun devicectl device process launch --console … jp.shilokuma.TheaterPlayer -- -tp-diagnostics で読める。-- が無いと devicectl が自分の引数と取り違える）。
 //
 
 import Foundation
 import Synchronization
 
-enum Diagnostics {
-    static let enabled = ProcessInfo.processInfo.arguments.contains("-tp-diagnostics")
+public enum Diagnostics {
+    public static let enabled = ProcessInfo.processInfo.arguments.contains("-tp-diagnostics")
 
-    static func log(_ message: @autoclosure () -> String) {
+    public static func log(_ message: @autoclosure () -> String) {
         guard enabled else {
             return
         }

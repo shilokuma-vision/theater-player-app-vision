@@ -64,6 +64,14 @@ final class SpatialSpeakers {
         controllers.forEach { $0.stop() }
     }
 
+    /// 音源を止めて外す（同じ輪のバッファを、古い舞台の音源が読み続けないように）
+    func remove() {
+        stop()
+        controllers.removeAll()
+        entities.forEach { $0.removeFromParent() }
+        entities.removeAll()
+    }
+
     /// スピーカーの種類ごとの鳴り方（向きの鋭さ・距離での減り方）
     static func spatialAudio(for bus: String) -> SpatialAudioComponent {
         switch bus {

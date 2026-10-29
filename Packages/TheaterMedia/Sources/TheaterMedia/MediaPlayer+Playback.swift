@@ -7,6 +7,7 @@
 
 @preconcurrency import AVFoundation
 import CinemaAudio
+import CoreMedia
 import Darwin
 import Foundation
 import Synchronization
@@ -263,7 +264,11 @@ extension MediaPlayer {
         let readers = "readers=\(spread.readers) sampleTimeSpread=\(Int(spread.sampleTime)) " +
             "hostSpread=\(String(format: "%.4f", spread.host))"
         let output = "out.time=\(String(format: "%.3f", videoOutput.time)) out.rate=\(videoOutput.rate)"
-        let rendererText = "renderer=\(status) error=\(renderer.error?.localizedDescription ?? "なし")"
+        let displayed = renderer.displayedPixelBuffer().map { String(UInt(bitPattern: ObjectIdentifier($0).hashValue) % 10_000) } ?? "なし"
+        let rendererTime = CMTimebaseGetTime(renderer.timebase).seconds
+        let errorText = renderer.error?.localizedDescription ?? "なし"
+        let rendererText = "renderer=\(status) error=\(errorText) ready=\(renderer.isReadyForMoreMediaData) " +
+            "displayed=\(displayed) renderer.time=\(String(format: "%.3f", rendererTime))"
         let audioText = "audioClock=\(clock) ring=\(ring.pendingFrames) \(readers)"
         Diagnostics.log("state=\(state) video[\(videoText)] \(output) \(rendererText) \(audioText)")
     }

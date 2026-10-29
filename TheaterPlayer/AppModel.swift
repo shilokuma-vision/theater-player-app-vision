@@ -23,6 +23,10 @@ final class AppModel {
     let libraryWindowID = "Library"
 
     var immersiveSpaceState = ImmersiveSpaceState.closed
+    /// 今つないでいる映画館の舞台（同時に 1 つだけ。TheaterView が入れ替える）
+    @ObservationIgnored var activeStage: TheaterStage?
+    /// 舞台を作った回数（診断用）
+    @ObservationIgnored var stagesCreated = 0
     /// ライブラリのウィンドウが開いているか（LibraryView が書き換える。映画館を閉じたときに開き直すかを決める）
     var isLibraryOpen = false
     /// 映画館の中から「字幕ファイルを選ぶ」を頼まれた（ライブラリのウィンドウがファイルの選択を出す）
