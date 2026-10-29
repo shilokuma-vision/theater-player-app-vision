@@ -54,7 +54,7 @@ struct ControlPanel: View {
                 withAnimation { collapsed = true }
             }
         }
-        // 下のつまみでパネルを動かし終えたら、畳むまでの待ちをやり直す
+        // 下のつまみでパネルを動かし終えた・スクリーンをつまんで呼ばれたら、開いて、畳むまでの待ちをやり直す
         .onChange(of: appModel.panelInteraction) {
             touch()
         }

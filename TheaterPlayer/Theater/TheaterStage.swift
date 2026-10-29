@@ -30,12 +30,18 @@ final class TheaterStage {
     /// 映像・静止画を出していないときのスクリーンの面。出しているあいだは隠す
     /// （隠さないと、縦長の画像などで、マスキングで覆い切れない端にスクリーンの面が見える）
     @ObservationIgnored private let screenSurface: Entity?
-    private(set) var screenFrame: ScreenFrame
+    private(set) var screenFrame: ScreenFrame {
+        didSet { fitScreenTarget() }
+    }
     private let speakers = SpatialSpeakers()
     let lighting: LightingDirector
     @ObservationIgnored private var currentFormat: VideoFormat?
     /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点（表示は、さらに曲面の出っ張りの分だけ手前に置く。overlayDepth）
     let screenAnchor = Entity()
+    /// スクリーンをつまむ（視線＋ピンチ）ための当たり判定。見た目は無く、映像の範囲に合わせる（TheaterView が、つまんだら操作パネルを出す）。
+    /// 字幕・音楽の表示（つまめない）より奥に置き、手前に置いた操作できる表示があれば、そちらが先につままれるようにする
+    let screenTarget = Entity()
+    static let screenTargetName = "ScreenTarget"
 
     static func load(preferences: Preferences) async throws -> TheaterStage {
         let environment = try await TheaterEnvironment.load(bundle: .main)
@@ -51,6 +57,11 @@ final class TheaterStage {
         screenAnchor.name = "ScreenAnchor"
         screenAnchor.position = SIMD3(screen.center.x, screen.center.y, screen.center.z + 0.08)
         environment.model.addChild(screenAnchor)
+        screenTarget.name = Self.screenTargetName
+        // 遠くのスクリーンなので、視線＋ピンチ（間接）だけを受ける
+        screenTarget.components.set(InputTargetComponent(allowedInputTypes: .indirect))
+        screenAnchor.addChild(screenTarget)
+        fitScreenTarget()
         let seat = environment.layout.seat(id: preferences.seatID) ?? environment.layout.seat(id: Preferences.defaultSeat)
         if let seat {
             environment.sit(at: seat)
@@ -179,6 +190,12 @@ final class TheaterStage {
             }
             environment.setMasking(frame: frame)
         }
+    }
+
+    /// スクリーンをつまむ当たり判定を、今の映像の範囲に合わせる
+    private func fitScreenTarget() {
+        let shape = ShapeResource.generateBox(width: screenFrame.width, height: screenFrame.height, depth: 0.1)
+        screenTarget.components.set(CollisionComponent(shapes: [shape]))
     }
 
     /// スクリーンの面は、映像・静止画を出していないときだけ見せる

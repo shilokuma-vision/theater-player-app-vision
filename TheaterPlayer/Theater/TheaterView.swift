@@ -92,6 +92,7 @@ struct TheaterView: View {
             }
         }
         .gesture(panelDrag)
+        .simultaneousGesture(screenTap)
         // open / closed は実際に表示・非表示になったときにだけ書き換える（システムの操作でも開閉するため）
         .onAppear {
             appModel.immersiveSpaceState = .open
@@ -157,6 +158,18 @@ struct TheaterView: View {
                 dragOffset = nil
                 appModel.isMovingPanel = false
                 appModel.panelInteraction += 1
+            }
+    }
+
+    /// スクリーンをつまむ（視線＋ピンチ）と、畳んだ操作パネルを出す。
+    /// 食事中などに手が偶然つまむ形になっても、パネルが出るだけ（6 秒で畳む）なので、再生・一時停止・シークにはつながない
+    private var screenTap: some Gesture {
+        SpatialTapGesture()
+            .targetedToAnyEntity()
+            .onEnded { value in
+                if value.entity.name == TheaterStage.screenTargetName {
+                    appModel.perform(.showPanel)
+                }
             }
     }
 
