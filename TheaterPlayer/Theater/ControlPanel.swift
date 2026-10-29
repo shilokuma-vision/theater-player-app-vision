@@ -269,9 +269,13 @@ struct VolumeSlider: View {
         @Bindable var preferences = appModel.preferences
         HStack {
             Image(systemName: "speaker.fill")
-            Slider(value: $preferences.volume, in: 0...1.5)
+            Slider(value: $preferences.volume, in: 0...Preferences.maxVolume)
                 .onChange(of: preferences.volume) { appModel.player.applyAudioPreferences() }
             Image(systemName: "speaker.wave.3.fill")
+            // 等倍より上げたぶん（リミッターの前で上げる）
+            Text(preferences.volume > 1 ? String(format: "+%.0f dB", 20 * log10(preferences.volume)) : "")
+                .font(.caption.monospacedDigit())
+                .frame(width: 52, alignment: .leading)
         }
         .foregroundStyle(.secondary)
     }
