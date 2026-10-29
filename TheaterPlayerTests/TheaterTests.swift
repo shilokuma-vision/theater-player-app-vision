@@ -63,13 +63,36 @@ struct LightingDirectorTests {
     /// 再生を始めると、客電がゆっくり（数秒かけて）落ちる
     @Test func houseLightsDimSlowlyWhenPlaying() {
         let preferences = preferences()
-        let director = LightingDirector(initialHouse: 0.8)
+        let level = preferences.houseLevel
+        let director = LightingDirector(initialHouse: level)
         _ = director.step(deltaTime: 1, playing: true, hasVideo: true, preferences: preferences, light: nil)
-        #expect(director.house < 0.8)
-        #expect(director.house > 0.5)
+        #expect(director.house < level)
+        #expect(director.house > level * 0.7)
         for _ in 0..<10 {
             _ = director.step(deltaTime: 1, playing: true, hasVideo: true, preferences: preferences, light: nil)
         }
+        #expect(director.house == preferences.showLevel)
+    }
+
+    /// 開場は照明を焼き付けたときより明るく、色は白のまま
+    @Test func openHouseIsBrighterThanBakedAndStaysWhite() {
+        let preferences = preferences()
+        #expect(preferences.houseLevel > 1)
+        let director = LightingDirector(initialHouse: preferences.houseLevel)
+        let values = director.step(deltaTime: 0.01, playing: false, hasVideo: false, preferences: preferences, light: nil)
+        #expect(values.house.x > 1)
+        #expect(values.house.x == values.house.z)
+    }
+
+    /// 開場を明るくしても、再生すると約 6 秒で上映中の明るさまで落ちる
+    @Test func brightHouseStillDimsInAboutSixSeconds() {
+        let preferences = preferences()
+        let director = LightingDirector(initialHouse: preferences.houseLevel)
+        for _ in 0..<5 {
+            _ = director.step(deltaTime: 1, playing: true, hasVideo: true, preferences: preferences, light: nil)
+        }
+        #expect(director.house > preferences.showLevel)
+        _ = director.step(deltaTime: 1.5, playing: true, hasVideo: true, preferences: preferences, light: nil)
         #expect(director.house == preferences.showLevel)
     }
 
@@ -84,6 +107,7 @@ struct LightingDirectorTests {
 }
 
 struct PreferencesTests {
+
     @Test func savesAndRestoresTheSeatAndAudioSettings() throws {
         let suite = "PreferencesTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))

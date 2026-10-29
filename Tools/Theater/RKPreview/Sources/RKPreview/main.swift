@@ -20,6 +20,10 @@ enum LightingPreset: String {
     case preshow
     /// 上映中（客電は消え、スクリーンの映像の光で照らされる）
     case feature
+    /// アプリの開場：今までの既定（客電 0.8。暗くするほど暖かい色）
+    case openHouseBefore
+    /// アプリの開場：新しい既定（照明を焼き付けたときより明るく、色は白）
+    case openHouse
 }
 
 /// 視点（席・見る点・照明の状態）
@@ -41,8 +45,19 @@ let views: [View] = [
     View(name: "G17_left_preshow", seat: "G-17", target: [-13, 6.5, -10], preset: .preshow, horizontalFOV: 84),
     View(name: "G17_back_preshow", seat: "G-17", target: [0, 9.5, 0], preset: .preshow, horizontalFOV: 84),
     View(name: "G17_back_feature", seat: "G-17", target: [0, 9.5, 0], preset: .feature, horizontalFOV: 84),
-    View(name: "G17_up_preshow", seat: "G-17", target: [0, 15, -18], preset: .preshow, horizontalFOV: 84)
+    View(name: "G17_up_preshow", seat: "G-17", target: [0, 15, -18], preset: .preshow, horizontalFOV: 84),
+    View(name: "G17_open_before", seat: "G-17", target: [0, 4.6, -27], preset: .openHouseBefore),
+    View(name: "G17_open", seat: "G-17", target: [0, 4.6, -27], preset: .openHouse),
+    View(name: "M30_open_before", seat: "M-30", target: [-1, 6, -27], preset: .openHouseBefore),
+    View(name: "M30_open", seat: "M-30", target: [-1, 6, -27], preset: .openHouse)
 ]
+
+/// アプリ（LightingDirector）と同じ式の客電：暗くするほど暖かく、1 を超えたら白のまま
+func appHouse(_ level: Float) -> (house: SIMD3<Float>, emission: SIMD3<Float>) {
+    let full = min(level, 1)
+    let warmth = SIMD3<Float>(1, 0.82 + 0.18 * full, 0.62 + 0.38 * full)
+    return (warmth * level, warmth * pow(level, 0.8))
+}
 
 @MainActor
 final class Preview {
@@ -106,6 +121,14 @@ final class Preview {
         var values = LightingValues()
         switch preset {
         case .preshow:
+            videoScreen?.isEnabled = false
+            theater.screenSurface?.isEnabled = true
+        case .openHouseBefore, .openHouse:
+            // 新しい既定の客電は、環境変数 RK_HOUSE で変えて試せる
+            let open = Float(ProcessInfo.processInfo.environment["RK_HOUSE"] ?? "") ?? 3
+            let light = appHouse(preset == .openHouse ? open : 0.8)
+            values.house = light.house
+            values.houseEmission = light.emission
             videoScreen?.isEnabled = false
             theater.screenSurface?.isEnabled = true
         case .feature:

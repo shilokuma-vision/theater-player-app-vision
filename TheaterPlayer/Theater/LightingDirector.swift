@@ -4,6 +4,7 @@
 //
 //  映画館の照明の演出。毎フレーム、照明の状態（客電・常時灯・スクリーンの光・全体の明るさ）を決める。
 //  - 再生が始まると客電をゆっくり落とし（約 6 秒）、止める・終わると戻す（約 4 秒）。暗くするほど電球のように暖かい色になる
+//  - 開場（再生していないとき）は、照明を焼き付けたときより明るくできる（客電 1 を超える。色は白のまま）
 //  - スクリーンの光：映像の左・中央・右の色で、部屋を照らす（少しだけならして、ちらつかないように）
 //
 
@@ -13,7 +14,7 @@ import TheaterScene
 
 @MainActor
 final class LightingDirector {
-    /// 今の客電の明るさ（0〜1）
+    /// 今の客電の明るさ（0〜4。1 が照明を焼き付けたときの明るさ）
     private(set) var house: Double
     private var zones = [SIMD3<Float>](repeating: .zero, count: 3)
     /// 全体の明るさ（席の移動の暗転）
@@ -36,8 +37,9 @@ final class LightingDirector {
     /// 1 フレーム分進め、照明の状態を返す
     func step(deltaTime: Double, playing: Bool, hasVideo: Bool, preferences: Preferences, light: ScreenLight?) -> LightingValues {
         let target = preferences.autoDim && playing ? preferences.showLevel : preferences.houseLevel
-        // 暗くするときはゆっくり（約 6 秒）、明るくするときは少し速く（約 4 秒）
-        let speed = target < house ? 1 / 6.0 : 1 / 4.0
+        // 暗くするときはゆっくり（約 6 秒）、明るくするときは少し速く（約 4 秒）。開場を明るくしても、かかる時間は同じ
+        let span = max(preferences.houseLevel, 1)
+        let speed = target < house ? span / 6 : span / 4
         house += max(-speed * deltaTime, min(speed * deltaTime, target - house))
         let zoneTargets: [SIMD3<Float>] = hasVideo ? [light?.left, light?.center, light?.right].map {
             ($0 ?? .zero) * Float(preferences.screenSpill)
@@ -54,8 +56,9 @@ final class LightingDirector {
     private func values(preferences: Preferences) -> LightingValues {
         var values = LightingValues()
         let level = Float(house)
-        // 調光すると色温度が下がる（暖かくなる）
-        let warmth = SIMD3<Float>(1, 0.82 + 0.18 * level, 0.62 + 0.38 * level)
+        // 調光すると色温度が下がる（暖かくなる）。焼き付けたときより明るくするときは白のまま
+        let full = min(level, 1)
+        let warmth = SIMD3<Float>(1, 0.82 + 0.18 * full, 0.62 + 0.38 * full)
         values.house = warmth * level
         values.houseEmission = warmth * pow(level, 0.8)
         values.ambient = SIMD3(repeating: Float(preferences.ambientLevel))

@@ -11,7 +11,7 @@ import Observation
 
 @Observable
 final class Preferences {
-    /// 客電の明るさ（開場・休憩のとき。0〜1）
+    /// 客電の明るさ（開場・休憩のとき。0〜4。1 が照明を焼き付けたときの明るさで、1 を超えると開場らしく明るくする）
     var houseLevel: Double {
         didSet { save(houseLevel, for: .houseLevel) }
     }
@@ -49,6 +49,11 @@ final class Preferences {
     }
 
     static let defaultSeat = "G-17"
+    /// 開場（再生していないとき）の客電の既定。上映前でも暗く感じないよう、焼き付けたときより明るくする
+    /// （壁・天井・幕が黒っぽいので、3 倍の光でも見た目は約 2.5 倍。RKPreview で確かめた）
+    static let defaultHouseLevel = 3.0
+    /// 客電の明るさの上限（これより上げると、スクリーン・照明器具が白く飛ぶ）
+    static let maxHouseLevel = 4.0
     private let defaults: UserDefaults
 
     private enum Key: String {
@@ -58,7 +63,7 @@ final class Preferences {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        houseLevel = defaults.object(forKey: Key.houseLevel.rawValue) as? Double ?? 0.8
+        houseLevel = defaults.object(forKey: Key.houseLevel.rawValue) as? Double ?? Self.defaultHouseLevel
         showLevel = defaults.object(forKey: Key.showLevel.rawValue) as? Double ?? 0
         autoDim = defaults.object(forKey: Key.autoDim.rawValue) as? Bool ?? true
         screenSpill = defaults.object(forKey: Key.screenSpill.rawValue) as? Double ?? 1
