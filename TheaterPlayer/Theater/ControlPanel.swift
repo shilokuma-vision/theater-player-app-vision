@@ -12,7 +12,7 @@ import TheaterMedia
 
 struct ControlPanel: View {
     enum Page: Hashable {
-        case main, audioTracks, subtitles, speed, lighting, seats, sound
+        case main, audioTracks, subtitles, speed, stereo, lighting, seats, sound
         #if DEBUG
         /// デバッグ用：YouTube の検索
         case youTube
@@ -80,6 +80,8 @@ struct ControlPanel: View {
             SubtitlePage(page: $page)
         case .speed:
             SpeedPage(page: $page)
+        case .stereo:
+            StereoPage(page: $page)
         case .lighting:
             LightingPage(page: $page)
         case .seats:
@@ -115,6 +117,9 @@ struct ControlPanel: View {
                     .disabled(!appModel.player.hasPlayback)
                 pageButton("速さ", systemImage: "gauge.with.dots.needle.50percent", page: .speed)
                     .disabled(!appModel.player.hasPlayback)
+                // 3D（立体視）は映像のときだけ
+                pageButton("3D", systemImage: "view.3d", page: .stereo)
+                    .disabled(appModel.player.info?.isAudioOnly ?? true)
                 pageButton("明るさ", systemImage: "lightbulb.max", page: .lighting)
                 pageButton("座席", systemImage: "chair", page: .seats)
                 pageButton("音響", systemImage: "hifispeaker.2", page: .sound)

@@ -40,6 +40,11 @@ final class VideoDecoder: @unchecked Sendable {
     private let control: PlaybackControl
     /// 映像の形式が分かった・変わった
     var onFormat: (@Sendable (VideoFormat) -> Void)?
+    /// 左右が別の層の HEVC（空間ビデオ）。両方の層をデコードする
+    private let isMultiview: Bool
+    /// 空間ビデオの左右を 1 枚に並べて渡す（3D で見る）。false なら左目の層だけ渡す（2D）
+    let composesStereo = Atomic<Bool>(false)
+    private let pairer = StereoViewPairer()
 
     init(
         stream: UnsafeMutablePointer<AVStream>,
@@ -67,16 +72,22 @@ final class VideoDecoder: @unchecked Sendable {
         frameDuration = rate > 1 ? 1 / rate : 1 / 24
         rotation = MediaTracks.rotation(of: stream)
         isHDR = parameters.color_trc == AVCOL_TRC_SMPTE2084 || parameters.color_trc == AVCOL_TRC_ARIB_STD_B67
+        isMultiview = MediaTracks.stereoPacking(of: stream) == .multiview
         self.control = control
         self.output = output
         self.lights = lights
         try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "映像の設定")
         context.pointee.pkt_timebase = stream.pointee.time_base
         context.pointee.thread_count = 0
-        if !interlaced {
+        // 空間ビデオは、両方の層をデコードする（VideoToolbox の HEVC は基本の層だけなので、ソフトウェアで）
+        var options: OpaquePointer?
+        if isMultiview {
+            av_dict_set(&options, "view_ids", "-1", 0)
+        } else if !interlaced {
             Self.attachVideoToolbox(context)
         }
-        try check(avcodec_open2(context, decoder, nil), "映像のデコーダーを開けません")
+        defer { av_dict_free(&options) }
+        try check(avcodec_open2(context, decoder, &options), "映像のデコーダーを開けません")
     }
 
     deinit {
@@ -148,6 +159,7 @@ final class VideoDecoder: @unchecked Sendable {
         }
         decoderSerial = serial
         packetsWithoutFrame = 0
+        pairer.reset()
         deinterlacer = nil
         waitingFirstFrame = true
         lastTime = nil
@@ -164,7 +176,9 @@ final class VideoDecoder: @unchecked Sendable {
                 $0.decoded += 1
                 $0.usesVideoToolbox = hardware
             }
-            if interlaced, frame.pointee.flags & AV_FRAME_FLAG_INTERLACED != 0 || deinterlacer != nil {
+            if isMultiview {
+                deliverView(serial: serial)
+            } else if interlaced, frame.pointee.flags & AV_FRAME_FLAG_INTERLACED != 0 || deinterlacer != nil {
                 deinterlace(frame, serial: serial)
             } else {
                 deliver(frame, timeBase: timeBase, serial: serial)
@@ -235,7 +249,26 @@ final class VideoDecoder: @unchecked Sendable {
 
     // MARK: - フレームを渡す
 
-    private func deliver(_ decoded: UnsafeMutablePointer<AVFrame>, timeBase base: AVRational, serial: Int) {
+    /// 空間ビデオの片目のコマ：3D なら左右がそろったら左目・右目の絵を渡し、2D なら左目だけ渡す
+    private func deliverView(serial: Int) {
+        guard composesStereo.load(ordering: .relaxed) else {
+            if StereoViewPairer.isLeftEye(frame) {
+                deliver(frame, timeBase: timeBase, serial: serial)
+            }
+            return
+        }
+        if let pair = pairer.add(frame) {
+            deliver(frame, timeBase: timeBase, serial: serial, eyes: pair)
+        }
+    }
+
+    /// eyes を渡すと、frame の画素の代わりに、その左目・右目の絵を映す（空間ビデオ）
+    private func deliver(
+        _ decoded: UnsafeMutablePointer<AVFrame>,
+        timeBase base: AVRational,
+        serial: Int,
+        eyes: (left: CVPixelBuffer, right: CVPixelBuffer)? = nil
+    ) {
         let time = frameTime(decoded, timeBase: base)
         let duration = decoded.pointee.duration > 0 ? Double(decoded.pointee.duration) * av_q2d(base) : frameDuration
         lastTime = time
@@ -243,7 +276,7 @@ final class VideoDecoder: @unchecked Sendable {
             stats.withLock { $0.droppedBeforeSeekTarget += 1 }
             return
         }
-        guard let buffer = pixelBuffer(of: decoded) else {
+        guard let buffer = eyes?.left ?? pixelBuffer(of: decoded) else {
             stats.withLock { $0.noPixelBuffer += 1 }
             return
         }
@@ -265,8 +298,10 @@ final class VideoDecoder: @unchecked Sendable {
             $0.lastFrameTime = time
         }
         lights.append(time: time, light: light)
-        output.enqueue(DecodedVideoFrame(pixelBuffer: buffer, time: time, duration: duration, serial: serial),
-                       displayImmediately: waitingFirstFrame && control.isPaused)
+        output.enqueue(
+            DecodedVideoFrame(pixelBuffer: buffer, rightEye: eyes?.right, time: time, duration: duration, serial: serial),
+            displayImmediately: waitingFirstFrame && control.isPaused
+        )
         waitingFirstFrame = false
     }
 
