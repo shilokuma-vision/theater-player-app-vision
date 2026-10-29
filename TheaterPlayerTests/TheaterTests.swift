@@ -107,6 +107,18 @@ struct LightingDirectorTests {
 }
 
 struct PreferencesTests {
+    /// 動かした操作パネルの位置を覚え、元に戻すと消す
+    @Test func savesAndClearsThePanelPosition() throws {
+        let suite = "PreferencesTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let preferences = Preferences(defaults: defaults)
+        #expect(preferences.panelPosition == nil)
+        preferences.panelPosition = SIMD3(0.3, 1.1, -0.7)
+        #expect(Preferences(defaults: defaults).panelPosition == SIMD3(0.3, 1.1, -0.7))
+        preferences.panelPosition = nil
+        #expect(Preferences(defaults: defaults).panelPosition == nil)
+    }
 
     @Test func savesAndRestoresTheSeatAndAudioSettings() throws {
         let suite = "PreferencesTests.\(UUID().uuidString)"

@@ -23,6 +23,10 @@ final class AppModel {
     let libraryWindowID = "Library"
 
     var immersiveSpaceState = ImmersiveSpaceState.closed
+    /// 操作パネルを動かしている（そのあいだは畳まない）
+    var isMovingPanel = false
+    /// 操作パネルを動かし終えた回数（操作パネルが、畳むまでの待ちをやり直す）
+    var panelInteraction = 0
     /// 今つないでいる映画館の舞台（同時に 1 つだけ。TheaterView が入れ替える）
     @ObservationIgnored var activeStage: TheaterStage?
     /// 舞台を作った回数（診断用）
