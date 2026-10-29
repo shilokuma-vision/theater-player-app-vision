@@ -3,7 +3,7 @@
 //  TheaterPlayer
 //
 //  映画館の空間（RealityKit）。映画館のモデルと、スクリーンの映像・静止画（画像・PDF）・空間オーディオのスピーカー・
-//  照明の演出・席の移動をまとめる。
+//  照明の演出・開演のブザー・席の移動をまとめる。
 //
 
 @preconcurrency import AVFoundation
@@ -32,6 +32,9 @@ final class TheaterStage {
     @ObservationIgnored private let screenSurface: Entity?
     private(set) var screenFrame: ScreenFrame
     private let speakers = SpatialSpeakers()
+    private let buzzer = TheaterBuzzer()
+    /// ブザーを鳴らした開演（ShowDirector.performance。開演ごとに 1 回だけ鳴らす）
+    @ObservationIgnored private var buzzedPerformance = 0
     let lighting: LightingDirector
     @ObservationIgnored private var currentFormat: VideoFormat?
     /// 幕（左右のマスキング）を閉じているか
@@ -58,6 +61,7 @@ final class TheaterStage {
             environment.sit(at: seat)
         }
         environment.root.components.set(ReverbComponent(reverb: preferences.room.reverb))
+        buzzer.build(layout: environment.layout, parent: environment.model)
     }
 
     var root: Entity {
@@ -103,6 +107,7 @@ final class TheaterStage {
     /// 再生のエンジンから外す（映画館を閉じた・別の舞台に替わった）。同じ renderer を、古い VideoMaterial が持ったままにしない
     func detach() {
         speakers.remove()
+        buzzer.stop()
         // スクリーンを外したら、次のスクリーンをつなぐまでコマを渡さない（外したスクリーンの映す先に渡し続けると、
         // 次の VideoMaterial を作るときに「渡している最中」になって映らない）
         if videoScreen != nil {
@@ -236,13 +241,21 @@ final class TheaterStage {
     func update(deltaTime: Double, player: PlayerModel, preferences: Preferences) {
         // 開演の流れは、映画館が描き始めてから進める
         player.show.theaterDidRender()
+        let phase = player.showPhase
+        if phase == .buzzer, player.show.performance != buzzedPerformance {
+            buzzedPerformance = player.show.performance
+            buzzer.play(volume: preferences.volume)
+        } else if player.show.ceremony == nil {
+            // 開演の流れを省いて始めた・止めた
+            buzzer.stop()
+        }
         // 開演の流れのあいだは映像を出さないので、映像の色で部屋を照らさない
         let hasVideo = (player.info.map { !$0.isAudioOnly } ?? false) && player.show.ceremony == nil
         // 静止画を出しているあいだも、その画像の色で部屋を照らす
         let still = player.still
         let values = lighting.step(
             deltaTime: deltaTime,
-            phase: player.showPhase,
+            phase: phase,
             hasVideo: hasVideo || still != nil,
             preferences: preferences,
             light: still?.light ?? player.engine?.screenLight()
