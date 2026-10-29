@@ -209,41 +209,6 @@ final class PlayerModel {
 
     // MARK: - 操作
 
-    /// 再生の操作を行う（AppModel.perform(_:) から呼ぶ。パネルを出す操作は AppModel が受ける）。動画・音楽を開いていなければ何もしない
-    func perform(_ command: PlayerCommand) {
-        guard hasPlayback, let engine else {
-            return
-        }
-        switch command {
-        case .togglePlay:
-            if isPlaying {
-                pause(engine)
-            } else {
-                engine.play()
-            }
-        case .play:
-            engine.play()
-        case .pause:
-            pause(engine)
-        case .skip, .seek, .nextChapter, .previousChapter:
-            if let target = command.seekTarget(from: currentTime, duration: duration, chapterStarts: info?.chapters.map(\.start) ?? []) {
-                engine.seek(to: target)
-                currentTime = target
-                publishNowPlaying()
-            }
-        case let .setRate(newRate):
-            engine.rate = newRate
-            publishNowPlaying()
-        case .showPanel:
-            break
-        }
-    }
-
-    private func pause(_ engine: MediaPlayer) {
-        engine.pause()
-        saveProgress()
-    }
-
     var rate: Float {
         engine?.rate ?? 1
     }
@@ -341,6 +306,52 @@ final class PlayerModel {
         subtitles = engine.subtitles(at: engine.displayTime)
     }
 
+    private func saveProgress(position: Double? = nil) {
+        guard let item = currentItem, let info else {
+            return
+        }
+        recents.update(item.id, position: position ?? currentTime, duration: info.duration, isAudioOnly: info.isAudioOnly)
+    }
+}
+
+// MARK: - 再生の操作（PlayerCommand）と Now Playing
+
+extension PlayerModel {
+    /// 再生の操作を行う（AppModel.perform(_:) から呼ぶ。パネルを出す操作は AppModel が受ける）。動画・音楽を開いていなければ何もしない
+    func perform(_ command: PlayerCommand) {
+        guard hasPlayback, let engine else {
+            return
+        }
+        switch command {
+        case .togglePlay:
+            if isPlaying {
+                pause(engine)
+            } else {
+                engine.play()
+            }
+        case .play:
+            engine.play()
+        case .pause:
+            pause(engine)
+        case .skip, .seek, .nextChapter, .previousChapter:
+            if let target = command.seekTarget(from: currentTime, duration: duration, chapterStarts: info?.chapters.map(\.start) ?? []) {
+                engine.seek(to: target)
+                currentTime = target
+                publishNowPlaying()
+            }
+        case let .setRate(newRate):
+            engine.rate = newRate
+            publishNowPlaying()
+        case .showPanel:
+            break
+        }
+    }
+
+    private func pause(_ engine: MediaPlayer) {
+        engine.pause()
+        saveProgress()
+    }
+
     /// システムの Now Playing に、今の再生の様子を見せる（動画・音楽を開いていなければ消す）。
     /// 位置はシステムが速さから進めるので、変わり目（開いた・再生／一時停止・シーク・速さ）にだけ呼ぶ
     private func publishNowPlaying() {
@@ -359,12 +370,5 @@ final class PlayerModel {
             chapterCount: info.chapters.count
         )
         nowPlaying.update(item, artwork: info.artwork)
-    }
-
-    private func saveProgress(position: Double? = nil) {
-        guard let item = currentItem, let info else {
-            return
-        }
-        recents.update(item.id, position: position ?? currentTime, duration: info.duration, isAudioOnly: info.isAudioOnly)
     }
 }
