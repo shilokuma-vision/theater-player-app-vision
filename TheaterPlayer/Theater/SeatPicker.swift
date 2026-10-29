@@ -24,9 +24,11 @@ struct SeatPicker: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
                     .background(.white.opacity(0.25), in: Capsule())
-                SeatMap(rows: stage.seatRows, current: current) { seat in
+                SeatMap(rows: stage.seatRows, current: current?.id) { seat in
                     choose(seat, on: stage)
                 }
+                // 席のボタンは choose を比べずに描き直しを省くので、舞台が替わったら作り直す（古い舞台の choose を持ち続けない）
+                .id(ObjectIdentifier(stage))
                 if let seat = current {
                     Text("いまの席：\(seat.row) 列 \(seat.number) 番").font(.footnote).foregroundStyle(.secondary)
                 }
@@ -71,7 +73,8 @@ struct SeatPicker: View {
 /// 座席の並び（ブロックの間に通路のすき間）
 struct SeatMap: View {
     let rows: [SeatRow]
-    let current: Seat?
+    /// 選んでいる席の id
+    let current: String?
     let choose: (Seat) -> Void
 
     var body: some View {
@@ -83,16 +86,24 @@ struct SeatMap: View {
                         if row.aisleBefore.contains(seat.id) {
                             Color.clear.frame(width: 10, height: 1)
                         }
-                        seatButton(seat)
+                        SeatButton(seat: seat, isCurrent: seat.id == current, choose: choose)
+                            .equatable()
                     }
                 }
             }
         }
     }
+}
 
-    private func seatButton(_ seat: Seat) -> some View {
-        let isCurrent = seat.id == current?.id
-        return Button {
+/// 座席表の席 1 つ。席を選び直したとき、色の変わる席だけを描き直す
+/// （全席のボタンを描き直すと、選ぶたびにメインスレッドが止まる）
+struct SeatButton: View, Equatable {
+    let seat: Seat
+    let isCurrent: Bool
+    let choose: (Seat) -> Void
+
+    var body: some View {
+        Button {
             choose(seat)
         } label: {
             RoundedRectangle(cornerRadius: 3)
@@ -101,5 +112,10 @@ struct SeatMap: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text("\(seat.row) 列 \(seat.number) 番"))
+    }
+
+    /// choose は比べない（同じ座席表のあいだは変わらない。舞台が替わったら座席表ごと作り直す）
+    nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.seat.id == rhs.seat.id && lhs.isCurrent == rhs.isCurrent
     }
 }
