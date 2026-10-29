@@ -59,7 +59,8 @@ final class AppModel {
         }
     }
 
-    /// 再生の操作を行う。操作パネル・Now Playing・キーボード・コントローラー・スクリーンをつまむ操作など、どこからの操作もここを通す
+    /// 再生の操作を行う。操作パネル・Now Playing・キーボード・コントローラー・Siri のショートカット・スクリーンをつまむ操作など、
+    /// どこからの操作もここを通す
     func perform(_ command: PlayerCommand) {
         switch command {
         case .showPanel:
