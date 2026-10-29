@@ -98,7 +98,6 @@ final class TheaterStage {
         isShowingVideo = false
     }
 
-
     func setRoom(_ room: SpatialSpeakers.Room) {
         root.components.set(ReverbComponent(reverb: room.reverb))
     }
