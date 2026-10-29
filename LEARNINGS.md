@@ -14,3 +14,5 @@
 - visionOS の Simulator では `XCUIScreen.main.screenshot()` が真っ黒（1280 × 1280）になる。画面は `xcrun simctl io <UDID> screenshot` で撮る（2026-10-28）
 - GitHub Actions の macOS ランナー（仮想マシン）の visionOS Simulator では、この映画館を描くと描画サーバー（backboardd）が `re::createArgumentBuffer` で落ち、アプリと UI テストがまとめて signal 9 で止められる（手元の Mac の Simulator では落ちない）。仮想マシンかは `sysctlbyname("kern.hv_vmm_present")` で見分ける（Simulator の中の GPU の名前は手元も CI も「Apple xrOS simulator GPU」で見分けられない）（2026-10-28）
 - CI の UI テストの失敗の原因は、`TestResults.xcresult` を `xcrun xcresulttool export diagnostics` で書き出すと追える（アプリの標準出力・Simulator のクラッシュの記録・システムのログ）（2026-10-28）
+- RealityKit（visionOS 26.5 の Simulator）：`LowLevelTexture.replace(using:)`（MainActor）は、描画が前の書き換えを受け取るまで戻らない。描画より速く（毎フレーム）呼ぶと、1 回に 6〜16 ms 待ってメインスレッドが止まる。同時に送る書き換えを 1 つにする・`LowLevelTexture` を 3 枚持ち回して `TextureResource.replace(with:)` で差し替える、では減らず、前の書き換えから 1/60 秒空けるとほぼ待たなくなった（2026-10-30）
+- visionOS の Simulator の Time Profiler（xctrace）は、動いている（Running）サンプルしか記録しないので、メインスレッドが待っている時間は見えない。待ちを含めた重さは、メインの run loop に `CFRunLoopObserver`（afterWaiting → beforeWaiting）を付けて、1 回りの時間を測ると分かる（2026-10-30）
