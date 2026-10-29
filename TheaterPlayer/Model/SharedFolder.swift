@@ -2,7 +2,7 @@
 //  SharedFolder.swift
 //  TheaterPlayer
 //
-//  「ファイル」App の「この Apple Vision Pro 内」に出す、アプリのフォルダ（Documents。Info.plist の UIFileSharingEnabled）。
+//  「ファイル」App の「この Apple Vision Pro内」に出す、アプリのフォルダ（Documents。Info.plist の UIFileSharingEnabled）。
 //  フォルダが空だと「ファイル」App に出ない（visionOS 26.5 の Simulator で確かめた）ので、空なら使い方の案内を 1 つ置く。
 //
 

@@ -12,7 +12,7 @@ import Testing
 struct FileSharingTests {
     let info = Bundle.main.infoDictionary ?? [:]
 
-    /// アプリの Documents を「ファイル」App の「この Apple Vision Pro 内」に「TheaterPlayer」として出す。
+    /// アプリの Documents を「ファイル」App の「この Apple Vision Pro内」に「TheaterPlayer」として出す。
     /// 2 つそろわないと、フォルダが「ファイル」App に出ない
     @Test func documentsFolderIsSharedWithTheFilesApp() {
         #expect(info["UIFileSharingEnabled"] as? Bool == true)

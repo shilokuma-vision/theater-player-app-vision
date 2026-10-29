@@ -16,7 +16,7 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
 
 ## ファイルの入れ方
 
-- **「ファイル」App の TheaterPlayer のフォルダ**：「ファイル」App の「この Apple Vision Pro 内」（On My Apple Vision Pro）に「TheaterPlayer」のフォルダがあります（アプリのフォルダを共有しています。`UIFileSharingEnabled`）。
+- **「ファイル」App の TheaterPlayer のフォルダ**：「ファイル」App の「この Apple Vision Pro内」（On My Apple Vision Pro）に「TheaterPlayer」のフォルダがあります（アプリのフォルダを共有しています。`UIFileSharingEnabled`）。
   ここに入れた動画・音楽・画像・PDF は、ライブラリの「ファイルを選ぶ」でこのフォルダを開いて選べます。
   フォルダは空だと「ファイル」App に出ないので、空なら起動したときに案内（`使い方.txt`）を置きます（消してもかまいません。ほかのファイルがあれば置き直しません）
 - **Mac から送る**：iCloud Drive に入れる・AirDrop で送る・「ファイル」App の「サーバへ接続」で Mac の共有フォルダを開く、のどれかで Vision Pro に届け、「ファイル」App で TheaterPlayer のフォルダへ移します。
