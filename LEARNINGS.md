@@ -14,3 +14,7 @@
 - visionOS の Simulator では `XCUIScreen.main.screenshot()` が真っ黒（1280 × 1280）になる。画面は `xcrun simctl io <UDID> screenshot` で撮る（2026-10-28）
 - GitHub Actions の macOS ランナー（仮想マシン）の visionOS Simulator では、この映画館を描くと描画サーバー（backboardd）が `re::createArgumentBuffer` で落ち、アプリと UI テストがまとめて signal 9 で止められる（手元の Mac の Simulator では落ちない）。仮想マシンかは `sysctlbyname("kern.hv_vmm_present")` で見分ける（Simulator の中の GPU の名前は手元も CI も「Apple xrOS simulator GPU」で見分けられない）（2026-10-28）
 - CI の UI テストの失敗の原因は、`TestResults.xcresult` を `xcrun xcresulttool export diagnostics` で書き出すと追える（アプリの標準出力・Simulator のクラッシュの記録・システムのログ）（2026-10-28）
+- visionOS 26.5 の Simulator：Info.plist に `UIFileSharingEnabled` と `LSSupportsOpeningDocumentsInPlace` を入れても、Documents が空だと「ファイル」App の「この Apple Vision Pro内」にアプリのフォルダが出ない（ファイルを 1 つ置くと出る）。Documents はインストールした時点で空のまま作られている（2026-10-30）
+- visionOS の Simulator の XCUITest：「ファイル」App は `XCUIApplication(bundleIdentifier: "com.apple.DocumentsApp")` で操作できるが、サイドバーなどの文字は `tap()` が「not hittable」で失敗するので、`coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()` で押す。アプリの `fileImporter` の選択の画面は別のプロセス（`com.apple.DocumentManager.Service`）で、アプリの要素にも出ず、bundle id でもつなげない（2026-10-30）
+- visionOS の Simulator で、Info.plist だけを変えて `xcodebuild test`（UI テスト）を流すと、入っているアプリが古いまま（変更前の Info.plist）のことがあった。Info.plist の効果を Simulator で見るときは、`xcrun simctl install` で入れ直し、`get_app_container … app` の Info.plist で確かめる（2026-10-30）
+- visionOS の Simulator で、アプリの Documents の中のファイルを `xcrun simctl openurl <UDID> file:///…` で渡すと、アプリが起動して `onOpenURL` に届く（「ファイル」App から開いたときの道を、UI を操作せずに確かめられる）（2026-10-30）
