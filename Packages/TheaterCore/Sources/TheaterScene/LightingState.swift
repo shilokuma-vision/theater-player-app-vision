@@ -5,10 +5,13 @@
 //  照明の状態。映画館のすべてのマテリアル（照明を焼いた unlit の ShaderGraph）が共有する、横に並んだ数画素の画像に書く。
 //  マテリアルの入力 lightState をこの画像に差し替えておけば、画像を GPU で書き換えるだけで、部屋じゅうの明るさとスクリーンの照り返しが変わる
 //  （マテリアルを付け直さない）。
+//  画像は、画素が変わったときだけ、間隔を空けて書き換える（LightingWrites）。
 //
 
 import Dispatch
+import Foundation
 import Metal
+import QuartzCore
 import RealityKit
 
 /// 照明の層ごとの明るさと、スクリーンの区画の色（リニア。1 が焼いたときの明るさ）
@@ -46,6 +49,26 @@ public struct LightingValues: Sendable, Equatable {
     }
 }
 
+/// 照明の画像を書き換える頃合い。画素（Float16）が変わったときだけ、前に書いてから minimumInterval たってから書く
+struct LightingWrites {
+    /// 書き換えの間隔の下限。描画が前の書き換えを受け取る前に LowLevelTexture.replace を呼ぶと、受け取るまで待たされてメインスレッドが止まる
+    /// （毎フレーム書くと、Simulator では席を移る暗転のあいだ、2 秒のうち 1 秒ほど待っていた）。90 Hz の実機では 2 フレームに 1 回になる
+    static let minimumInterval: TimeInterval = 1.0 / 60
+    /// 最後に書いた画素
+    private(set) var written: [SIMD4<Float16>] = []
+    private var writtenAt = -TimeInterval.infinity
+
+    /// texels を今（now）書くか。間隔が空いていなくて書かなかった画素は、次に呼ばれたときに書く
+    func shouldWrite(_ texels: [SIMD4<Float16>], at now: TimeInterval) -> Bool {
+        texels != written && now - writtenAt >= Self.minimumInterval
+    }
+
+    mutating func didWrite(_ texels: [SIMD4<Float16>], at now: TimeInterval) {
+        written = texels
+        writtenAt = now
+    }
+}
+
 /// 照明の状態の画像（LowLevelTexture）。MainActor で使う
 @MainActor
 public final class LightingState {
@@ -60,6 +83,8 @@ public final class LightingState {
     private var stagingIndex = 0
     /// 空いている受け渡しの領域の数（GPU が写し終えたら戻す）
     private let available = DispatchSemaphore(value: 3)
+    /// 画像を書き換える頃合い（同じ画素は書かず、書き換えの間隔を空ける）
+    private var writes = LightingWrites()
 
     public init(spec: LightStateSpec, device: MTLDevice? = MTLCreateSystemDefaultDevice()) throws {
         let length = spec.width * MemoryLayout<SIMD4<Float16>>.stride
@@ -81,28 +106,34 @@ public final class LightingState {
         self.spec = spec
         self.queue = queue
         self.staging = staging
-        write(values)
+        write(texels(values), at: CACurrentMediaTime())
     }
 
-    /// 値を変える（前と同じなら何もしない）。GPU が遅れて領域が空いていなければ、次に呼ばれたときに書く
+    /// 値を変える。画像は、画素が変わったときだけ間隔を空けて書く（書かなかった分と、GPU が遅れて領域が空いていなかった分は、次に呼ばれたときに書く）
     public func update(_ newValues: LightingValues) {
-        guard newValues != values else {
+        values = newValues
+        let texels = self.texels(newValues)
+        let now = CACurrentMediaTime()
+        guard writes.shouldWrite(texels, at: now) else {
             return
         }
-        write(newValues)
+        write(texels, at: now)
     }
 
-    private func write(_ newValues: LightingValues) {
-        // 待たずに確かめる（毎フレーム呼ばれるので止めない）。書けなければ values を変えず、次のフレームでもう一度書く
+    private func texels(_ values: LightingValues) -> [SIMD4<Float16>] {
+        values.texels(order: spec.texels, width: spec.width).map { SIMD4<Float16>($0) }
+    }
+
+    private func write(_ texels: [SIMD4<Float16>], at now: TimeInterval) {
+        // 待たずに確かめる（毎フレーム呼ばれるので止めない）。書けなければ、次のフレームでもう一度書く
         guard available.wait(timeout: .now()) == .success else {
             return
         }
-        let texels = newValues.texels(order: spec.texels, width: spec.width)
         let buffer = staging[stagingIndex]
         stagingIndex = (stagingIndex + 1) % staging.count
         let pointer = buffer.contents().bindMemory(to: SIMD4<Float16>.self, capacity: spec.width)
         for (index, texel) in texels.enumerated() {
-            pointer[index] = SIMD4<Float16>(texel)
+            pointer[index] = texel
         }
         guard let commands = queue.makeCommandBuffer(), let blit = commands.makeBlitCommandEncoder() else {
             available.signal()
@@ -126,7 +157,7 @@ public final class LightingState {
             available.signal()
         }
         commands.commit()
-        values = newValues
+        writes.didWrite(texels, at: now)
     }
 }
 
