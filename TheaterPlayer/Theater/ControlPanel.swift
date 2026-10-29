@@ -58,6 +58,11 @@ struct ControlPanel: View {
         .onChange(of: appModel.panelInteraction) {
             touch()
         }
+        // パネルの外（コントロールセンター・AirPods・Siri など）から再生を始めた・止めたときも、畳むまでの待ちをやり直す。
+        // 止めているあいだに待ちが終わっていると、外から再生を始めたあと、パネルが開いたまま残る
+        .onChange(of: appModel.player.isPlaying) {
+            lastInteraction = Date()
+        }
         .simultaneousGesture(TapGesture().onEnded { touch() })
     }
 
