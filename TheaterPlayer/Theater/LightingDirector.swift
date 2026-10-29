@@ -44,16 +44,24 @@ final class LightingDirector {
         exposureTarget = 1
     }
 
+    /// 開演の流れで、客電を 1 段目に落とす所（開場と上映中の明るさのあいだの割合）
+    static let preShowShare = 0.5
+
     /// 上映の段階ごとの客電。「再生すると暗くする」を切にしていれば、いつも開場の明るさ
     static func cue(for phase: ShowPhase, preferences: Preferences) -> HouseCue {
+        let house = preferences.houseLevel
+        let show = preferences.showLevel
         guard preferences.autoDim else {
-            return HouseCue(level: preferences.houseLevel)
+            return HouseCue(level: house)
         }
         switch phase {
-        case .lobby:
-            return HouseCue(level: preferences.houseLevel)
+        case .lobby, .buzzer:
+            return HouseCue(level: house)
+        case .dimming, .opening:
+            // 開演の流れの 1 段目：半分まで落とし、幕が開き切るまでそのまま（本編で上映中の明るさまで落とす）
+            return HouseCue(level: show + (house - show) * preShowShare)
         case .feature:
-            return HouseCue(level: preferences.showLevel)
+            return HouseCue(level: show)
         }
     }
 

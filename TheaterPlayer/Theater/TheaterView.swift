@@ -62,7 +62,7 @@ struct TheaterView: View {
             let hasVideo = player.info.map { !$0.isAudioOnly } ?? false
             stage.show(still: player.still)
             if hasVideo {
-                stage.update(format: player.videoFormat, hasVideo: true)
+                stage.update(format: player.videoFormat, hasVideo: true, ceremony: player.show.ceremony)
             } else {
                 stage.update(format: nil, hasVideo: false)
                 // 静止画のときは、マスキングを静止画に合わせる（show(still:)）

@@ -2,7 +2,7 @@
 //  Preferences.swift
 //  TheaterPlayer
 //
-//  利用者の設定（部屋の明るさ・座る席・音量・音響・部屋の響き・操作パネルの位置）。UserDefaults に保存する。
+//  利用者の設定（部屋の明るさ・上映の演出・座る席・音量・音響・部屋の響き・操作パネルの位置）。UserDefaults に保存する。
 //
 
 import CinemaAudio
@@ -22,6 +22,10 @@ final class Preferences {
     /// 再生を始めたら客電を落とし、終わったら戻す
     var autoDim: Bool {
         didSet { save(autoDim, for: .autoDim) }
+    }
+    /// 上映の演出（動画を頭から再生すると、開演のブザー・2 段の暗転・幕が開くのあとに始める）
+    var showtime: Bool {
+        didSet { save(showtime, for: .showtime) }
     }
     /// スクリーンの光の照り返しの強さ（0〜2）
     var screenSpill: Double {
@@ -62,7 +66,7 @@ final class Preferences {
 
     private enum Key: String {
         // room は以前 @AppStorage("room") で保存していた。同じキーを読む
-        case houseLevel, showLevel, autoDim, screenSpill, ambientLevel, seatID, volume, audio, room, panelPosition
+        case houseLevel, showLevel, autoDim, showtime, screenSpill, ambientLevel, seatID, volume, audio, room, panelPosition
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -70,6 +74,7 @@ final class Preferences {
         houseLevel = defaults.object(forKey: Key.houseLevel.rawValue) as? Double ?? Self.defaultHouseLevel
         showLevel = defaults.object(forKey: Key.showLevel.rawValue) as? Double ?? 0
         autoDim = defaults.object(forKey: Key.autoDim.rawValue) as? Bool ?? true
+        showtime = defaults.object(forKey: Key.showtime.rawValue) as? Bool ?? true
         screenSpill = defaults.object(forKey: Key.screenSpill.rawValue) as? Double ?? 1
         ambientLevel = defaults.object(forKey: Key.ambientLevel.rawValue) as? Double ?? 1
         seatID = defaults.string(forKey: Key.seatID.rawValue) ?? Self.defaultSeat

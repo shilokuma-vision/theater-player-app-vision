@@ -34,6 +34,8 @@ final class TheaterStage {
     private let speakers = SpatialSpeakers()
     let lighting: LightingDirector
     @ObservationIgnored private var currentFormat: VideoFormat?
+    /// 幕（左右のマスキング）を閉じているか
+    @ObservationIgnored private var curtainClosed = false
     /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点（表示は、さらに曲面の出っ張りの分だけ手前に置く。overlayDepth）
     let screenAnchor = Entity()
 
@@ -116,26 +118,40 @@ final class TheaterStage {
         root.components.set(ReverbComponent(reverb: room.reverb))
     }
 
-    /// 映像の形式に合わせて、スクリーンの映像の範囲とマスキングを変える。映像が無ければ（音楽）映像を消す
-    func update(format: VideoFormat?, hasVideo: Bool) {
-        let visible = hasVideo && format != nil
+    /// 映像の形式に合わせて、スクリーンの映像の範囲とマスキングを変える。映像が無ければ（音楽）映像を消す。
+    /// ceremony：開演の流れの段階。流しているあいだは映像を出さず（白いスクリーンの前で幕を開ける）、ブザーと 1 段目の暗転のあいだは幕を閉じる
+    func update(format: VideoFormat?, hasVideo: Bool, ceremony: ShowPhase? = nil) {
+        let visible = hasVideo && format != nil && ceremony == nil
         if let screen = videoScreen, visible != isShowingVideo {
             Diagnostics.log("VideoScreen visible=\(visible) format=\(String(describing: format))")
             screen.components.set(OpacityComponent(opacity: visible ? 1 : 0))
             isShowingVideo = visible
         }
         updateSurface()
-        guard let format, format != currentFormat else {
+        if let format, format != currentFormat {
+            currentFormat = format
+            let frame = ScreenFrame(aspect: Float(format.visibleAspect), spec: layout.screen)
+            screenFrame = frame
+            let rotation = VideoRotation(rawValue: format.rotation) ?? .none
+            if let mesh = try? ScreenMesh.make(frame: frame, spec: layout.screen, rotation: rotation) {
+                videoScreen?.model?.mesh = mesh
+            }
+        }
+        // 映像の形式が分かる前（開いた直後）は、今の範囲のまま幕だけ閉じる
+        if format != nil || ceremony != nil {
+            placeMasking(frame: screenFrame, closed: ceremony?.closesCurtain ?? false)
+        }
+    }
+
+    /// マスキングを動かす。幕を閉じる・開けるときは、開演の流れの秒数で動かす
+    private func placeMasking(frame: ScreenFrame, closed: Bool) {
+        guard closed != curtainClosed else {
+            environment.setMasking(frame: frame, closed: closed)
             return
         }
-        currentFormat = format
-        let frame = ScreenFrame(aspect: Float(format.visibleAspect), spec: layout.screen)
-        screenFrame = frame
-        let rotation = VideoRotation(rawValue: format.rotation) ?? .none
-        if let mesh = try? ScreenMesh.make(frame: frame, spec: layout.screen, rotation: rotation) {
-            videoScreen?.model?.mesh = mesh
-        }
-        environment.setMasking(frame: frame)
+        curtainClosed = closed
+        let program = ShowProgram.standard
+        environment.setMasking(frame: frame, closed: closed, duration: closed ? program.curtainClose : program.curtainOpen)
     }
 
     /// 静止画（画像・PDF のページ）をスクリーンに貼る。nil なら外す。
@@ -177,7 +193,7 @@ final class TheaterStage {
             if screenFrame != frame {
                 screenFrame = frame
             }
-            environment.setMasking(frame: frame)
+            placeMasking(frame: frame, closed: false)
         }
     }
 
@@ -197,7 +213,7 @@ final class TheaterStage {
         if screenFrame != frame {
             screenFrame = frame
         }
-        environment.setMasking(frame: frame)
+        placeMasking(frame: frame, closed: false)
     }
 
     /// 幅 width の平らな表示（字幕など）を、screenAnchor からどれだけ手前に置くか。
@@ -218,12 +234,15 @@ final class TheaterStage {
     // MARK: - 毎フレーム
 
     func update(deltaTime: Double, player: PlayerModel, preferences: Preferences) {
-        let hasVideo = player.info.map { !$0.isAudioOnly } ?? false
-        // 静止画を出しているあいだも、上映中と同じく客電を落とし、その画像の色で部屋を照らす
+        // 開演の流れは、映画館が描き始めてから進める
+        player.show.theaterDidRender()
+        // 開演の流れのあいだは映像を出さないので、映像の色で部屋を照らさない
+        let hasVideo = (player.info.map { !$0.isAudioOnly } ?? false) && player.show.ceremony == nil
+        // 静止画を出しているあいだも、その画像の色で部屋を照らす
         let still = player.still
         let values = lighting.step(
             deltaTime: deltaTime,
-            phase: player.isPlaying || still != nil ? .feature : .lobby,
+            phase: player.showPhase,
             hasVideo: hasVideo || still != nil,
             preferences: preferences,
             light: still?.light ?? player.engine?.screenLight()

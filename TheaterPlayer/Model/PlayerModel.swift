@@ -4,6 +4,7 @@
 //
 //  画面から使う再生の状態（MainActor）。TheaterMedia の MediaPlayer を包み、時刻・トラック・字幕を View に見せる。
 //  画像・PDF（静止画）は MediaPlayer を使わずに開き、スクリーンに貼る 1 枚（still）を持つ。
+//  動画を開いて頭から再生するときは、上映の進行（show）の開演の流れのあとに再生を始める。
 //
 
 import CinemaAudio
@@ -34,6 +35,8 @@ final class PlayerModel {
     let speakers: [CinemaBus]
     /// 再生のエンジン（作れなければ nil。Metal・音声の準備に失敗したとき）
     let engine: MediaPlayer?
+    /// 上映の進行（開演の流れ）
+    let show = ShowDirector()
     private let preferences: Preferences
     private let recents: RecentItems
     private var accessedURL: URL?
@@ -57,8 +60,14 @@ final class PlayerModel {
         info?.duration ?? 0
     }
 
+    /// 再生している（開演の流れを流しているあいだも。そのあいだに止めると、本編を始めずに止める）
     var isPlaying: Bool {
-        state == .playing || state == .buffering
+        state == .playing || state == .buffering || show.ceremony != nil
+    }
+
+    /// 今の上映の段階（客電・幕を決める）
+    var showPhase: ShowPhase {
+        ShowPhase.resolve(ceremony: show.ceremony, state: state, showingStill: still != nil)
     }
 
     /// 何か開いている（動画・音楽・画像・PDF）
@@ -117,8 +126,15 @@ final class PlayerModel {
             selectedSubtitleTrack = engine.selectedSubtitleTrack
             if let resume = item?.resumePosition {
                 engine.seek(to: resume)
+                engine.play()
+            } else if preferences.showtime, ShowDirector.wantsCeremony(isAudioOnly: opened.isAudioOnly, duration: opened.duration) {
+                // 頭から再生する動画は、開演の流れ（ブザー → 客電を半分 → 幕が開く）のあとに始める
+                show.begin { [weak self] in
+                    self?.engine?.play()
+                }
+            } else {
+                engine.play()
             }
-            engine.play()
             startRefreshing()
         } catch {
             errorMessage = error.localizedDescription
@@ -129,6 +145,7 @@ final class PlayerModel {
     /// 再生をやめる（位置を保存する）
     func close() {
         saveProgress()
+        show.cancel()
         refreshTask?.cancel()
         refreshTask = nil
         engine?.close()
@@ -208,6 +225,11 @@ final class PlayerModel {
         guard let engine else {
             return
         }
+        // 開演の流れのあいだに止めた：本編を始めずに止める（エンジンはまだ止まったまま）
+        if show.ceremony != nil {
+            show.cancel()
+            return
+        }
         if isPlaying {
             engine.pause()
             saveProgress()
@@ -219,6 +241,19 @@ final class PlayerModel {
     func seek(to time: Double) {
         engine?.seek(to: time)
         currentTime = time
+        // 開演の流れのあいだにシークした：その位置からすぐに始める
+        if show.ceremony != nil {
+            startNow()
+        }
+    }
+
+    /// 開演の流れを省いて、すぐに本編を始める
+    func startNow() {
+        guard show.ceremony != nil else {
+            return
+        }
+        show.cancel()
+        engine?.play()
     }
 
     func skip(by seconds: Double) {
