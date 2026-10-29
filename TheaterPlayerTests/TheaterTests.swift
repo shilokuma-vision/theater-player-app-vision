@@ -8,6 +8,7 @@
 import CinemaAudio
 import Foundation
 import Testing
+import TheaterMedia
 @testable import TheaterPlayer
 import TheaterScene
 
@@ -143,6 +144,40 @@ struct PreferencesTests {
         #expect(preferences.room == .rich)
         preferences.room = .dry
         #expect(Preferences(defaults: defaults).room == .dry)
+    }
+}
+
+/// 3D（立体視）の並べ方の見分け方と、片目の縦横比
+struct StereoTests {
+    @Test func guessesThePackingFromTheFileName() {
+        #expect(StereoPacking.guess(fromFileName: "Movie.2010.1080p.Half-SBS.mkv") == .sideBySide)
+        #expect(StereoPacking.guess(fromFileName: "movie_HSBS.mp4") == .sideBySide)
+        #expect(StereoPacking.guess(fromFileName: "Movie (3D Side by Side).mkv") == .sideBySide)
+        #expect(StereoPacking.guess(fromFileName: "Movie.3D.HOU.mkv") == .overUnder)
+        #expect(StereoPacking.guess(fromFileName: "stereo-test_TAB.mp4") == .overUnder)
+        #expect(StereoPacking.guess(fromFileName: "Top-and-Bottom.mp4") == .overUnder)
+        // 言葉の一部に含まれるだけの文字（"you" の "ou"・"table" の "tab"）は印にしない
+        #expect(StereoPacking.guess(fromFileName: "Thank You For The Music.mp4") == nil)
+        #expect(StereoPacking.guess(fromFileName: "Round Table.mkv") == nil)
+    }
+
+    @Test func eyeAspectDependsOnFullOrHalf() {
+        // フルの左右（3840×1080）は片目 16:9、ハーフ（1920×1080）もそのまま 16:9
+        #expect(abs(StereoPacking.sideBySide.eyeAspect(frameAspect: 3840.0 / 1080) - 16.0 / 9) < 0.001)
+        #expect(abs(StereoPacking.sideBySide.eyeAspect(frameAspect: 16.0 / 9) - 16.0 / 9) < 0.001)
+        // フルの上下（1920×2160）は片目 16:9、シネスコのフルの上下（2.39 を縦に 2 つ）も 2.39 に戻る
+        #expect(abs(StereoPacking.overUnder.eyeAspect(frameAspect: 1920.0 / 2160) - 16.0 / 9) < 0.001)
+        #expect(abs(StereoPacking.overUnder.eyeAspect(frameAspect: 2.39 / 2) - 2.39) < 0.001)
+        // 空間ビデオは左右に並べてから渡すので、左右のフルと同じ
+        #expect(StereoPacking.multiview.output == .sideBySide)
+    }
+
+    @Test func modeChoosesTheContainerFirstThenTheName() {
+        #expect(StereoMode.auto.resolve(track: .multiview, fileName: "IMG_0001.MOV") == .multiview)
+        #expect(StereoMode.auto.resolve(track: .mono, fileName: "clip_SBS.mp4") == .sideBySide)
+        #expect(StereoMode.auto.resolve(track: .mono, fileName: "clip.mp4") == .mono)
+        #expect(StereoMode.off.resolve(track: .sideBySide, fileName: "clip_SBS.mp4") == .mono)
+        #expect(StereoMode.overUnder.resolve(track: .mono, fileName: "clip.mp4") == .overUnder)
     }
 }
 

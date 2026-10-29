@@ -45,6 +45,8 @@ public struct VideoTrack: Sendable, Identifiable, Hashable {
     /// HDR（PQ・HLG）
     public let isHDR: Bool
     public let isInterlaced: Bool
+    /// 入れ物に書いてある立体の並べ方（MKV の StereoMode・MOV の vexu。無ければ mono）
+    public let stereo: StereoPacking
 }
 
 /// 音声のトラック

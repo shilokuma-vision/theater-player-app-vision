@@ -28,6 +28,27 @@ enum MediaTracks {
         return ((clockwise % 360) + 360) % 360
     }
 
+    /// 入れ物に書いてある立体の並べ方（MKV の StereoMode・MOV の vexu）。
+    /// 左右が別の層の HEVC（空間ビデオ）は、FFmpeg では種類が UNSPEC になる
+    static func stereoPacking(of stream: UnsafeMutablePointer<AVStream>) -> StereoPacking {
+        let parameters = stream.pointee.codecpar.pointee
+        guard let side = av_packet_side_data_get(parameters.coded_side_data, parameters.nb_coded_side_data, AV_PKT_DATA_STEREO3D),
+              let data = side.pointee.data, side.pointee.size >= MemoryLayout<AVStereo3D>.size else {
+            return .mono
+        }
+        let stereo = UnsafeRawPointer(data).loadUnaligned(as: AVStereo3D.self)
+        switch stereo.type {
+        case AV_STEREO3D_SIDEBYSIDE:
+            return .sideBySide
+        case AV_STEREO3D_TOPBOTTOM:
+            return .overUnder
+        case AV_STEREO3D_UNSPEC where parameters.codec_id == AV_CODEC_ID_HEVC:
+            return .multiview
+        default:
+            return .mono
+        }
+    }
+
     static func language(_ stream: UnsafeMutablePointer<AVStream>) -> String? {
         MediaContainer.value(stream.pointee.metadata, "language").flatMap { $0 == "und" ? nil : $0 }
     }
@@ -57,7 +78,8 @@ enum MediaTracks {
                 frameRate: rate > 0 ? rate : nil,
                 rotation: rotation(of: stream),
                 isHDR: parameters.color_trc == AVCOL_TRC_SMPTE2084 || parameters.color_trc == AVCOL_TRC_ARIB_STD_B67,
-                isInterlaced: parameters.field_order != AV_FIELD_UNKNOWN && parameters.field_order != AV_FIELD_PROGRESSIVE
+                isInterlaced: parameters.field_order != AV_FIELD_UNKNOWN && parameters.field_order != AV_FIELD_PROGRESSIVE,
+                stereo: stereoPacking(of: stream)
             )
         }
     }
