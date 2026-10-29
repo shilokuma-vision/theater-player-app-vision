@@ -5,9 +5,11 @@
 //  再生・一時停止・シーク・速さと、時計（音の時計に映像の時計を合わせる）。
 //
 
+@preconcurrency import AVFoundation
 import CinemaAudio
 import Darwin
 import Foundation
+import Synchronization
 
 extension MediaPlayer {
     // MARK: - 再生の操作
@@ -203,6 +205,7 @@ extension MediaPlayer {
             guard let session = currentSession else {
                 return
             }
+            logDiagnostics(session)
             switch state {
             case .playing:
                 updateAudioStarved(session)
@@ -232,6 +235,37 @@ extension MediaPlayer {
             let correction = Float(max(-0.03, min(0.03, difference * 0.4)))
             videoOutput.adjustRate(rate * (1 + correction))
         }
+    }
+
+    /// 診断のログ（-tp-diagnostics のとき、1 秒ごと）
+    private func logDiagnostics(_ session: PlaybackSession) {
+        guard Diagnostics.enabled else {
+            return
+        }
+        let now = mach_absolute_time()
+        guard HostClock.seconds(from: lastDiagnosticsHost, to: now) >= 1 else {
+            return
+        }
+        lastDiagnosticsHost = now
+        let renderer = videoOutput.renderer
+        let status = switch renderer.status {
+        case .rendering: "rendering"
+        case .failed: "failed"
+        default: "unknown"
+        }
+        let video = session.video?.stats.withLock { $0 }
+        let videoText = video.map {
+            "decoded=\($0.decoded) enqueued=\($0.enqueued) late=\($0.droppedLate) beforeSeek=\($0.droppedBeforeSeekTarget) " +
+                "noBuffer=\($0.noPixelBuffer) vt=\($0.usesVideoToolbox) last=\(String(format: "%.3f", $0.lastFrameTime))"
+        } ?? "なし"
+        let clock = audioClock().map { String(format: "%.3f", $0) } ?? "なし"
+        let spread = ring.readerSpread()
+        let readers = "readers=\(spread.readers) sampleTimeSpread=\(Int(spread.sampleTime)) " +
+            "hostSpread=\(String(format: "%.4f", spread.host))"
+        let output = "out.time=\(String(format: "%.3f", videoOutput.time)) out.rate=\(videoOutput.rate)"
+        let rendererText = "renderer=\(status) error=\(renderer.error?.localizedDescription ?? "なし")"
+        let audioText = "audioClock=\(clock) ring=\(ring.pendingFrames) \(readers)"
+        Diagnostics.log("state=\(state) video[\(videoText)] \(output) \(rendererText) \(audioText)")
     }
 
     /// 音が尽き、映像の待ち行列がいっぱいで読み込みが止まった（音の無い所）：音を待つと進まないので映像の時計で進める。

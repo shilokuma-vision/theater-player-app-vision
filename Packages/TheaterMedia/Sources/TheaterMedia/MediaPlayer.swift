@@ -45,6 +45,8 @@ public final class MediaPlayer: @unchecked Sendable {
     var audioStarved = false
     /// 輪のバッファを鳴らし始めたホストの時刻（それより前の描画の回は、止める前の古い位置）
     var ringStartHost: UInt64 = 0
+    /// 前に診断のログを書いたホストの時刻
+    var lastDiagnosticsHost: UInt64 = 0
     var settings = PlayerTiming()
     public let events: AsyncStream<MediaPlayerEvent>
     let continuation: AsyncStream<MediaPlayerEvent>.Continuation

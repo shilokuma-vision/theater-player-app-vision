@@ -2,7 +2,8 @@
 //  LibraryView.swift
 //  TheaterPlayer
 //
-//  ライブラリ（最初のウィンドウ）。ファイル・写真から動画や音楽を選び、映画館に入って再生する。最近の一覧から続きを再生できる。
+//  ライブラリ（最初のウィンドウ）。ファイル・写真から動画・音楽・画像・PDF を選び、映画館に入って再生・表示する。
+//  最近の一覧から続きを再生できる（PDF は前回見ていたページから）。
 //
 
 import PhotosUI
@@ -79,9 +80,9 @@ struct LibraryView: View {
     private var header: some View {
         VStack(spacing: 8) {
             Image(systemName: "film.stack").font(.system(size: 56)).foregroundStyle(.secondary)
-            Text("映画館の大きなスクリーンで、手元の動画と音楽を")
+            Text("映画館の大きなスクリーンで、手元の動画・音楽・画像を")
                 .font(.title3)
-            Text("MKV・MP4・AVI・WMV・TS などの動画と、FLAC・MP3・AAC・WAV などの音楽を再生できます")
+            Text("MKV・MP4・AVI・WMV・TS などの動画と、FLAC・MP3・AAC・WAV などの音楽を再生できます。PNG・JPEG・HEIC などの画像と PDF も映せます")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -99,7 +100,7 @@ struct LibraryView: View {
                     .frame(minWidth: 180)
             }
             .buttonStyle(.borderedProminent)
-            PhotosPicker(selection: $photoItem, matching: .videos) {
+            PhotosPicker(selection: $photoItem, matching: .any(of: [.videos, .images])) {
                 Label(photoTitle, systemImage: "photo.on.rectangle")
                     .frame(minWidth: 180)
             }
@@ -143,10 +144,17 @@ struct LibraryView: View {
             loadingPhoto = false
             photoItem = nil
         }
-        guard let movie = try? await item.loadTransferable(type: PickedMovie.self) else {
+        // 動画か画像か（写真ライブラリの項目の型で見分ける）
+        let isMovie = item.supportedContentTypes.contains { $0.conforms(to: .movie) }
+        let url: URL? = if isMovie {
+            try? await item.loadTransferable(type: PickedMovie.self)?.url
+        } else {
+            try? await item.loadTransferable(type: PickedImage.self)?.url
+        }
+        guard let url else {
             return
         }
-        await play { await appModel.player.open(url: movie.url, temporary: true) }
+        await play { await appModel.player.open(url: url, temporary: true) }
     }
 
     /// 映画館（ImmersiveSpace）を開き、ライブラリのウィンドウを閉じる。映画館に入れたら true
@@ -194,11 +202,11 @@ struct RecentList: View {
             ContentUnavailableView(
                 "まだ再生したファイルはありません",
                 systemImage: "clock",
-                description: Text("「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽を開けます")
+                description: Text("「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます")
             )
         } else {
             List {
-                Section("最近再生したもの") {
+                Section("最近開いたもの") {
                     ForEach(items) { item in
                         Button {
                             open(item)
@@ -214,18 +222,32 @@ struct RecentList: View {
         }
     }
 
+    /// 一覧のアイコン（動画・音楽・画像・PDF）
+    static func symbol(for item: RecentItems.Item) -> String {
+        switch item.stillKind {
+        case .image:
+            "photo"
+        case .pdf:
+            "doc.richtext"
+        case nil:
+            item.isAudioOnly ? "music.note" : "film"
+        }
+    }
+
     private func row(_ item: RecentItems.Item) -> some View {
         HStack {
-            Image(systemName: item.isAudioOnly ? "music.note" : "film")
+            Image(systemName: Self.symbol(for: item))
                 .frame(width: 32)
             VStack(alignment: .leading) {
                 Text(item.name).lineLimit(1)
-                if let resume = item.resumePosition {
+                if let page = item.page, page > 0 {
+                    Text("\(page + 1) ページ目から").font(.caption).foregroundStyle(.secondary)
+                } else if let resume = item.resumePosition {
                     Text("続きから \(TimeFormat.clock(resume))").font(.caption).foregroundStyle(.secondary)
                 }
             }
             Spacer()
-            if let duration = item.duration, duration > 0 {
+            if item.stillKind == nil, let duration = item.duration, duration > 0 {
                 ProgressView(value: min(item.position, duration), total: duration).frame(width: 120)
             }
         }
@@ -240,19 +262,34 @@ struct PickedMovie: Transferable {
         FileRepresentation(contentType: .movie) { movie in
             SentTransferredFile(movie.url)
         } importing: { received in
-            try Self.copy(received.file)
+            Self(url: try PickedFiles.copy(received.file))
         }
     }
+}
 
-    /// 選ぶたびに別のフォルダーへコピーする（前の動画を閉じて消すときに、新しいコピーを消さない）。
+/// 写真ライブラリの画像（動画と同じく Caches/PickedMovies にコピーして開く。表示を閉じたら PlayerModel が消す）
+struct PickedImage: Transferable {
+    let url: URL
+
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(contentType: .image) { image in
+            SentTransferredFile(image.url)
+        } importing: { received in
+            Self(url: try PickedFiles.copy(received.file))
+        }
+    }
+}
+
+enum PickedFiles {
+    /// 選ぶたびに別のフォルダーへコピーする（前の物を閉じて消すときに、新しいコピーを消さない）。
     /// 前に選んだ物の残り（再生中にアプリが終わったときなど）は、ここで消す。再生中の物を消しても、開いているあいだは読める
-    nonisolated private static func copy(_ file: URL) throws -> Self {
+    nonisolated static func copy(_ file: URL) throws -> URL {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first ?? FileManager.default.temporaryDirectory
         let folder = caches.appendingPathComponent("PickedMovies", isDirectory: true)
         try? FileManager.default.removeItem(at: folder)
         let target = folder.appendingPathComponent(UUID().uuidString, isDirectory: true).appendingPathComponent(file.lastPathComponent)
         try FileManager.default.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
         try FileManager.default.copyItem(at: file, to: target)
-        return Self(url: target)
+        return target
     }
 }

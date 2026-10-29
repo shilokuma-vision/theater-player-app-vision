@@ -16,14 +16,20 @@ struct SpeakerFeedRingTests {
         }
     }
 
-    func read(_ ring: SpeakerFeedRing, feed: Int, frames: Int, sampleTime: Double, gain: inout Float) -> [Float] {
+    /// sample サンプル目（48 kHz）のホストの時刻
+    func host(_ sample: Double) -> UInt64 {
+        UInt64(1_000_000_000 + sample / 48_000 / SpeakerFeedRing.hostTickSeconds)
+    }
+
+    /// sampleTime は読み手の mSampleTime、at は描画の回の位置（全員に共通のホストの時刻をここから決める）
+    func read(_ ring: SpeakerFeedRing, feed: Int, frames: Int, sampleTime: Double, at: Double? = nil, gain: inout Float) -> [Float] {
         var out = [Float](repeating: -1, count: frames)
         out.withUnsafeMutableBufferPointer { pointer in
             ring.read(
                 feed: feed,
                 into: pointer.baseAddress!,
                 frames: frames,
-                time: RenderTime(sampleTime: sampleTime, hostTime: 0),
+                time: RenderTime(sampleTime: sampleTime, hostTime: host(at ?? sampleTime)),
                 previousGain: &gain
             )
         }
@@ -53,8 +59,10 @@ struct SpeakerFeedRingTests {
         write(ring, values: (16..<24).map(Float.init))
         let second = read(ring, feed: 1, frames: 8, sampleTime: 100, gain: &gains[1])
         #expect(second == (0..<8).map { Float($0) + 1_000 })
-        // 次の回になれば、前の回の分は書き手に渡る
+        // 全員が次の回に進めば、前の回の分は書き手に渡る（1 人だけ進んでも、遅れている読み手の範囲は残す）
         _ = read(ring, feed: 1, frames: 8, sampleTime: 108, gain: &gains[1])
+        #expect(ring.writableFrames == 0)
+        _ = read(ring, feed: 0, frames: 8, sampleTime: 108, gain: &gains[0])
         #expect(ring.writableFrames == 8)
     }
 
@@ -64,10 +72,29 @@ struct SpeakerFeedRingTests {
         write(ring, values: (0..<32).map(Float.init))
         ring.setPaused(false)
         var gain: Float = 1
-        _ = read(ring, feed: 0, frames: 8, sampleTime: 1_000, gain: &gain)
-        _ = read(ring, feed: 0, frames: 8, sampleTime: 1_008, gain: &gain)
-        let restarted = read(ring, feed: 0, frames: 8, sampleTime: 0, gain: &gain)
+        _ = read(ring, feed: 0, frames: 8, sampleTime: 1_000, at: 0, gain: &gain)
+        _ = read(ring, feed: 0, frames: 8, sampleTime: 1_008, at: 8, gain: &gain)
+        // mSampleTime は戻っても、ホストの時刻は進んでいる
+        let restarted = read(ring, feed: 0, frames: 8, sampleTime: 0, at: 16, gain: &gain)
         #expect(restarted == (16..<24).map(Float.init))
+    }
+
+    /// mSampleTime の起点が読み手ごとに違っても（実機の RealityKit の音源）、同じ回はホストの時刻でそろえて同じ範囲を読み、
+    /// 読み手の数だけ速く進んだりしない
+    @Test func readersWithDifferentSampleTimeOriginsStayAligned() {
+        let ring = SpeakerFeedRing(feeds: 2, capacity: 64)
+        write(ring, values: (0..<48).map(Float.init))
+        ring.setPaused(false)
+        var gains: [Float] = [1, 1]
+        for cycle in 0..<4 {
+            let at = Double(cycle * 8)
+            let first = read(ring, feed: 0, frames: 8, sampleTime: 1_000 + at, at: at, gain: &gains[0])
+            let second = read(ring, feed: 1, frames: 8, sampleTime: 777_000 + at, at: at, gain: &gains[1])
+            let expected = (cycle * 8..<cycle * 8 + 8).map(Float.init)
+            #expect(first == expected)
+            #expect(second == expected.map { $0 + 1_000 })
+        }
+        #expect(ring.pendingFrames == 48 - 24)
     }
 
     @Test func underrunPlaysSilenceAndResumesWhereTheDataEnds() {

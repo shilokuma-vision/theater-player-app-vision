@@ -42,8 +42,15 @@ struct ControlPanel: View {
             }
         }
         .task(id: lastInteraction) {
-            try? await Task.sleep(for: .seconds(6))
-            if appModel.player.isPlaying, page == .main {
+            // 操作し直すと前の待ちは取り消される。取り消されたら畳まない
+            // （try? で続けると、「操作を表示」を押した瞬間にまた畳んでしまう）
+            do {
+                try await Task.sleep(for: .seconds(6))
+            } catch {
+                return
+            }
+            // 再生中・静止画を出しているあいだは、畳んでスクリーンを見やすくする
+            if appModel.player.isPlaying || appModel.player.still != nil, page == .main {
                 withAnimation { collapsed = true }
             }
         }
@@ -80,19 +87,22 @@ struct ControlPanel: View {
                 Text(loadError).foregroundStyle(.red)
             }
             NowPlayingHeader()
-            if appModel.player.hasMedia {
+            if let still = appModel.player.still {
+                StillControls(still: still)
+            } else if appModel.player.hasPlayback {
                 TransportControls()
             } else {
                 Text("ライブラリでファイルを選ぶと、ここで再生します")
                     .foregroundStyle(.secondary)
             }
             HStack(spacing: 12) {
+                // 音声・字幕・速さは、動画・音楽のときだけ（画像・PDF には無い）
                 pageButton("音声", systemImage: "waveform", page: .audioTracks)
-                    .disabled(!appModel.player.hasMedia)
+                    .disabled(!appModel.player.hasPlayback)
                 pageButton("字幕", systemImage: "captions.bubble", page: .subtitles)
-                    .disabled(!appModel.player.hasMedia)
+                    .disabled(!appModel.player.hasPlayback)
                 pageButton("速さ", systemImage: "gauge.with.dots.needle.50percent", page: .speed)
-                    .disabled(!appModel.player.hasMedia)
+                    .disabled(!appModel.player.hasPlayback)
                 pageButton("明るさ", systemImage: "lightbulb.max", page: .lighting)
                 pageButton("座席", systemImage: "chair", page: .seats)
                 pageButton("音響", systemImage: "hifispeaker.2", page: .sound)
@@ -162,6 +172,41 @@ struct NowPlayingHeader: View {
             if let message = player.errorMessage {
                 Text(message).font(.footnote).foregroundStyle(.red)
             }
+        }
+    }
+}
+
+/// 静止画（画像・PDF）のとき：PDF のページの移動
+struct StillControls: View {
+    @Environment(AppModel.self) private var appModel
+    let still: StillPicture
+
+    var body: some View {
+        let player = appModel.player
+        if still.pageCount > 1 {
+            HStack(spacing: 28) {
+                Button {
+                    Task { await player.previousPage() }
+                } label: {
+                    Image(systemName: "chevron.left").font(.title).frame(width: 64, height: 64)
+                }
+                .disabled(still.page == 0)
+                .accessibilityLabel("前のページ")
+                Text("\(still.page + 1) / \(still.pageCount) ページ")
+                    .font(.title3)
+                    .monospacedDigit()
+                Button {
+                    Task { await player.nextPage() }
+                } label: {
+                    Image(systemName: "chevron.right").font(.title).frame(width: 64, height: 64)
+                }
+                .disabled(still.page + 1 >= still.pageCount)
+                .accessibilityLabel("次のページ")
+            }
+            .buttonStyle(.borderless)
+        } else {
+            Label(still.kind == .pdf ? "PDF" : "画像", systemImage: still.kind == .pdf ? "doc.richtext" : "photo")
+                .foregroundStyle(.secondary)
         }
     }
 }

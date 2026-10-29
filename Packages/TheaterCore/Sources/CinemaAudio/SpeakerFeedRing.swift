@@ -5,14 +5,15 @@
 //  スピーカーごとの信号を、RealityKit の空間オーディオ（音源ごとの AudioGeneratorController）へ渡す輪のバッファ。
 //  書き手は 1 つ（音声のデコードのスレッド）、読み手はスピーカーの数だけ（オーディオのリアルタイムのスレッド）。
 //
-//  すべてのスピーカーの音をサンプル単位でそろえるため、読み出す位置を各読み手が自分で数えず、
-//  描画の時刻（AudioTimeStamp の mSampleTime）から決める：位置 = 基準の位置 + (mSampleTime - 基準の mSampleTime)。
-//  同じ描画の回の読み手は同じ mSampleTime を受け取るので、同じ範囲を読む。
-//  データが足りないとき（デコードが追いつかない・再生の始め）は無音を出し、次の回から、書けている所に基準を合わせ直す。
-//  描画の時刻が戻った・大きく飛んだとき（オーディオのエンジンの再起動など）は、続きの位置に基準を合わせ直す。
+//  読み出す位置は、スピーカーごとに自分の描画の時刻（AudioTimeStamp の mSampleTime）で数える：
+//  位置 = そのスピーカーの基準の位置 + (mSampleTime - そのスピーカーの基準の mSampleTime)。
+//  mSampleTime の起点は音源ごとに違うことがあるので（実機で確かめた）、スピーカーどうしは、全員に共通の
+//  ホストの時刻（mHostTime）でそろえる：基準を決めるとき、全体の基準（ホストの時刻と位置）からの経過で位置を決める。
+//  データが足りないとき（デコードが追いつかない・再生の始め）は無音を出し、次から全員の基準を、書けている所の終わりに合わせ直す。
+//  あるスピーカーの描画の時刻が戻った・大きく飛んだとき（オーディオのエンジンの再起動など）は、そのスピーカーだけ合わせ直す。
 //
-//  読み終えた位置（consumed）は、描画の回が変わったときに、その回の頭まで進める（どの読み手でもよい）。
-//  回の終わりまで進めると、同じ回のまだ読んでいないスピーカーの範囲を書き手が上書きしてしまう。
+//  読み終えた位置（consumed）は、最近読んだスピーカーのうち、いちばん遅れている読み出しの頭まで進める。
+//  それより先まで進めると、まだ読んでいないスピーカーの範囲を書き手が上書きしてしまう。
 //
 
 import Foundation
@@ -21,38 +22,73 @@ import Synchronization
 public final class SpeakerFeedRing: @unchecked Sendable {
     public let feeds: Int
     public let capacity: Int
+    public let sampleRate: Double
     private let storage: UnsafeMutablePointer<Float>
     /// 書いたサンプルの数（書き手だけが増やす）
     private let written = Atomic<Int>(0)
-    /// 読んだ位置（いまの描画の回の頭。書き手は、ここより capacity 先までしか書かない）
+    /// 読んだ位置（最近読んだスピーカーのうち、いちばん遅れている読み出しの頭。書き手は、ここより capacity 先までしか書かない）
     private let consumed = Atomic<Int>(0)
-    private let timeline = Mutex(Timeline())
+    private let timeline: Mutex<Timeline>
     private let volumeBits = Atomic<UInt32>(Float(1).bitPattern)
+    /// これより長く読まれていないスピーカーは、consumed を決めるときに数えない（ホストの時刻の単位）
+    private let staleTicks: Int64
+
+    /// スピーカーごとの読み出しの状態
+    private struct Feed {
+        /// 基準（このスピーカーの mSampleTime と、そのときの読み出しの位置）。nan なら次に読むときに決める
+        var anchorSampleTime = Double.nan
+        var anchorIndex = 0
+        var lastSampleTime = -1.0
+        var lastStart = 0
+        var lastHost: UInt64 = 0
+        var hasRead = false
+    }
+
+    private struct Clock {
+        let host: UInt64
+        let index: Int
+    }
 
     private struct Timeline {
         var paused = true
-        /// 基準（mSampleTime と、そのときの読み出しの位置）
-        var anchorSampleTime: Double?
-        var anchorIndex = 0
-        /// 次の回で、この位置に基準を合わせ直す
+        var feeds: [Feed]
+        /// 全体の基準（ホストの時刻と、そのときの読み出しの位置）。nil なら次に読んだスピーカーが決める
+        var clock: Clock?
+        /// 次に読むときに、全員の基準をこの位置に合わせ直す（足りなかったとき）
         var reanchorIndex: Int?
-        /// いちばん新しい描画の回（時計に使う）
-        var lastSampleTime: Double = -1
+        /// いちばん新しい読み出し（時計に使う）
         var lastIndex = 0
-        var lastHostTime: UInt64 = 0
-        var lastFrames = 0
+        var lastHost: UInt64 = 0
+        var hasRendered = false
+
+        mutating func resetAnchors() {
+            for index in feeds.indices {
+                feeds[index].anchorSampleTime = .nan
+            }
+            clock = nil
+        }
     }
 
-    public init(feeds: Int, capacity: Int = 32_768) {
+    public init(feeds: Int, capacity: Int = 32_768, sampleRate: Double = 48_000) {
         self.feeds = feeds
         self.capacity = capacity
+        self.sampleRate = sampleRate
         storage = .allocate(capacity: feeds * capacity)
         storage.initialize(repeating: 0, count: feeds * capacity)
+        timeline = Mutex(Timeline(feeds: [Feed](repeating: Feed(), count: feeds)))
+        staleTicks = Int64(0.2 / Self.hostTickSeconds)
     }
 
     deinit {
         storage.deallocate()
     }
+
+    /// ホストの時刻（mach_absolute_time）の 1 単位の秒数
+    static let hostTickSeconds: Double = {
+        var info = mach_timebase_info_data_t()
+        mach_timebase_info(&info)
+        return Double(info.numer) / Double(info.denom) / 1_000_000_000
+    }()
 
     // MARK: - 書き手
 
@@ -89,12 +125,15 @@ public final class SpeakerFeedRing: @unchecked Sendable {
         return count
     }
 
-    /// 書いた物を捨て、通しの番号を from からにする（シークのとき）。読み手は無音になり、次に書いた所から鳴らす
+    /// 書いた物を捨てる（シークのとき）。読み手は無音になり、次に書いた所から鳴らす
     public func flush() {
         timeline.withLock { line in
             let now = written.load(ordering: .acquiring)
-            line.anchorSampleTime = nil
+            line.resetAnchors()
             line.reanchorIndex = nil
+            for index in line.feeds.indices {
+                line.feeds[index].hasRead = false
+            }
             consumed.store(now, ordering: .releasing)
         }
     }
@@ -105,7 +144,7 @@ public final class SpeakerFeedRing: @unchecked Sendable {
         timeline.withLock { line in
             line.paused = paused
             if paused {
-                line.anchorSampleTime = nil
+                line.resetAnchors()
             }
         }
     }
@@ -116,10 +155,30 @@ public final class SpeakerFeedRing: @unchecked Sendable {
         set { volumeBits.store(max(0, newValue).bitPattern, ordering: .relaxed) }
     }
 
-    /// 時計：いちばん新しい描画の回の、ホストの時刻と読み出しの位置（通しの番号）。まだ鳴っていなければ nil
+    /// 時計：いちばん新しい読み出しの、ホストの時刻と読み出しの位置（通しの番号）。まだ鳴っていなければ nil
     public func lastRender() -> (hostTime: UInt64, index: Int)? {
         timeline.withLock { line in
-            line.lastSampleTime < 0 || line.paused ? nil : (line.lastHostTime, line.lastIndex)
+            !line.hasRendered || line.paused ? nil : (line.lastHost, line.lastIndex)
+        }
+    }
+
+    /// 診断用：最近読んだスピーカーの数と、その mSampleTime・ホストの時刻（秒）のばらつき（最大 − 最小）
+    public struct ReaderSpread: Sendable {
+        public let readers: Int
+        public let sampleTime: Double
+        public let host: Double
+    }
+
+    public func readerSpread() -> ReaderSpread {
+        timeline.withLock { line in
+            let recent = line.feeds.filter { $0.hasRead }
+            guard let first = recent.first else {
+                return ReaderSpread(readers: 0, sampleTime: 0, host: 0)
+            }
+            let samples = recent.map(\.lastSampleTime)
+            let hosts = recent.map(\.lastHost)
+            let hostSpread = Double((hosts.max() ?? first.lastHost) - (hosts.min() ?? first.lastHost)) * Self.hostTickSeconds
+            return ReaderSpread(readers: recent.count, sampleTime: (samples.max() ?? 0) - (samples.min() ?? 0), host: hostSpread)
         }
     }
 }
@@ -147,7 +206,7 @@ extension SpeakerFeedRing {
         time: RenderTime,
         previousGain: inout Float
     ) {
-        guard let start = readStart(feed: feed, frames: frames, sampleTime: time.sampleTime, hostTime: time.hostTime) else {
+        guard feed < feeds, let start = readStart(feed: feed, frames: frames, time: time) else {
             output.update(repeating: 0, count: frames)
             previousGain = 0
             return
@@ -167,41 +226,68 @@ extension SpeakerFeedRing {
     }
 
     /// 読み出しの始まりの位置（鳴らさないときは nil）
-    private func readStart(feed: Int, frames: Int, sampleTime: Double, hostTime: UInt64) -> Int? {
+    private func readStart(feed: Int, frames: Int, time: RenderTime) -> Int? {
         let available = written.load(ordering: .acquiring)
         return timeline.withLock { line in
             guard !line.paused else {
                 return nil
             }
-            let newCycle = sampleTime != line.lastSampleTime
-            if newCycle, line.anchorSampleTime != nil, line.lastSampleTime >= 0, line.reanchorIndex == nil,
-               sampleTime < line.lastSampleTime || sampleTime - line.lastSampleTime > Double(capacity) {
-                // 時刻が戻った・大きく飛んだ：前の回の続きから鳴らす
-                line.reanchorIndex = line.lastIndex + line.lastFrames
-            }
-            if line.anchorSampleTime == nil || (line.reanchorIndex != nil && newCycle) {
-                let index = line.reanchorIndex ?? consumed.load(ordering: .acquiring)
-                line.anchorSampleTime = sampleTime
-                line.anchorIndex = min(max(index, available - capacity, 0), available)
+            // 足りなかった：全員の基準を、書けている所の終わりに合わせ直す
+            if let index = line.reanchorIndex {
+                line.resetAnchors()
+                line.clock = Clock(host: time.hostTime, index: index)
                 line.reanchorIndex = nil
             }
-            let start = line.anchorIndex + Int((sampleTime - (line.anchorSampleTime ?? sampleTime)).rounded())
-            if newCycle {
-                line.lastSampleTime = sampleTime
-                line.lastIndex = start
-                line.lastHostTime = hostTime
-                line.lastFrames = frames
-                // 前の回までは鳴らし終えた。この回の範囲（start から）は、残りのスピーカーが読むまで書き手に渡さない
-                let done = min(start, available)
-                if done > consumed.load(ordering: .relaxed) {
-                    consumed.store(done, ordering: .releasing)
-                }
+            var state = line.feeds[feed]
+            // このスピーカーの描画の時刻が戻った・大きく飛んだ：このスピーカーだけ合わせ直す
+            if !state.anchorSampleTime.isNaN,
+               time.sampleTime < state.lastSampleTime || time.sampleTime - state.lastSampleTime > Double(capacity) {
+                state.anchorSampleTime = .nan
             }
-            // 足りない：無音を出し、次の回から、書けている所の終わりに基準を合わせ直す（同じ所をくり返さない）
+            if state.anchorSampleTime.isNaN {
+                state.anchorSampleTime = time.sampleTime
+                state.anchorIndex = min(max(anchorIndex(line: &line, hostTime: time.hostTime), available - capacity, 0), available)
+            }
+            let start = state.anchorIndex + Int((time.sampleTime - state.anchorSampleTime).rounded())
+            state.lastSampleTime = time.sampleTime
+            state.lastStart = start
+            state.lastHost = time.hostTime
+            state.hasRead = true
+            line.feeds[feed] = state
+            if !line.hasRendered || time.hostTime >= line.lastHost {
+                line.lastHost = time.hostTime
+                line.lastIndex = start
+                line.hasRendered = true
+            }
+            // 足りない：無音を出し、次から合わせ直す（同じ所をくり返さない）
             if start + frames > available, line.reanchorIndex == nil {
                 line.reanchorIndex = available
             }
+            advanceConsumed(line: line, hostTime: time.hostTime, available: available)
             return start
+        }
+    }
+
+    /// 基準を決めるスピーカーの読み出しの位置：全体の基準から、ホストの時刻の経過で決める（無ければ、ここを全体の基準にする）
+    private func anchorIndex(line: inout Timeline, hostTime: UInt64) -> Int {
+        guard let clock = line.clock else {
+            let index = consumed.load(ordering: .acquiring)
+            line.clock = Clock(host: hostTime, index: index)
+            return index
+        }
+        let ticks = Int64(bitPattern: hostTime &- clock.host)
+        return clock.index + Int((Double(ticks) * Self.hostTickSeconds * sampleRate).rounded())
+    }
+
+    /// 最近読んだスピーカーのうち、いちばん遅れている読み出しの頭まで、書き手に渡す
+    private func advanceConsumed(line: Timeline, hostTime: UInt64, available: Int) {
+        var slowest = Int.max
+        for state in line.feeds where state.hasRead && Int64(bitPattern: hostTime &- state.lastHost) < staleTicks {
+            slowest = min(slowest, state.lastStart)
+        }
+        let done = min(slowest, available)
+        if done != Int.max, done > consumed.load(ordering: .relaxed) {
+            consumed.store(done, ordering: .releasing)
         }
     }
 }
