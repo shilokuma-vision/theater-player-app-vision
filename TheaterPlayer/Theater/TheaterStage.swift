@@ -72,7 +72,10 @@ final class TheaterStage {
 
     /// 再生のエンジンの映像・音声を、スクリーンとスピーカーにつなぐ
     func attach(_ engine: MediaPlayer) {
-        let material = Self.videoMaterial(for: engine.videoRenderer)
+        // VideoMaterial は舞台を作るたびに 1 回だけ作る。作ると renderer に「映す先」が足される（コマを渡している最中は足せず、落ちる）。
+        // 映画館に入るときは、ファイルを閉じている（または映す先が無いので renderer がコマを受け取っていない）ので、ここでは足せる。
+        // 前の舞台の VideoMaterial を使い回すと、映画館を閉じたときに RealityKit 側の映す先が片付けられていて、映らない
+        let material = VideoMaterial(videoRenderer: engine.videoRenderer)
         if let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
             let screen = ModelEntity(mesh: mesh, materials: [material])
             screen.name = "VideoScreen"
@@ -93,21 +96,6 @@ final class TheaterStage {
         videoScreen?.removeFromParent()
         videoScreen = nil
         isShowingVideo = false
-    }
-
-    /// renderer ごとに 1 つだけ作る VideoMaterial（舞台を作り直しても使い回す）。
-    /// VideoMaterial を作ると renderer に「映す先」が足されるが、コマを渡している最中は足せない（例外で落ちる）。
-    /// 最初の舞台をつなぐときは、映す先が無いうちは renderer がコマを受け取らないので、まだ渡していない
-    private static var videoMaterials: [ObjectIdentifier: VideoMaterial] = [:]
-
-    private static func videoMaterial(for renderer: AVSampleBufferVideoRenderer) -> VideoMaterial {
-        let key = ObjectIdentifier(renderer)
-        if let material = videoMaterials[key] {
-            return material
-        }
-        let material = VideoMaterial(videoRenderer: renderer)
-        videoMaterials[key] = material
-        return material
     }
 
     func setRoom(_ room: SpatialSpeakers.Room) {
