@@ -14,6 +14,15 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
 - **部屋の明るさと座る席**：開場（再生していないとき）は明るく、再生を始めると客電がゆっくり落ち、止めると戻ります。座席表から好きな席に移れます
 - **動かせる操作パネル**：手元の操作パネルは、下のつまみをつまんで好きな位置へ動かせます（位置は覚えます）
 
+## ファイルの入れ方
+
+- **「ファイル」App の TheaterPlayer のフォルダ**：「ファイル」App の「この Apple Vision Pro 内」（On My Apple Vision Pro）に「TheaterPlayer」のフォルダがあります（アプリのフォルダを共有しています。`UIFileSharingEnabled`）。
+  ここに入れた動画・音楽・画像・PDF は、ライブラリの「ファイルを選ぶ」でこのフォルダを開いて選べます
+- **Mac から送る**：iCloud Drive に入れる・AirDrop で送る・「ファイル」App の「サーバへ接続」で Mac の共有フォルダを開く、のどれかで Vision Pro に届け、「ファイル」App で TheaterPlayer のフォルダへ移します。
+  Finder のファイル共有（ケーブルでつないだ端末の「ファイル」タブ）は、Apple の案内では iPhone・iPad が対象で、Vision Pro は載っていません
+- **コピーせずに開く**：iCloud Drive・外部ストレージ・ファイルサーバのファイルも、「ファイルを選ぶ」でその場所のまま開けます（`LSSupportsOpeningDocumentsInPlace`）。最近の一覧から開き直せます
+- TheaterPlayer のフォルダの中身は、ほかのアプリの書類と同じく端末のバックアップに含まれます。大きな動画を入れたままにすると、iCloud バックアップの容量を使います
+
 ## Environment
 
 - Xcode 26.6
