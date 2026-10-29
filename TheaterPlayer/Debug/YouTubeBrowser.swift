@@ -66,6 +66,10 @@ final class YouTubeBrowser {
             return
         }
         blockedShorts()
+        // 今いる履歴の項目がショートのときだけ戻る。読み込みを始めただけ（NavigationDeciding が止める）なら、まだ移っていないので戻らない
+        guard let current = page?.backForwardList.currentItem?.url, YouTubeLinks.isShorts(current) else {
+            return
+        }
         goBack()
     }
 
