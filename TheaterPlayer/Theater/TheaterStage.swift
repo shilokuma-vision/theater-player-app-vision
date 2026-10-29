@@ -21,6 +21,8 @@ final class TheaterStage {
     private(set) var videoScreen: ModelEntity?
     /// 映像のスクリーンを見せているか（スクリーンは無効にせず、透明さで隠す）
     @ObservationIgnored private(set) var isShowingVideo = false
+    /// つないでいる再生のエンジン（外すときに、コマを渡すのを止める）
+    @ObservationIgnored private weak var engine: MediaPlayer?
     /// スクリーンに静止画（画像・PDF のページ）を貼るエンティティ（静止画を出すあいだだけ有効）
     private(set) var stillScreen: ModelEntity?
     /// スクリーンに貼った（貼っている途中の）静止画
@@ -75,8 +77,14 @@ final class TheaterStage {
         // VideoMaterial は舞台を作るたびに 1 回だけ作る。作ると renderer に「映す先」が足される（コマを渡している最中は足せず、落ちる）。
         // 映画館に入るときは、ファイルを閉じている（または映す先が無いので renderer がコマを受け取っていない）ので、ここでは足せる。
         // 前の舞台の VideoMaterial を使い回すと、映画館を閉じたときに RealityKit 側の映す先が片付けられていて、映らない
-        let material = VideoMaterial(videoRenderer: engine.videoRenderer)
-        if let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
+        // 前のスクリーンを外してから（コマを渡すのを止めてから）、新しい VideoMaterial を作ってつなぐ
+        engine.detachVideoScreen()
+        var created: VideoMaterial?
+        engine.attachVideoScreen {
+            created = VideoMaterial(videoRenderer: engine.videoRenderer)
+        }
+        self.engine = engine
+        if let material = created, let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
             let screen = ModelEntity(mesh: mesh, materials: [material])
             screen.name = "VideoScreen"
             // 無効にしない（有効に戻すと RealityKit が renderer に映す先を足し直し、コマを渡している最中だと足せずに真っ黒になる）。
@@ -93,9 +101,15 @@ final class TheaterStage {
     /// 再生のエンジンから外す（映画館を閉じた・別の舞台に替わった）。同じ renderer を、古い VideoMaterial が持ったままにしない
     func detach() {
         speakers.remove()
+        // スクリーンを外したら、次のスクリーンをつなぐまでコマを渡さない（外したスクリーンの映す先に渡し続けると、
+        // 次の VideoMaterial を作るときに「渡している最中」になって映らない）
+        if videoScreen != nil {
+            engine?.detachVideoScreen()
+        }
         videoScreen?.removeFromParent()
         videoScreen = nil
         isShowingVideo = false
+        engine = nil
     }
 
     func setRoom(_ room: SpatialSpeakers.Room) {
