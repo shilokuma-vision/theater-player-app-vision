@@ -65,11 +65,11 @@ struct LightingDirectorTests {
         let preferences = preferences()
         let level = preferences.houseLevel
         let director = LightingDirector(initialHouse: level)
-        _ = director.step(deltaTime: 1, playing: true, hasVideo: true, preferences: preferences, light: nil)
+        _ = director.step(deltaTime: 1, phase: .feature, hasVideo: true, preferences: preferences, light: nil)
         #expect(director.house < level)
         #expect(director.house > level * 0.7)
         for _ in 0..<10 {
-            _ = director.step(deltaTime: 1, playing: true, hasVideo: true, preferences: preferences, light: nil)
+            _ = director.step(deltaTime: 1, phase: .feature, hasVideo: true, preferences: preferences, light: nil)
         }
         #expect(director.house == preferences.showLevel)
     }
@@ -79,7 +79,7 @@ struct LightingDirectorTests {
         let preferences = preferences()
         #expect(preferences.houseLevel > 1)
         let director = LightingDirector(initialHouse: preferences.houseLevel)
-        let values = director.step(deltaTime: 0.01, playing: false, hasVideo: false, preferences: preferences, light: nil)
+        let values = director.step(deltaTime: 0.01, phase: .lobby, hasVideo: false, preferences: preferences, light: nil)
         #expect(values.house.x > 1)
         #expect(values.house.x == values.house.z)
     }
@@ -89,10 +89,10 @@ struct LightingDirectorTests {
         let preferences = preferences()
         let director = LightingDirector(initialHouse: preferences.houseLevel)
         for _ in 0..<5 {
-            _ = director.step(deltaTime: 1, playing: true, hasVideo: true, preferences: preferences, light: nil)
+            _ = director.step(deltaTime: 1, phase: .feature, hasVideo: true, preferences: preferences, light: nil)
         }
         #expect(director.house > preferences.showLevel)
-        _ = director.step(deltaTime: 1.5, playing: true, hasVideo: true, preferences: preferences, light: nil)
+        _ = director.step(deltaTime: 1.5, phase: .feature, hasVideo: true, preferences: preferences, light: nil)
         #expect(director.house == preferences.showLevel)
     }
 
@@ -101,7 +101,7 @@ struct LightingDirectorTests {
         let preferences = preferences()
         preferences.houseLevel = 0.2
         let director = LightingDirector(initialHouse: 0.2)
-        let values = director.step(deltaTime: 0.01, playing: false, hasVideo: false, preferences: preferences, light: nil)
+        let values = director.step(deltaTime: 0.01, phase: .lobby, hasVideo: false, preferences: preferences, light: nil)
         #expect(values.house.x > values.house.z)
     }
 }

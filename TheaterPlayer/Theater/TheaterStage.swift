@@ -223,7 +223,7 @@ final class TheaterStage {
         let still = player.still
         let values = lighting.step(
             deltaTime: deltaTime,
-            playing: player.isPlaying || still != nil,
+            phase: player.isPlaying || still != nil ? .feature : .lobby,
             hasVideo: hasVideo || still != nil,
             preferences: preferences,
             light: still?.light ?? player.engine?.screenLight()
