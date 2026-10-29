@@ -39,6 +39,8 @@ final class AppModel {
     let recents: RecentItems
     /// 再生（映画館を開いたときに作る）
     let player: PlayerModel
+    /// Bluetooth のキーボード・ゲームコントローラーからの操作
+    let hardwareControls = HardwareControls()
     #if DEBUG
     /// デバッグ用：スクリーンの前で開く YouTube
     let youTube = YouTubeBrowser()
@@ -48,13 +50,16 @@ final class AppModel {
         self.preferences = preferences
         self.recents = recents
         player = PlayerModel(preferences: preferences, recents: recents)
-        // コントロールセンター・AirPods・Siri からの操作も、パネルの操作と同じ入口を通す
+        // コントロールセンター・AirPods・Siri・キーボード・コントローラーからの操作も、パネルの操作と同じ入口を通す
         player.nowPlaying.connect { [weak self] command in
+            self?.perform(command)
+        }
+        hardwareControls.connect { [weak self] command in
             self?.perform(command)
         }
     }
 
-    /// 再生の操作を行う。操作パネル・Now Playing・スクリーンをつまむ操作など、どこからの操作もここを通す
+    /// 再生の操作を行う。操作パネル・Now Playing・キーボード・コントローラー・スクリーンをつまむ操作など、どこからの操作もここを通す
     func perform(_ command: PlayerCommand) {
         switch command {
         case .showPanel:
