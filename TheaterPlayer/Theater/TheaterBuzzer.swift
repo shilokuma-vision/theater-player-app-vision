@@ -24,8 +24,8 @@ enum BuzzerSound {
     static let brightness = 3_000.0
     /// 振幅の最大
     static let peak: Float = 0.5
-    /// 音量の設定が 1 のときの、音源の強さ（dB）
-    static let baseGain = -4.0
+    /// 音量の設定が 1 のときの、音源の強さ（dB）。倍音が多く詰まった音なので（RMS で約 -10 dBFS）、映画の台詞より大きくなりすぎないよう下げる
+    static let baseGain = -10.0
 
     /// 1 チャンネルの音（sampleRate で length 秒）
     static func samples() -> [Float] {
