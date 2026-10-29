@@ -38,6 +38,16 @@
 				<string>3B52.1</string>
 			</array>
 		</dict>
+		<!-- System boot time: TheaterMedia の mach_absolute_time（MediaPlayer+Playback.swift）。音を最後に鳴らした時刻からの経過で映像を音に合わせる・診断のログの間隔 -->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategorySystemBootTime</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<!-- 35F9.1: アプリの中の出来事のあいだの経過時間を測る（端末の外には送らない） -->
+				<string>35F9.1</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>
