@@ -34,6 +34,8 @@ final class PlayerModel {
     let speakers: [CinemaBus]
     /// 再生のエンジン（作れなければ nil。Metal・音声の準備に失敗したとき）
     let engine: MediaPlayer?
+    /// システムの「再生中」（コントロールセンター・AirPods・Siri からの操作と、題名・位置の表示）
+    let nowPlaying = NowPlaying()
     private let preferences: Preferences
     private let recents: RecentItems
     private var accessedURL: URL?
@@ -118,8 +120,10 @@ final class PlayerModel {
             if let resume = item?.resumePosition {
                 engine.seek(to: resume)
             }
+            nowPlaying.activate()
             engine.play()
             startRefreshing()
+            publishNowPlaying()
         } catch {
             errorMessage = error.localizedDescription
             info = nil
@@ -147,6 +151,7 @@ final class PlayerModel {
         externalSubtitle = nil
         currentItem = nil
         currentTime = 0
+        publishNowPlaying()
     }
 
     // MARK: - 静止画（画像・PDF）
@@ -224,9 +229,11 @@ final class PlayerModel {
             if let target = command.seekTarget(from: currentTime, duration: duration, chapterStarts: info?.chapters.map(\.start) ?? []) {
                 engine.seek(to: target)
                 currentTime = target
+                publishNowPlaying()
             }
         case let .setRate(newRate):
             engine.rate = newRate
+            publishNowPlaying()
         case .showPanel:
             break
         }
@@ -303,6 +310,7 @@ final class PlayerModel {
             if newState == .ended {
                 saveProgress(position: 0)
             }
+            publishNowPlaying()
         case let .videoFormat(format):
             videoFormat = format
         case let .error(message):
@@ -331,6 +339,26 @@ final class PlayerModel {
         }
         currentTime = engine.currentTime
         subtitles = engine.subtitles(at: engine.displayTime)
+    }
+
+    /// システムの Now Playing に、今の再生の様子を見せる（動画・音楽を開いていなければ消す）。
+    /// 位置はシステムが速さから進めるので、変わり目（開いた・再生／一時停止・シーク・速さ）にだけ呼ぶ
+    private func publishNowPlaying() {
+        guard let info, let engine else {
+            nowPlaying.update(nil, artwork: nil)
+            return
+        }
+        let item = NowPlaying.Item(
+            title: title,
+            artist: info.artist,
+            album: info.album,
+            duration: info.duration ?? 0,
+            elapsed: engine.currentTime,
+            rate: state == .playing ? Double(engine.rate) : 0,
+            isAudioOnly: info.isAudioOnly,
+            chapterCount: info.chapters.count
+        )
+        nowPlaying.update(item, artwork: info.artwork)
     }
 
     private func saveProgress(position: Double? = nil) {

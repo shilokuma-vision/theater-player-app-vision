@@ -44,6 +44,10 @@ final class AppModel {
         self.preferences = preferences
         self.recents = recents
         player = PlayerModel(preferences: preferences, recents: recents)
+        // コントロールセンター・AirPods・Siri からの操作も、パネルの操作と同じ入口を通す
+        player.nowPlaying.connect { [weak self] command in
+            self?.perform(command)
+        }
     }
 
     /// 再生の操作を行う。操作パネル・Now Playing・スクリーンをつまむ操作など、どこからの操作もここを通す

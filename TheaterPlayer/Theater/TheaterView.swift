@@ -102,6 +102,8 @@ struct TheaterView: View {
                 appModel.activeStage = nil
             }
             appModel.player.close()
+            // スピーカーを外したので、音声のセッションを止める（止めていたほかのアプリの音を再開できるように）
+            appModel.player.nowPlaying.deactivate()
             // 「映画館を出る」は .inTransition にして、ライブラリを開いてから閉じる。
             // それ以外（Digital Crown などシステムの操作で閉じた）は、ウィンドウが 1 つも無くなるので、ここでライブラリを開き直す
             if appModel.immersiveSpaceState != .inTransition, !appModel.isLibraryOpen {
