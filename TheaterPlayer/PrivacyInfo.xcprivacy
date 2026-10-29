@@ -13,6 +13,7 @@
 	<array/>
 	<!-- 理由の申告が必要な API。@AppStorage / UserDefaults はほぼすべてのアプリが使うため、最初から申告しておく -->
 	<!-- ファイルのタイムスタンプ・空き容量・起動時刻などの API を使うときは、ここに理由を足す -->
+	<!-- 静的にリンクした FFmpeg が使う API も、このアプリの申告になる（確かめ方は README の「プライバシーマニフェスト」） -->
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
 		<dict>
@@ -22,6 +23,19 @@
 			<array>
 				<!-- CA92.1: アプリ自身だけが読み書きする設定・状態の保存 -->
 				<string>CA92.1</string>
+			</array>
+		</dict>
+		<!-- File timestamp: FFmpeg の stat・fstat・lstat。開いたファイルの大きさと種類を fstat で見る（libavformat/file.c の file のプロトコル）。
+		     lstat（同じ file.c のフォルダーの一覧）・stat（libavformat/img2dec.c の ts_from_file）は参照だけで、このアプリは使わない -->
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<!-- C617.1: アプリのコンテナの中のファイル（写真から選んで Caches/PickedMovies にコピーした物） -->
+				<string>C617.1</string>
+				<!-- 3B52.1: 利用者がファイルの選択（fileImporter）で選んだファイル（最近の項目のブックマークから開き直す物を含む） -->
+				<string>3B52.1</string>
 			</array>
 		</dict>
 	</array>
