@@ -75,8 +75,11 @@ final class TheaterStage {
 
     /// 再生のエンジンの映像・音声を、スクリーンとスピーカーにつなぐ
     func attach(_ engine: MediaPlayer) {
+        // VideoMaterial は舞台を作るたびに 1 回だけ作る。作ると renderer に「映す先」が足される（コマを渡している最中は足せず、落ちる）。
+        // 映画館に入るときは、ファイルを閉じている（または映す先が無いので renderer がコマを受け取っていない）ので、ここでは足せる。
+        // 前の舞台の VideoMaterial を使い回すと、映画館を閉じたときに RealityKit 側の映す先が片付けられていて、映らない
         let renderer = engine.videoRenderer
-        let material = Self.videoMaterial(for: renderer)
+        let material = VideoMaterial(videoRenderer: renderer)
         screenRenderer = renderer
         if let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
             let screen = makeVideoScreen(mesh: mesh, material: material)
@@ -117,23 +120,9 @@ final class TheaterStage {
             return
         }
         old.removeFromParent()
-        makeVideoScreen(mesh: mesh, material: Self.videoMaterial(for: renderer))
+        makeVideoScreen(mesh: mesh, material: VideoMaterial(videoRenderer: renderer))
         screenRenderer = renderer
         Diagnostics.log("VideoScreen を作り直した（renderer を付け替えた）")
-    }
-
-    /// 今の renderer の VideoMaterial（renderer ごとに 1 つだけ作り、舞台を作り直しても使い回す）。
-    /// VideoMaterial を作ると renderer に「映す先」が足されるが、コマを渡している最中は足せない（例外で落ちる）。
-    /// 新しい renderer は、映す先が無いうちはコマを受け取らないので、まだ渡していない
-    private static var videoMaterial: (renderer: AVSampleBufferVideoRenderer, material: VideoMaterial)?
-
-    private static func videoMaterial(for renderer: AVSampleBufferVideoRenderer) -> VideoMaterial {
-        if let cached = videoMaterial, cached.renderer === renderer {
-            return cached.material
-        }
-        let material = VideoMaterial(videoRenderer: renderer)
-        videoMaterial = (renderer, material)
-        return material
     }
 
     func setRoom(_ room: SpatialSpeakers.Room) {
