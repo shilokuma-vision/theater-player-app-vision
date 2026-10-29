@@ -19,8 +19,8 @@ final class TheaterStage {
     let environment: TheaterEnvironment
     /// スクリーンに映像を貼るエンティティ（映像を出すあいだだけ有効）
     private(set) var videoScreen: ModelEntity?
-    /// スクリーンに映す renderer（attach で受け取る）
-    @ObservationIgnored private var renderer: AVSampleBufferVideoRenderer?
+    /// 映像のスクリーンを見せているか（スクリーンは無効にせず、透明さで隠す）
+    @ObservationIgnored private(set) var isShowingVideo = false
     /// スクリーンに静止画（画像・PDF のページ）を貼るエンティティ（静止画を出すあいだだけ有効）
     private(set) var stillScreen: ModelEntity?
     /// スクリーンに貼った（貼っている途中の）静止画
@@ -72,12 +72,13 @@ final class TheaterStage {
 
     /// 再生のエンジンの映像・音声を、スクリーンとスピーカーにつなぐ
     func attach(_ engine: MediaPlayer) {
-        renderer = engine.videoRenderer
-        let material = VideoMaterial(videoRenderer: engine.videoRenderer)
+        let material = Self.videoMaterial(for: engine.videoRenderer)
         if let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
             let screen = ModelEntity(mesh: mesh, materials: [material])
             screen.name = "VideoScreen"
-            screen.isEnabled = false
+            // 無効にしない（有効に戻すと RealityKit が renderer に映す先を足し直し、コマを渡している最中だと足せずに真っ黒になる）。
+            // 映像が無いときは透明にして隠す
+            screen.components.set(OpacityComponent(opacity: 0))
             environment.model.addChild(screen)
             videoScreen = screen
             Diagnostics.log("VideoScreen を作った position=\(screen.position) bounds=\(screen.visualBounds(relativeTo: nil).extents)")
@@ -91,7 +92,22 @@ final class TheaterStage {
         speakers.remove()
         videoScreen?.removeFromParent()
         videoScreen = nil
-        renderer = nil
+        isShowingVideo = false
+    }
+
+    /// renderer ごとに 1 つだけ作る VideoMaterial（舞台を作り直しても使い回す）。
+    /// VideoMaterial を作ると renderer に「映す先」が足されるが、コマを渡している最中は足せない（例外で落ちる）。
+    /// 最初の舞台をつなぐときは、映す先が無いうちは renderer がコマを受け取らないので、まだ渡していない
+    private static var videoMaterials: [ObjectIdentifier: VideoMaterial] = [:]
+
+    private static func videoMaterial(for renderer: AVSampleBufferVideoRenderer) -> VideoMaterial {
+        let key = ObjectIdentifier(renderer)
+        if let material = videoMaterials[key] {
+            return material
+        }
+        let material = VideoMaterial(videoRenderer: renderer)
+        videoMaterials[key] = material
+        return material
     }
 
     func setRoom(_ room: SpatialSpeakers.Room) {
@@ -100,15 +116,12 @@ final class TheaterStage {
 
     /// 映像の形式に合わせて、スクリーンの映像の範囲とマスキングを変える。映像が無ければ（音楽）映像を消す
     func update(format: VideoFormat?, hasVideo: Bool) {
-        let enabled = hasVideo && format != nil
-        if let screen = videoScreen, screen.isEnabled != enabled {
-            Diagnostics.log("VideoScreen enabled=\(enabled) format=\(String(describing: format)) parent=\(screen.parent?.name ?? "なし")")
-            // 映し始めるたびに VideoMaterial を作り直す（前の再生の後に、同じ renderer の絵を映さなくなることがあった）
-            if enabled, let renderer {
-                screen.model?.materials = [VideoMaterial(videoRenderer: renderer)]
-            }
+        let visible = hasVideo && format != nil
+        if let screen = videoScreen, visible != isShowingVideo {
+            Diagnostics.log("VideoScreen visible=\(visible) format=\(String(describing: format))")
+            screen.components.set(OpacityComponent(opacity: visible ? 1 : 0))
+            isShowingVideo = visible
         }
-        videoScreen?.isEnabled = enabled
         updateSurface()
         guard let format, format != currentFormat else {
             return
@@ -168,7 +181,7 @@ final class TheaterStage {
 
     /// スクリーンの面は、映像・静止画を出していないときだけ見せる
     private func updateSurface() {
-        let showing = videoScreen?.isEnabled == true || stillScreen?.isEnabled == true
+        let showing = isShowingVideo || stillScreen?.isEnabled == true
         if screenSurface?.isEnabled != !showing {
             screenSurface?.isEnabled = !showing
         }
