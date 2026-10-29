@@ -75,46 +75,73 @@ final class VideoOutput: @unchecked Sendable {
         lock.withLock { rendererValue }
     }
 
+    /// スクリーン（RealityKit の VideoMaterial）がつながっているか。つながっている間だけコマを渡す。
+    /// renderer は、前のスクリーンを外したあとも「受け取れる」と答えてコマを受け取ることがあり、そのあと新しいスクリーンの
+    /// VideoMaterial を作っても、コマを渡している最中なので映す先を足せず、以後ずっと映らなかった（実機で確かめた）
+    private var screenAttached = false
+    /// enqueue と、スクリーンのつなぎ替え・renderer の作り直しを 1 つずつ行う（つなぎ替えの間に、渡している途中のコマが無いように）。
+    /// lock より先に取る
+    private let targetLock = NSLock()
+
     var isReady: Bool {
-        renderer.isReadyForMoreMediaData
+        targetLock.withLock { screenAttached } && renderer.isReadyForMoreMediaData
+    }
+
+    /// スクリーンをつなぐ：コマを渡していない間に body（VideoMaterial を作る）を行い、そのあとコマを渡し始める
+    func attachScreen(_ body: () -> Void) {
+        targetLock.withLock {
+            body()
+            screenAttached = true
+        }
+    }
+
+    /// スクリーンを外す：コマを渡すのをやめ、renderer に残ったコマを捨てる
+    func detachScreen() {
+        targetLock.withLock {
+            screenAttached = false
+            renderer.flush()
+        }
     }
 
     /// 渡すフレームの左右の目の並べ方。
-    /// 3D と 2D を切り替えるときは renderer を作り直す（新しい renderer は、VideoMaterial に付けられて映す先ができるまでコマを受け取らない）
+    /// 3D と 2D を切り替えるときは renderer を作り直す。新しい renderer はまだスクリーンにつながっていないので、
+    /// スクリーンが新しい VideoMaterial でつなぎ直す（attachScreen）まで、コマを渡さない
     var stereo: StereoPacking {
         get { lock.withLock { stereoValue } }
         set {
-            let replaced: AVSampleBufferVideoRenderer? = lock.withLock {
-                guard stereoValue != newValue else {
-                    return nil
-                }
-                let wasStereo = stereoValue != .mono
-                stereoValue = newValue
-                // 次のフレームで、形式を作り直す
-                format = nil
-                guard wasStereo != (newValue != .mono) else {
-                    return nil
-                }
-                let old = rendererValue
-                rendererValue = AVSampleBufferVideoRenderer()
-                return old
-            }
-            if let replaced {
-                synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
-                replaced.flush()
-                synchronizer.addRenderer(renderer)
-            }
+            targetLock.withLock { setStereo(newValue) }
         }
+    }
+
+    /// targetLock を取った中で呼ぶ
+    private func setStereo(_ newValue: StereoPacking) {
+        let replaced: AVSampleBufferVideoRenderer? = lock.withLock {
+            guard stereoValue != newValue else {
+                return nil
+            }
+            let wasStereo = stereoValue != .mono
+            stereoValue = newValue
+            // 次のフレームで、形式を作り直す
+            format = nil
+            guard wasStereo != (newValue != .mono) else {
+                return nil
+            }
+            let old = rendererValue
+            rendererValue = AVSampleBufferVideoRenderer()
+            return old
+        }
+        guard let replaced else {
+            return
+        }
+        screenAttached = false
+        synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
+        replaced.flush()
+        synchronizer.addRenderer(renderer)
     }
 
     /// フレームを渡す。displayImmediately なら時刻を待たずに表示する（止まっているときのシーク）
     func enqueue(_ frame: DecodedVideoFrame, displayImmediately: Bool = false) {
-        let (target, stereo) = lock.withLock { (rendererValue, stereoValue) }
-        // renderer を作り直した直後は、スクリーンにつながる（VideoMaterial が映す先を足す）まで渡さない。
-        // 映す先が無いうちに渡すと、そのあと映す先を足せなくなる
-        guard target.isReadyForMoreMediaData else {
-            return
-        }
+        let stereo = lock.withLock { stereoValue }
         let timing = CMSampleTimingInfo(
             duration: CMTime(seconds: max(frame.duration, 0.001), preferredTimescale: 90_000),
             presentationTimeStamp: CMTime(seconds: frame.time, preferredTimescale: 90_000),
@@ -137,7 +164,13 @@ final class VideoOutput: @unchecked Sendable {
                 Unmanaged.passUnretained(kCFBooleanTrue).toOpaque()
             )
         }
-        target.enqueue(sample)
+        targetLock.withLock {
+            // スクリーンを外した後（つなぎ替えの途中）・並べ方を変えた後（作り直した renderer）は渡さない
+            let (target, current) = lock.withLock { (rendererValue, stereoValue) }
+            if screenAttached, current == stereo {
+                target.enqueue(sample)
+            }
+        }
     }
 
     /// 左右に並べたフレーム（左が左目）。上下に並べたフレームと、空間ビデオの左右の層は、左右に並べ替える

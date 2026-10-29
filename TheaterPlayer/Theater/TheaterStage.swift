@@ -21,6 +21,8 @@ final class TheaterStage {
     private(set) var videoScreen: ModelEntity?
     /// 映像のスクリーンを見せているか（スクリーンは無効にせず、透明さで隠す）
     @ObservationIgnored private(set) var isShowingVideo = false
+    /// つないでいる再生のエンジン（外すときに、コマを渡すのを止める）
+    @ObservationIgnored private weak var engine: MediaPlayer?
     /// スクリーンに静止画（画像・PDF のページ）を貼るエンティティ（静止画を出すあいだだけ有効）
     private(set) var stillScreen: ModelEntity?
     /// スクリーンに貼った（貼っている途中の）静止画
@@ -78,10 +80,10 @@ final class TheaterStage {
         // VideoMaterial は舞台を作るたびに 1 回だけ作る。作ると renderer に「映す先」が足される（コマを渡している最中は足せず、落ちる）。
         // 映画館に入るときは、ファイルを閉じている（または映す先が無いので renderer がコマを受け取っていない）ので、ここでは足せる。
         // 前の舞台の VideoMaterial を使い回すと、映画館を閉じたときに RealityKit 側の映す先が片付けられていて、映らない
-        let renderer = engine.videoRenderer
-        let material = VideoMaterial(videoRenderer: renderer)
-        screenRenderer = renderer
-        if let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
+        // 前のスクリーンを外してから（コマを渡すのを止めてから）、新しい VideoMaterial を作ってつなぐ
+        engine.detachVideoScreen()
+        self.engine = engine
+        if let material = connect(engine), let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
             let screen = makeVideoScreen(mesh: mesh, material: material)
             Diagnostics.log("VideoScreen を作った position=\(screen.position) bounds=\(screen.visualBounds(relativeTo: nil).extents)")
         }
@@ -92,10 +94,16 @@ final class TheaterStage {
     /// 再生のエンジンから外す（映画館を閉じた・別の舞台に替わった）。同じ renderer を、古い VideoMaterial が持ったままにしない
     func detach() {
         speakers.remove()
+        // スクリーンを外したら、次のスクリーンをつなぐまでコマを渡さない（外したスクリーンの映す先に渡し続けると、
+        // 次の VideoMaterial を作るときに「渡している最中」になって映らない）
+        if videoScreen != nil {
+            engine?.detachVideoScreen()
+        }
         videoScreen?.removeFromParent()
         videoScreen = nil
         screenRenderer = nil
         isShowingVideo = false
+        engine = nil
     }
 
     /// 映像を映すスクリーンを作って部屋に置く
@@ -111,17 +119,27 @@ final class TheaterStage {
         return screen
     }
 
+    /// エンジンの今の renderer の VideoMaterial を作って、スクリーンとしてつなぐ（コマを渡していない間に作る）
+    private func connect(_ engine: MediaPlayer) -> VideoMaterial? {
+        var created: VideoMaterial?
+        engine.attachVideoScreen {
+            let renderer = engine.videoRenderer
+            created = VideoMaterial(videoRenderer: renderer)
+            screenRenderer = renderer
+        }
+        return created
+    }
+
     /// エンジンが renderer を作り直したら（3D と 2D の切り替え）、新しい renderer の VideoMaterial を貼ったスクリーンに替える。
     /// 同じスクリーンのまま VideoMaterial を差し替えると、1 回おきに映らなかった（Simulator）ので、スクリーンごと作り直す。
-    /// 新しい renderer は映す先ができるまでコマを受け取らないので、ここで作っても渡している最中にはならない
+    /// 作り直した renderer には、スクリーンをつなぐまでコマを渡さないので、ここで作っても渡している最中にはならない
     private func followRenderer(of engine: MediaPlayer) {
-        let renderer = engine.videoRenderer
-        guard let old = videoScreen, renderer !== screenRenderer, let mesh = old.model?.mesh else {
+        guard let old = videoScreen, engine.videoRenderer !== screenRenderer, let mesh = old.model?.mesh,
+              let material = connect(engine) else {
             return
         }
         old.removeFromParent()
-        makeVideoScreen(mesh: mesh, material: VideoMaterial(videoRenderer: renderer))
-        screenRenderer = renderer
+        makeVideoScreen(mesh: mesh, material: material)
         Diagnostics.log("VideoScreen を作り直した（renderer を付け替えた）")
     }
 

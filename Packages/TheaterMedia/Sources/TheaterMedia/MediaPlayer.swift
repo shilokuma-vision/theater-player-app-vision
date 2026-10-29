@@ -72,6 +72,17 @@ public final class MediaPlayer: @unchecked Sendable {
         videoOutput.renderer
     }
 
+    /// スクリーンをつなぐ。body で VideoMaterial(videoRenderer:) を作る（コマを渡していない間に行う。渡している最中だと落ちる・映らない）。
+    /// つないだあとからコマを渡す
+    public func attachVideoScreen(_ body: () -> Void) {
+        videoOutput.attachScreen(body)
+    }
+
+    /// スクリーンを外す（映画館を閉じた・舞台を作り直す）。次にスクリーンをつなぐまで、コマを渡さない
+    public func detachVideoScreen() {
+        videoOutput.detachScreen()
+    }
+
     public var state: PlaybackState {
         lock.lock()
         defer { lock.unlock() }
