@@ -24,7 +24,7 @@ struct SeatPicker: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
                     .background(.white.opacity(0.25), in: Capsule())
-                SeatMap(layout: stage.layout, current: current) { seat in
+                SeatMap(rows: stage.seatRows, current: current) { seat in
                     choose(seat, on: stage)
                 }
                 if let seat = current {
@@ -70,20 +70,17 @@ struct SeatPicker: View {
 
 /// 座席の並び（ブロックの間に通路のすき間）
 struct SeatMap: View {
-    let layout: TheaterLayout
+    let rows: [SeatRow]
     let current: Seat?
     let choose: (Seat) -> Void
 
     var body: some View {
-        let rows = Dictionary(grouping: layout.seats, by: \.rowIndex)
         VStack(spacing: 3) {
-            ForEach(rows.keys.sorted(), id: \.self) { index in
-                let seats = (rows[index] ?? []).sorted { $0.number < $1.number }
+            ForEach(rows) { row in
                 HStack(spacing: 2) {
-                    Text(seats.first?.row ?? "").font(.system(size: 10, weight: .semibold)).frame(width: 14)
-                    ForEach(seats) { seat in
-                        if seat.number > 1, let previous = seats.first(where: { $0.number == seat.number - 1 }),
-                           previous.block != seat.block {
+                    Text(row.letter).font(.system(size: 10, weight: .semibold)).frame(width: 14)
+                    ForEach(row.seats) { seat in
+                        if row.aisleBefore.contains(seat.id) {
                             Color.clear.frame(width: 10, height: 1)
                         }
                         seatButton(seat)

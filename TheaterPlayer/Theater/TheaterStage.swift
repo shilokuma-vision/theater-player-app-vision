@@ -33,6 +33,8 @@ final class TheaterStage {
     private(set) var screenFrame: ScreenFrame
     private let speakers = SpatialSpeakers()
     let lighting: LightingDirector
+    /// 座席表の列（座席のページを開くたびに並べ直さない）
+    let seatRows: [SeatRow]
     @ObservationIgnored private var currentFormat: VideoFormat?
     /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点（表示は、さらに曲面の出っ張りの分だけ手前に置く。overlayDepth）
     let screenAnchor = Entity()
@@ -46,6 +48,7 @@ final class TheaterStage {
         self.environment = environment
         lighting = LightingDirector(initialHouse: preferences.houseLevel)
         screenFrame = ScreenFrame(aspect: 2.0, spec: environment.layout.screen)
+        seatRows = environment.layout.seatRows
         screenSurface = environment.screenSurface
         let screen = environment.layout.screen
         screenAnchor.name = "ScreenAnchor"

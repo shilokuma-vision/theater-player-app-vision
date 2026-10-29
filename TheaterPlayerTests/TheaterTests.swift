@@ -52,6 +52,21 @@ struct TheaterLayoutTests {
         #expect(seated.count == layout.seats.count)
         #expect(Set(layout.units.map(\.tile)).count == layout.units.count)
     }
+
+    /// 座席表の列は前から並び、席は席番号の順。通路はブロックの境目（L と C、C と R）の 2 か所
+    @Test func seatRowsFollowTheBlocks() throws {
+        let layout = try layout()
+        let rows = layout.seatRows
+        #expect(rows.map(\.letter) == layout.rowLetters)
+        for row in rows {
+            #expect(row.seats.map(\.number) == Array(1...34))
+            #expect(row.aisleBefore.count == 2)
+        }
+        let center = try #require(rows.first { $0.letter == "G" })
+        #expect(center.aisleBefore == ["G-9", "G-27"])
+        #expect(center.seats.first { $0.id == "G-9" }?.block == "C")
+        #expect(center.seats.first { $0.id == "G-8" }?.block == "L")
+    }
 }
 
 @MainActor
