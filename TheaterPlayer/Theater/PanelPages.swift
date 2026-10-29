@@ -2,7 +2,7 @@
 //  PanelPages.swift
 //  TheaterPlayer
 //
-//  操作パネルのページ：音声のトラック・字幕・再生の速さ・部屋の明るさ。
+//  操作パネルのページ：音声のトラック・字幕・再生の速さ・部屋の明るさ（上映の演出の入・切を含む）。
 //
 
 import SwiftUI
@@ -196,6 +196,10 @@ struct LightingPage: View {
             LabeledSlider(title: "足元灯・誘導灯", value: $preferences.ambientLevel, range: 0...1.5)
             LabeledSlider(title: "スクリーンの照り返し", value: $preferences.screenSpill, range: 0...2)
             Toggle("再生すると暗くする", isOn: $preferences.autoDim)
+            Toggle(isOn: $preferences.showtime) {
+                Text("上映の演出")
+                Text("動画を頭から再生すると、開演のブザーのあとに暗くなり、幕が開いてから始まります。エンドロールでは少し明るくします")
+            }
         }
     }
 
