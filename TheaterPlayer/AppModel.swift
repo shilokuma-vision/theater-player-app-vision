@@ -45,4 +45,14 @@ final class AppModel {
         self.recents = recents
         player = PlayerModel(preferences: preferences, recents: recents)
     }
+
+    /// 再生の操作を行う。操作パネル・Now Playing・スクリーンをつまむ操作など、どこからの操作もここを通す
+    func perform(_ command: PlayerCommand) {
+        switch command {
+        case .showPanel:
+            panelInteraction += 1
+        default:
+            player.perform(command)
+        }
+    }
 }

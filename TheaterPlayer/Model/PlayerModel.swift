@@ -204,30 +204,41 @@ final class PlayerModel {
 
     // MARK: - 操作
 
-    func togglePlay() {
-        guard let engine else {
+    /// 再生の操作を行う（AppModel.perform(_:) から呼ぶ。パネルを出す操作は AppModel が受ける）。動画・音楽を開いていなければ何もしない
+    func perform(_ command: PlayerCommand) {
+        guard hasPlayback, let engine else {
             return
         }
-        if isPlaying {
-            engine.pause()
-            saveProgress()
-        } else {
+        switch command {
+        case .togglePlay:
+            if isPlaying {
+                pause(engine)
+            } else {
+                engine.play()
+            }
+        case .play:
             engine.play()
+        case .pause:
+            pause(engine)
+        case .skip, .seek, .nextChapter, .previousChapter:
+            if let target = command.seekTarget(from: currentTime, duration: duration, chapterStarts: info?.chapters.map(\.start) ?? []) {
+                engine.seek(to: target)
+                currentTime = target
+            }
+        case let .setRate(newRate):
+            engine.rate = newRate
+        case .showPanel:
+            break
         }
     }
 
-    func seek(to time: Double) {
-        engine?.seek(to: time)
-        currentTime = time
-    }
-
-    func skip(by seconds: Double) {
-        seek(to: max(0, min(currentTime + seconds, duration)))
+    private func pause(_ engine: MediaPlayer) {
+        engine.pause()
+        saveProgress()
     }
 
     var rate: Float {
-        get { engine?.rate ?? 1 }
-        set { engine?.rate = newValue }
+        engine?.rate ?? 1
     }
 
     var audioDelay: Double {

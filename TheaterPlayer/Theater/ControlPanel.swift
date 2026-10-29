@@ -237,7 +237,7 @@ struct TransportControls: View {
                 in: 0...max(player.duration, 1)
             ) { editing in
                 if !editing, let target = scrubbing {
-                    player.seek(to: target)
+                    appModel.perform(.seek(to: target))
                     scrubbing = nil
                 }
             }
@@ -249,12 +249,12 @@ struct TransportControls: View {
             .font(.footnote)
             .foregroundStyle(.secondary)
             HStack(spacing: 28) {
-                Button { player.skip(by: -10) } label: { Image(systemName: "gobackward.10").font(.title) }
-                Button { player.togglePlay() } label: {
+                Button { appModel.perform(.skip(by: -10)) } label: { Image(systemName: "gobackward.10").font(.title) }
+                Button { appModel.perform(.togglePlay) } label: {
                     Image(systemName: player.isPlaying ? "pause.fill" : "play.fill").font(.largeTitle)
                         .frame(width: 64, height: 64)
                 }
-                Button { player.skip(by: 30) } label: { Image(systemName: "goforward.30").font(.title) }
+                Button { appModel.perform(.skip(by: 30)) } label: { Image(systemName: "goforward.30").font(.title) }
             }
             .buttonStyle(.borderless)
             VolumeSlider()

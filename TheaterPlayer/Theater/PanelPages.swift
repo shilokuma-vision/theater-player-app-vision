@@ -169,7 +169,7 @@ struct SpeedPage: View {
                     detail: speed == 1 ? String(localized: "ふつう") : nil,
                     selected: abs(player.rate - speed) < 0.01
                 ) {
-                    player.rate = speed
+                    appModel.perform(.setRate(speed))
                 }
             }
         }
