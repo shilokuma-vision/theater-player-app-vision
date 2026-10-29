@@ -146,6 +146,35 @@ struct PreferencesTests {
     }
 }
 
+/// 低音の既定を強めたとき（音響の設定の版 2）、前の版で保存した設定を引き上げる
+struct AudioSettingsMigrationTests {
+    func defaults(saving audio: CinemaAudioSettings) throws -> UserDefaults {
+        let suite = "AudioSettingsMigrationTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defaults.set(try JSONEncoder().encode(audio), forKey: "audio")
+        return defaults
+    }
+
+    @Test func raisesTheBassSavedByTheOldVersion() throws {
+        var old = CinemaAudioSettings()
+        old.bassBoostDB = 4
+        old.virtualBass = 0.5
+        let defaults = try defaults(saving: old)
+        let preferences = Preferences(defaults: defaults)
+        #expect(preferences.audio.bassBoostDB == CinemaAudioSettings().bassBoostDB)
+        #expect(preferences.audio.virtualBass == CinemaAudioSettings().virtualBass)
+        // 引き上げた値を保存しているので、次に読んでも同じ
+        #expect(Preferences(defaults: defaults).audio.bassBoostDB == CinemaAudioSettings().bassBoostDB)
+    }
+
+    @Test func keepsBassTheUserRaised() throws {
+        var old = CinemaAudioSettings()
+        old.bassBoostDB = 15
+        let preferences = Preferences(defaults: try defaults(saving: old))
+        #expect(preferences.audio.bassBoostDB == 15)
+    }
+}
+
 struct RecentItemsTests {
     @Test func resumesOnlyInTheMiddle() {
         var item = RecentItems.Item(name: "movie.mkv", bookmark: Data())
