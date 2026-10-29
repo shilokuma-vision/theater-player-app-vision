@@ -54,6 +54,28 @@ struct ScreenGeometryTests {
         #expect(ScreenMesh.rotate(SIMD2(0, 0), .clockwise90) == SIMD2(1, 0))
         #expect(ScreenMesh.rotate(SIMD2(1, 1), .upsideDown) == SIMD2(0, 0))
     }
+
+    /// 幕を閉じる：左のマスキング（Theater.usdz では x が -13.45〜-10.5、原点は 0）を、外側の縁はそのままに中央を越えるまで伸ばす
+    @Test func closedCurtainStretchesTheLeftMaskingPastTheCenter() {
+        let stretch = HorizontalStretch(inner: -10.5, outer: -13.45, origin: 0, toInner: 0.06, toOuter: -13.45)
+        #expect(stretch.scale > 4)
+        #expect(abs(stretch.map(-10.5, restOrigin: 0) - 0.06) < 1e-4)
+        #expect(abs(stretch.map(-13.45, restOrigin: 0) + 13.45) < 1e-4)
+        // 最大の範囲（幅 21 m）の左半分を、すき間なく覆う
+        #expect(stretch.map(-10.5, restOrigin: 0) > 0)
+        #expect(stretch.map(-13.45, restOrigin: 0) < -spec.maxWidth / 2)
+    }
+
+    /// 物の原点が縁から離れていても、縁が行き先に来る（右のマスキング・原点が 12 の物）
+    @Test func stretchKeepsTheEdgesWhereverTheOriginIs() {
+        let stretch = HorizontalStretch(inner: 10.5, outer: 13.45, origin: 12, toInner: -0.06, toOuter: 13.45)
+        #expect(abs(stretch.map(10.5, restOrigin: 12) + 0.06) < 1e-4)
+        #expect(abs(stretch.map(13.45, restOrigin: 12) - 13.45) < 1e-4)
+        // 作った位置のままなら、倍率 1 で動かない
+        let rest = HorizontalStretch(inner: 10.5, outer: 13.45, origin: 12, toInner: 10.5, toOuter: 13.45)
+        #expect(abs(rest.scale - 1) < 1e-6)
+        #expect(abs(rest.origin - 12) < 1e-5)
+    }
 }
 
 struct SeatTests {
