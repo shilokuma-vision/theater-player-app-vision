@@ -12,6 +12,11 @@ struct TheaterPlayer: App {
     @State private var appModel = AppModel()
     @State private var immersion: ImmersionStyle = .full
 
+    init() {
+        // 「ファイル」App にアプリのフォルダを出す（空だと出ないので、空なら案内を置く）
+        SharedFolder.prepare()
+    }
+
     var body: some Scene {
         WindowGroup(id: appModel.libraryWindowID) {
             rootView
