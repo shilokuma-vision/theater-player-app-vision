@@ -43,12 +43,14 @@ struct TheaterView: View {
                     stage.attach(engine)
                 }
                 self.stage = stage
-                updates = content.subscribe(to: SceneEvents.Update.self) { event in
-                    stage.update(
+                // 購読の閉包では self（TheaterView）を掴まない。掴むと @State の updates → 購読 → 閉包 → @State の循環になり、
+                // 映画館を閉じても舞台（映画館のモデル）が解放されない。舞台は @State と AppModel が持つので、ここでは弱く持つ
+                updates = content.subscribe(to: SceneEvents.Update.self) { [weak stage, appModel] event in
+                    stage?.update(
                         deltaTime: event.deltaTime,
                         player: appModel.player,
                         preferences: appModel.preferences,
-                        isShowingWeb: isShowingYouTube
+                        isShowingWeb: appModel.isShowingYouTube
                     )
                 }
             } catch {
@@ -67,7 +69,7 @@ struct TheaterView: View {
             }
             let player = appModel.player
             // デバッグの YouTube を出しているあいだは、止めた動画・静止画を隠し、マスキングを YouTube のページ（16:9）に合わせる
-            let showsWeb = isShowingYouTube
+            let showsWeb = appModel.isShowingYouTube
             let hasVideo = !showsWeb && (player.info.map { !$0.isAudioOnly } ?? false)
             stage.show(still: showsWeb ? nil : player.still)
             if hasVideo {
@@ -145,15 +147,6 @@ struct TheaterView: View {
         }
     }
 
-    /// デバッグの YouTube を、スクリーンの前に出している
-    private var isShowingYouTube: Bool {
-        #if DEBUG
-        appModel.youTube.isOpen
-        #else
-        false
-        #endif
-    }
-
     /// 操作パネル（添付）と、その下のつまみを置く。パネルの大きさが変わったら（畳む・ページを替える）、つまみを付いて行かせる。
     /// つまみは、パネルを動かしている間は掴んでいる見た目にする
     private func addControlPanel(to content: RealityViewContent, attachments: RealityViewAttachments) async {
@@ -166,7 +159,8 @@ struct TheaterView: View {
         if let panel = attachments.entity(for: "controls") {
             root.addChild(panel)
             PanelPlacement.follow(handle: handle, panel: panel)
-            panelUpdates = content.subscribe(to: SceneEvents.Update.self) { [weak handle, weak panel] event in
+            // updates と同じく、self を掴まない（appModel だけを持つ）
+            panelUpdates = content.subscribe(to: SceneEvents.Update.self) { [weak handle, weak panel, appModel] event in
                 if let handle, let panel {
                     PanelPlacement.follow(handle: handle, panel: panel)
                     PanelPlacement.update(handle: handle, grabbing: appModel.isMovingPanel, deltaTime: event.deltaTime)

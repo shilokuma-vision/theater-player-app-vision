@@ -44,6 +44,15 @@ final class AppModel {
     let youTube = YouTubeBrowser()
     #endif
 
+    /// デバッグの YouTube を、スクリーンの前に出している
+    var isShowingYouTube: Bool {
+        #if DEBUG
+        youTube.isOpen
+        #else
+        false
+        #endif
+    }
+
     init(preferences: Preferences = Preferences(), recents: RecentItems = RecentItems()) {
         self.preferences = preferences
         self.recents = recents
