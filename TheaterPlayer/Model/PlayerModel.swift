@@ -352,7 +352,7 @@ final class PlayerModel {
 // MARK: - 再生の操作（PlayerCommand）と Now Playing
 
 extension PlayerModel {
-    /// 再生の操作を行う（AppModel.perform(_:) から呼ぶ。パネルを出す操作は AppModel が受ける）。動画・音楽を開いていなければ何もしない。
+    /// 再生の操作を行う（AppModel.perform(_:) から呼ぶ。パネルを出す・音量は AppModel が受ける）。動画・音楽を開いていなければ何もしない。
     /// 開演の流れ（show.ceremony）のあいだは、止めると本編を始めずに止め、シークするとその位置からすぐに始める
     func perform(_ command: PlayerCommand) {
         guard hasPlayback, let engine else {
@@ -379,9 +379,15 @@ extension PlayerModel {
             publishNowPlaying()
         case .startNow:
             startNow()
-        case .showPanel:
+        case .changeVolume, .showPanel:
             break
         }
+    }
+
+    /// 音量を delta だけ変える（何も開いていなくても変えられる。次に再生するときの音量）
+    func changeVolume(by delta: Double) {
+        preferences.volume = PlayerCommand.volume(preferences.volume, changedBy: delta, maximum: Preferences.maxVolume)
+        applyAudioPreferences()
     }
 
     /// 位置を動かす操作（スキップ・シーク・チャプター）。動く先が無ければ（最後のチャプターで「次へ」）何もしない

@@ -59,6 +59,8 @@ final class AppModel {
         switch command {
         case .showPanel:
             panelInteraction += 1
+        case let .changeVolume(delta):
+            player.changeVolume(by: delta)
         default:
             player.perform(command)
         }
