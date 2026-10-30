@@ -1,0 +1,81 @@
+テスト用のファイルを作るため、AC-3・E-AC-3 のエンコーダーが DRC の値（dynrng）を書けるようにする（FFmpeg 9.0.2）
+
+FFmpeg のエンコーダーは DRC の値を書かない（どのブロックも dynrnge = 0）ので、そのままでは
+デコーダーの drc_scale を変えても音が変わらず、確かめられない。scripts/make-drc-test-files.sh の
+ホストの ffmpeg だけに当てる（アプリの FFmpeg には当てない。scripts/ffmpeg/patches/ とは別にしている）。
+
+- 環境変数 TP_DYNRNG_CODE（0〜255）があれば、各フレームの最初のブロックに dynrng を書く
+- TP_DYNRNG_PERIOD（フレームの数）があれば、その数ごとに 0 dB（0）と TP_DYNRNG_CODE を交互にする（0 dB から始める）
+
+--- a/libavcodec/ac3enc.c
++++ b/libavcodec/ac3enc.c
+@@ -27,6 +27,7 @@
+  */
+ 
+ #include <stdint.h>
++#include <stdlib.h>
+ 
+ #include "libavutil/attributes.h"
+ #include "libavutil/avassert.h"
+@@ -54,6 +55,30 @@
+ #define SAMPLETYPE_SIZE(ctx) (sizeof(float) == sizeof(int32_t) ? sizeof(float) : \
+                                   (ctx)->fixed_point ? sizeof(int32_t) : sizeof(float))
+ 
++/*
++ * TheaterPlayer のテスト用のファイルを作るため（アプリには入れない）。
++ * 環境変数 TP_DYNRNG_CODE（0〜255）があれば、各フレームの最初のブロックに DRC の値（dynrng）を書く。
++ * TP_DYNRNG_PERIOD（フレームの数）があれば、その数ごとに 0 dB（0）と TP_DYNRNG_CODE を交互にする（0 dB から始める）。
++ */
++static int tp_dynrng_frame;
++
++static int tp_dynrng_enabled(void)
++{
++    return getenv("TP_DYNRNG_CODE") != NULL;
++}
++
++static int tp_dynrng_code(void)
++{
++    const char *code   = getenv("TP_DYNRNG_CODE");
++    const char *period = getenv("TP_DYNRNG_PERIOD");
++    int frames = period ? atoi(period) : 0;
++    if (!code)
++        return 0;
++    if (frames > 0 && (tp_dynrng_frame / frames) % 2 == 0)
++        return 0;
++    return (int)strtol(code, NULL, 0) & 0xFF;
++}
++
+ typedef struct AC3Mant {
+     int16_t *qmant1_ptr, *qmant2_ptr, *qmant4_ptr; ///< mantissa pointers for bap=1,2,4
+     int mant1_cnt, mant2_cnt, mant4_cnt;    ///< mantissa counts for bap=1,2,4
+@@ -1013,6 +1038,8 @@
+ 
+         /* dynamic range */
+         frame_bits++;
++        if (blk == 0 && tp_dynrng_enabled())
++            frame_bits += 8;
+ 
+         /* spectral extension */
+         if (s->eac3)
+@@ -1704,7 +1731,12 @@
+     }
+ 
+     /* dynamic range codes */
+-    put_bits(pb, 1, 0);
++    if (blk == 0 && tp_dynrng_enabled()) {
++        put_bits(pb, 1, 1);
++        put_bits(pb, 8, tp_dynrng_code());
++    } else {
++        put_bits(pb, 1, 0);
++    }
+ 
+     /* spectral extension */
+     if (s->eac3)
+@@ -1976,6 +2008,7 @@
+         output_audio_block(s, &pb, blk);
+ 
+     output_frame_end(s, &pb);
++    tp_dynrng_frame++;
+ }
+ 
+ int ff_ac3_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,

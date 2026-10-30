@@ -63,6 +63,11 @@ public final class CinemaProcessor: @unchecked Sendable {
         state.reset()
     }
 
+    /// いちばん新しく渡した設定（まだ処理に効いていない分も含む。どのスレッドから読んでもよい）
+    public var latestSettings: CinemaAudioSettings {
+        pendingSettings.withLock { $0 }
+    }
+
     /// input：入力のチャンネルごとの frames サンプル。output：スピーカーごとの frames サンプル（feeds の順）
     public func process(input: [UnsafePointer<Float>], frames: Int, output: [UnsafeMutablePointer<Float>]) {
         var offset = 0
