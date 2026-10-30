@@ -219,15 +219,20 @@ final class PlayerModel {
     // MARK: - 操作
 
     func togglePlay() {
-        guard let engine else {
+        if isPlaying {
+            pause()
+        } else {
+            engine?.play()
+        }
+    }
+
+    /// 止める（位置を保存する）。止まっていれば何もしない
+    func pause() {
+        guard isPlaying, let engine else {
             return
         }
-        if isPlaying {
-            engine.pause()
-            saveProgress()
-        } else {
-            engine.play()
-        }
+        engine.pause()
+        saveProgress()
     }
 
     func seek(to time: Double) {

@@ -13,6 +13,10 @@ import TheaterMedia
 struct ControlPanel: View {
     enum Page: Hashable {
         case main, audioTracks, subtitles, speed, stereo, lighting, seats, sound
+        #if DEBUG
+        /// デバッグ用：YouTube の検索
+        case youTube
+        #endif
     }
 
     let stage: TheaterStage?
@@ -84,6 +88,10 @@ struct ControlPanel: View {
             SeatPicker(stage: stage, page: $page)
         case .sound:
             SoundPage(stage: stage, page: $page)
+        #if DEBUG
+        case .youTube:
+            YouTubePage(page: $page)
+        #endif
         }
     }
 
@@ -122,6 +130,16 @@ struct ControlPanel: View {
                 } label: {
                     Label("ライブラリ", systemImage: "rectangle.stack")
                 }
+                #if DEBUG
+                // デバッグ用の YouTube（上の段はボタンで埋まっているので、こちらに置く）
+                Button {
+                    page = .youTube
+                    touch()
+                } label: {
+                    Label("YouTube", systemImage: "play.rectangle")
+                }
+                .accessibilityIdentifier("youTubePage")
+                #endif
                 Spacer()
                 // 下のつまみで動かしたパネルを、座ったときのひざの上へ戻す
                 if appModel.preferences.panelPosition != nil {

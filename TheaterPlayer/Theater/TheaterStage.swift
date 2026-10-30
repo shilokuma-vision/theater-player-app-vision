@@ -224,8 +224,13 @@ final class TheaterStage {
 
     /// 映像が無いとき（開いていない・音楽）のマスキング：最大の範囲
     func resetMasking() {
+        setMasking(aspect: 2.0)
+    }
+
+    /// 縦横比 aspect の範囲にマスキングを合わせる（映像の形式は忘れる。次に映像を出すときに合わせ直す）
+    func setMasking(aspect: Float) {
         currentFormat = nil
-        let frame = ScreenFrame(aspect: 2.0, spec: layout.screen)
+        let frame = ScreenFrame(aspect: aspect, spec: layout.screen)
         // RealityView の update から何度も呼ばれるので、変わったときだけ書き換える（見ている View を作り直させない）
         if screenFrame != frame {
             screenFrame = frame
@@ -250,7 +255,9 @@ final class TheaterStage {
 
     // MARK: - 毎フレーム
 
-    func update(deltaTime: Double, player: PlayerModel, preferences: Preferences) {
+    /// isShowingWeb：スクリーンの前に Web のページ（デバッグの YouTube）を出している。
+    /// 上映中と同じく客電を落とす。ページの色は分からないので、スクリーンの照り返しは無し
+    func update(deltaTime: Double, player: PlayerModel, preferences: Preferences, isShowingWeb: Bool = false) {
         if let engine = player.engine {
             followRenderer(of: engine)
         }
@@ -259,8 +266,8 @@ final class TheaterStage {
         let still = player.still
         let values = lighting.step(
             deltaTime: deltaTime,
-            playing: player.isPlaying || still != nil,
-            hasVideo: hasVideo || still != nil,
+            playing: player.isPlaying || still != nil || isShowingWeb,
+            hasVideo: (hasVideo || still != nil) && !isShowingWeb,
             preferences: preferences,
             light: still?.light ?? player.engine?.screenLight()
         )
