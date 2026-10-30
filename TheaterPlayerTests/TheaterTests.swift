@@ -88,6 +88,49 @@ struct TheaterLayoutTests {
     }
 }
 
+struct SeatChartTests {
+    func chart() throws -> (TheaterLayout, SeatChart) {
+        let url = try #require(Bundle.main.url(forResource: "TheaterLayout", withExtension: "json"))
+        let layout = try TheaterLayout.load(from: url)
+        return (layout, SeatChart(rows: layout.seatRows, sections: layout.seatSections()))
+    }
+
+    /// 席の四角は全席ぶんあり、絵の中に収まり、重ならない。通路（ブロックの境目）では間が広い
+    @Test func seatsFitWithoutOverlap() throws {
+        let (layout, chart) = try chart()
+        let bounds = CGRect(origin: .zero, size: chart.size)
+        let frames = layout.seats.compactMap { chart.seatFrames[$0.id] }
+        #expect(frames.count == layout.seats.count)
+        #expect(frames.allSatisfy { bounds.contains($0) })
+        for (index, frame) in frames.enumerated() {
+            #expect(!frames[(index + 1)...].contains { $0.intersects(frame) })
+        }
+        let left = try #require(chart.seatFrames["G-8"])
+        let right = try #require(chart.seatFrames["G-9"])
+        let next = try #require(chart.seatFrames["G-10"])
+        #expect(right.minX - left.maxX > next.minX - right.maxX)
+    }
+
+    /// 区画の枠（ボタンの範囲）は 12 個で、絵の中に収まり、重ならず、その区画の席だけを囲む
+    @Test func sectionFramesSurroundTheirSeats() throws {
+        let (layout, chart) = try chart()
+        let bounds = CGRect(origin: .zero, size: chart.size)
+        let frames = chart.sections.compactMap { chart.sectionFrames[$0.id] }
+        #expect(frames.count == 12)
+        #expect(frames.allSatisfy { bounds.contains($0) })
+        for (index, frame) in frames.enumerated() {
+            #expect(!frames[(index + 1)...].contains { $0.intersects(frame) })
+        }
+        for section in chart.sections {
+            let frame = try #require(chart.sectionFrames[section.id])
+            for seat in layout.seats {
+                let seatFrame = try #require(chart.seatFrames[seat.id])
+                #expect(frame.contains(seatFrame) == section.contains(seat))
+            }
+        }
+    }
+}
+
 @MainActor
 struct LightingDirectorTests {
     func preferences() -> Preferences {
