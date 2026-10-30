@@ -39,6 +39,10 @@ final class AppModel {
     let recents: RecentItems
     /// 再生（映画館を開いたときに作る）
     let player: PlayerModel
+    #if DEBUG
+    /// デバッグ用：スクリーンの前で開く YouTube
+    let youTube = YouTubeBrowser()
+    #endif
 
     init(preferences: Preferences = Preferences(), recents: RecentItems = RecentItems()) {
         self.preferences = preferences

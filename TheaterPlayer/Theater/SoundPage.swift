@@ -62,7 +62,7 @@ struct SoundPage: View {
                     get: { Double(preferences.audio.bassBoostDB) },
                     set: { preferences.audio.bassBoostDB = Float($0) }
                 ),
-                range: 0...12,
+                range: 0...18,
                 format: { String(format: "+%.0f dB", $0) }
             )
             LabeledSlider(

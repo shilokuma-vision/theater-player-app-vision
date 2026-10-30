@@ -62,11 +62,15 @@ final class Preferences {
     static let defaultHouseLevel = 3.0
     /// 客電の明るさの上限（これより上げると、スクリーン・照明器具が白く飛ぶ）
     static let maxHouseLevel = 4.0
+    /// 音量の上限（等倍の 4 倍＝ +12 dB。1 を超えた分は映画館の音響処理のリミッターの前で上げる）
+    static let maxVolume = 4.0
+    /// 音響の設定の版（既定を変えたら上げ、前の版で保存した設定を引き上げる）
+    static let audioVersion = 2
     private let defaults: UserDefaults
 
     private enum Key: String {
         // room は以前 @AppStorage("room") で保存していた。同じキーを読む
-        case houseLevel, showLevel, autoDim, showtime, screenSpill, ambientLevel, seatID, volume, audio, room, panelPosition
+        case houseLevel, showLevel, autoDim, showtime, screenSpill, ambientLevel, seatID, volume, audio, room, panelPosition, audioVersion
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -85,12 +89,25 @@ final class Preferences {
         } else {
             panelPosition = nil
         }
+        var raised = false
         if let data = defaults.data(forKey: Key.audio.rawValue),
-           let decoded = try? JSONDecoder().decode(CinemaAudioSettings.self, from: data) {
+           var decoded = try? JSONDecoder().decode(CinemaAudioSettings.self, from: data) {
+            // 低音の既定を強めた（版 2）。前の版で保存した設定は、低音を新しい既定まで引き上げる（自分で強めにした値は残す）
+            if defaults.integer(forKey: Key.audioVersion.rawValue) < Self.audioVersion {
+                let latest = CinemaAudioSettings()
+                decoded.bassBoostDB = max(decoded.bassBoostDB, latest.bassBoostDB)
+                decoded.virtualBass = max(decoded.virtualBass, latest.virtualBass)
+                raised = true
+            }
             audio = decoded
         } else {
             audio = CinemaAudioSettings()
         }
+        // init の中の代入では didSet が呼ばれないので、引き上げた値は自分で保存する
+        if raised {
+            saveAudio()
+        }
+        defaults.set(Self.audioVersion, forKey: Key.audioVersion.rawValue)
     }
 
     private func save(_ value: Any, for key: Key) {
