@@ -73,6 +73,8 @@ final class AudioDecoder: @unchecked Sendable {
     private var writtenInSegment = 0
     private let feeds: PlanarFeeds
     private var tempo: AudioTempo?
+    /// デコーダーのストリームの DRC を合わせた「音量の幅」（AC-3・E-AC-3 のときだけ。ほかの形式は nil）
+    private var compressionRange: CinemaAudioSettings.DynamicRange?
     private let rateBits = Atomic<UInt64>(Double(1).bitPattern)
     /// 音の時刻のずれの許し（超えたら無音で埋める・重なりを捨てる。FFmpeg の aresample の min_hard_comp と同じ）
     private static let driftTolerance = 0.1
@@ -111,7 +113,18 @@ final class AudioDecoder: @unchecked Sendable {
         feeds = PlanarFeeds(count: processor.feeds.count, frames: 8_192)
         try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "音声の設定")
         context.pointee.pkt_timebase = stream.pointee.time_base
-        try check(avcodec_open2(context, decoder, nil), "音声のデコーダーを開けません")
+        var options: OpaquePointer?
+        if StreamCompression.applies(to: decoder.pointee.id) {
+            let range = processor.latestSettings.dynamicRange
+            StreamCompression.addOptions(for: range, to: &options)
+            compressionRange = range
+        }
+        let opened = avcodec_open2(context, decoder, &options)
+        av_dict_free(&options)
+        try check(opened, "音声のデコーダーを開けません")
+        if let compressionRange {
+            logCompression(compressionRange)
+        }
     }
 
     deinit {
@@ -147,6 +160,7 @@ final class AudioDecoder: @unchecked Sendable {
                     continue
                 }
                 prepare(serial: serial)
+                followDynamicRange()
                 if avcodec_send_packet(codec, packet) >= 0 {
                     receiveFrames(serial: serial)
                 }
@@ -179,6 +193,29 @@ final class AudioDecoder: @unchecked Sendable {
         // atempo の中にたまった前の位置の音を捨てる
         tempo = nil
         writtenInSegment = 0
+    }
+
+    /// 「音量の幅」が変わっていたら、ストリームの DRC を合わせる（デコードのスレッドで、パケットを送る前に。
+    /// デコーダーを開き直さないので、途中の音が途切れない）
+    func followDynamicRange() {
+        guard let current = compressionRange else {
+            return
+        }
+        let range = processor.latestSettings.dynamicRange
+        guard range != current, StreamCompression.apply(range, to: codec) else {
+            return
+        }
+        compressionRange = range
+        logCompression(range)
+    }
+
+    private func logCompression(_ range: CinemaAudioSettings.DynamicRange) {
+        Diagnostics.log("audio drc_scale=\(StreamCompression.scale(for: range)) dynamicRange=\(range)")
+    }
+
+    /// デコーダーの今の drc_scale（AC-3・E-AC-3 でなければ nil）
+    var streamCompressionScale: Double? {
+        compressionRange == nil ? nil : StreamCompression.currentScale(of: codec)
     }
 
     private func receiveFrames(serial: Int) {
