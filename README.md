@@ -335,7 +335,7 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 |---|---|---|
 | UserDefaults | `CA92.1`（アプリ自身だけが読み書きする設定） | 利用者の設定（`Preferences`） |
 | File timestamp | `C617.1`（アプリのコンテナの中のファイル）・`3B52.1`（利用者が選んだファイル） | FFmpeg の `stat`・`fstat`・`lstat`。file のプロトコルが、開いたファイルの大きさと種類を `fstat` で見る |
-| System boot time | `35F9.1`（アプリの中の出来事のあいだの経過時間） | TheaterMedia の `mach_absolute_time`。音を最後に鳴らした時刻からの経過で、映像を音に合わせる |
+| System boot time | `35F9.1`（アプリの中の出来事のあいだの経過時間）・`8FFB.1`（AVFAudio などの出来事の時刻の計算） | TheaterMedia の `mach_absolute_time`。音の描画で受け取る AVAudio の時刻（`hostTime`）と突き合わせ、音を最後に鳴らした時刻からの経過で映像を音に合わせる |
 
 - 静的にリンクした FFmpeg が使う API も、このアプリの申告になります。漏れていると、アップロードで ITMS-91053（Missing API declaration）の指摘を受けます
 - FFmpeg の構成（`scripts/build-ffmpeg.sh` の configure）を変えたときや、理由の申告が要る API を使うコードを足したときは、Release の実機向けのバイナリを `nm -u` で見て、[Apple の一覧](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype)の関数を参照していないか確かめます
