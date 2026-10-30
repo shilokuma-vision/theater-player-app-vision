@@ -33,6 +33,29 @@ public struct TheaterLayout: Decodable, Sendable {
         var seen = Set<String>()
         return seats.sorted { $0.rowIndex < $1.rowIndex }.compactMap { seen.insert($0.row).inserted ? $0.row : nil }
     }
+
+    /// 座席表の列（前から）。席は席番号の順に並べ、ブロックの境目（通路）を印す
+    public var seatRows: [SeatRow] {
+        Dictionary(grouping: seats, by: \.rowIndex).sorted { $0.key < $1.key }.map { index, seats in
+            let sorted = seats.sorted { $0.number < $1.number }
+            let aisles = zip(sorted, sorted.dropFirst()).filter { left, right in
+                right.number == left.number + 1 && left.block != right.block
+            }
+            return SeatRow(id: index, letter: sorted.first?.row ?? "", seats: sorted, aisleBefore: Set(aisles.map(\.1.id)))
+        }
+    }
+}
+
+/// 座席表の 1 列
+public struct SeatRow: Sendable, Identifiable {
+    /// 列の番号（前から 0）
+    public let id: Int
+    /// 列の文字（A〜N）
+    public let letter: String
+    /// 席番号の順（スクリーンに向かって左から）
+    public let seats: [Seat]
+    /// 通路のすぐ右の席（左どなりとブロックが違う）。座席表では、この席の前にすき間を空ける
+    public let aisleBefore: Set<String>
 }
 
 /// 部屋の範囲
