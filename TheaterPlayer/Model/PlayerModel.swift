@@ -74,17 +74,6 @@ final class PlayerModel {
         state == .playing || state == .buffering || show.ceremony != nil
     }
 
-    /// 今の上映の段階（客電・幕を決める）
-    var showPhase: ShowPhase {
-        ShowPhase.resolve(
-            ceremony: show.ceremony,
-            state: state,
-            showingStill: still != nil,
-            inCredits: show.isCredits(at: currentTime),
-            showtime: preferences.showtime && info.map { !$0.isAudioOnly } ?? false
-        )
-    }
-
     /// 何か開いている（動画・音楽・画像・PDF）
     var hasMedia: Bool {
         info != nil || still != nil
@@ -268,15 +257,6 @@ final class PlayerModel {
         }
     }
 
-    /// 開演の流れを省いて、すぐに本編を始める
-    func startNow() {
-        guard show.ceremony != nil else {
-            return
-        }
-        show.cancel()
-        engine?.play()
-    }
-
     func skip(by seconds: Double) {
         seek(to: max(0, min(currentTime + seconds, duration)))
     }
@@ -387,5 +367,29 @@ final class PlayerModel {
             return
         }
         recents.update(item.id, position: position ?? currentTime, duration: info.duration, isAudioOnly: info.isAudioOnly)
+    }
+}
+
+// MARK: - 上映の進行
+
+extension PlayerModel {
+    /// 今の上映の段階（客電・幕を決める）
+    var showPhase: ShowPhase {
+        ShowPhase.resolve(
+            ceremony: show.ceremony,
+            state: state,
+            showingStill: still != nil,
+            inCredits: show.isCredits(at: currentTime),
+            showtime: preferences.showtime && info.map { !$0.isAudioOnly } ?? false
+        )
+    }
+
+    /// 開演の流れを省いて、すぐに本編を始める
+    func startNow() {
+        guard show.ceremony != nil else {
+            return
+        }
+        show.cancel()
+        engine?.play()
     }
 }
