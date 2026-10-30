@@ -123,10 +123,6 @@ struct ControlPanel: View {
                 pageButton("明るさ", systemImage: "lightbulb.max", page: .lighting)
                 pageButton("座席", systemImage: "chair", page: .seats)
                 pageButton("音響", systemImage: "hifispeaker.2", page: .sound)
-                #if DEBUG
-                pageButton("YouTube", systemImage: "play.rectangle", page: .youTube)
-                    .accessibilityIdentifier("youTubePage")
-                #endif
             }
             HStack {
                 Button {
@@ -134,6 +130,16 @@ struct ControlPanel: View {
                 } label: {
                     Label("ライブラリ", systemImage: "rectangle.stack")
                 }
+                #if DEBUG
+                // デバッグ用の YouTube（上の段はボタンで埋まっているので、こちらに置く）
+                Button {
+                    page = .youTube
+                    touch()
+                } label: {
+                    Label("YouTube", systemImage: "play.rectangle")
+                }
+                .accessibilityIdentifier("youTubePage")
+                #endif
                 Spacer()
                 // 下のつまみで動かしたパネルを、座ったときのひざの上へ戻す
                 if appModel.preferences.panelPosition != nil {
