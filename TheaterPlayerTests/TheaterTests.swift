@@ -68,6 +68,24 @@ struct TheaterLayoutTests {
         #expect(center.seats.first { $0.id == "G-9" }?.block == "C")
         #expect(center.seats.first { $0.id == "G-8" }?.block == "L")
     }
+
+    /// 座席表の区画は、列を A〜C・D〜F・G〜J・K〜N に分け、それぞれを左・中央・右のブロックに分けた 12 個。
+    /// どの席も、ちょうど 1 つの区画に入る
+    @Test func seatSectionsSplitRowsAndBlocks() throws {
+        let layout = try layout()
+        let sections = layout.seatSections()
+        #expect(sections.map(\.id) == ["L-A", "C-A", "R-A", "L-D", "C-D", "R-D", "L-G", "C-G", "R-G", "L-K", "C-K", "R-K"])
+        // 同じ前後のまとまりの 3 区画は、同じ列を持つ
+        #expect(sections.map { $0.rows.map(\.letter).joined() } == ["ABC", "DEF", "GHJ", "KLMN"].flatMap { Array(repeating: $0, count: 3) })
+        #expect(sections.map(\.seats.count) == [24, 54, 24, 24, 54, 24, 24, 54, 24, 32, 72, 32])
+        for seat in layout.seats {
+            #expect(sections.filter { $0.contains(seat) }.count == 1)
+            #expect(sections.filter { $0.seats.contains(seat) }.count == 1)
+        }
+        let center = try #require(sections.first { $0.id == "C-G" })
+        #expect(center.rows.first?.seats.map(\.number) == Array(9...26))
+        #expect(center.rows.allSatisfy { $0.aisleBefore.isEmpty })
+    }
 }
 
 @MainActor
