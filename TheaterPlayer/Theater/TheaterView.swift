@@ -48,7 +48,7 @@ struct TheaterView: View {
                         deltaTime: event.deltaTime,
                         player: appModel.player,
                         preferences: appModel.preferences,
-                        isShowingWeb: isShowingYouTube
+                        isShowingWeb: appModel.isShowingYouTube
                     )
                 }
             } catch {
@@ -67,7 +67,7 @@ struct TheaterView: View {
             }
             let player = appModel.player
             // デバッグの YouTube を出しているあいだは、止めた動画・静止画を隠し、マスキングを YouTube のページ（16:9）に合わせる
-            let showsWeb = isShowingYouTube
+            let showsWeb = appModel.isShowingYouTube
             let hasVideo = !showsWeb && (player.info.map { !$0.isAudioOnly } ?? false)
             stage.show(still: showsWeb ? nil : player.still)
             if hasVideo {
@@ -143,15 +143,6 @@ struct TheaterView: View {
             }
             appModel.immersiveSpaceState = .closed
         }
-    }
-
-    /// デバッグの YouTube を、スクリーンの前に出している
-    private var isShowingYouTube: Bool {
-        #if DEBUG
-        appModel.youTube.isOpen
-        #else
-        false
-        #endif
     }
 
     /// 操作パネル（添付）と、その下のつまみを置く。パネルの大きさが変わったら（畳む・ページを替える）、つまみを付いて行かせる。
