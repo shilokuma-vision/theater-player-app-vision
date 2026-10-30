@@ -43,8 +43,10 @@ struct TheaterView: View {
                     stage.attach(engine)
                 }
                 self.stage = stage
-                updates = content.subscribe(to: SceneEvents.Update.self) { event in
-                    stage.update(
+                // 購読の閉包では self（TheaterView）を掴まない。掴むと @State の updates → 購読 → 閉包 → @State の循環になり、
+                // 映画館を閉じても舞台（映画館のモデル）が解放されない。舞台は @State と AppModel が持つので、ここでは弱く持つ
+                updates = content.subscribe(to: SceneEvents.Update.self) { [weak stage, appModel] event in
+                    stage?.update(
                         deltaTime: event.deltaTime,
                         player: appModel.player,
                         preferences: appModel.preferences,
@@ -157,7 +159,8 @@ struct TheaterView: View {
         if let panel = attachments.entity(for: "controls") {
             root.addChild(panel)
             PanelPlacement.follow(handle: handle, panel: panel)
-            panelUpdates = content.subscribe(to: SceneEvents.Update.self) { [weak handle, weak panel] event in
+            // updates と同じく、self を掴まない（appModel だけを持つ）
+            panelUpdates = content.subscribe(to: SceneEvents.Update.self) { [weak handle, weak panel, appModel] event in
                 if let handle, let panel {
                     PanelPlacement.follow(handle: handle, panel: panel)
                     PanelPlacement.update(handle: handle, grabbing: appModel.isMovingPanel, deltaTime: event.deltaTime)
