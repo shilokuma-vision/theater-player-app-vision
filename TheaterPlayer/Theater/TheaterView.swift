@@ -27,7 +27,7 @@ struct TheaterView: View {
             let anchor = Entity()
             anchor.name = "ImmersiveRoot"
             content.add(anchor)
-            addControlPanel(to: content, attachments: attachments)
+            await addControlPanel(to: content, attachments: attachments)
             do {
                 let stage = try await TheaterStage.load(preferences: appModel.preferences)
                 anchor.addChild(stage.root)
@@ -151,20 +151,22 @@ struct TheaterView: View {
         #endif
     }
 
-    /// 操作パネル（添付）と、その下のつまみを置く。パネルの大きさが変わったら（畳む・ページを替える）、つまみを付いて行かせる
-    private func addControlPanel(to content: RealityViewContent, attachments: RealityViewAttachments) {
+    /// 操作パネル（添付）と、その下のつまみを置く。パネルの大きさが変わったら（畳む・ページを替える）、つまみを付いて行かせる。
+    /// つまみは、パネルを動かしている間は掴んでいる見た目にする
+    private func addControlPanel(to content: RealityViewContent, attachments: RealityViewAttachments) async {
         let root = Entity()
         root.name = PanelPlacement.rootName
         PanelPlacement.place(root, at: appModel.preferences.panelPosition ?? PanelPlacement.defaultPosition)
         content.add(root)
-        let handle = PanelPlacement.makeHandle()
+        let handle = await PanelPlacement.makeHandle()
         root.addChild(handle)
         if let panel = attachments.entity(for: "controls") {
             root.addChild(panel)
             PanelPlacement.follow(handle: handle, panel: panel)
-            panelUpdates = content.subscribe(to: SceneEvents.Update.self) { [weak handle, weak panel] _ in
+            panelUpdates = content.subscribe(to: SceneEvents.Update.self) { [weak handle, weak panel] event in
                 if let handle, let panel {
                     PanelPlacement.follow(handle: handle, panel: panel)
+                    PanelPlacement.update(handle: handle, grabbing: appModel.isMovingPanel, deltaTime: event.deltaTime)
                 }
             }
         }
