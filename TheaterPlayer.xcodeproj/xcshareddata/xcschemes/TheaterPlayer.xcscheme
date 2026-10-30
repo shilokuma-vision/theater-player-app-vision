@@ -71,6 +71,16 @@
                ReferencedContainer = "container:Packages/TheaterCore">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "TheaterMediaTests"
+               BuildableName = "TheaterMediaTests"
+               BlueprintName = "TheaterMediaTests"
+               ReferencedContainer = "container:Packages/TheaterMedia">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

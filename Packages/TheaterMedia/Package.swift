@@ -42,6 +42,18 @@ let package = Package(
             swiftSettings: [
                 .enableUpcomingFeature("MemberImportVisibility")
             ]
+        ),
+        // FFmpeg は visionOS 向けにしか作らないので、visionOS の Simulator で回す（アプリのスキームのテストに入れている）
+        .testTarget(
+            name: "TheaterMediaTests",
+            dependencies: [
+                "TheaterMedia",
+                "CFFmpeg",
+                .product(name: "CinemaAudio", package: "TheaterCore")
+            ],
+            resources: [
+                .copy("Fixtures")
+            ]
         )
     ]
 )
