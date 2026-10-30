@@ -335,7 +335,31 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 - プロジェクトはフォルダ同期グループ（Xcode 16 以降の形式）で管理しているため、ファイルの追加・削除で pbxproj は変わりません
 - SwiftLint は Build Tool Plugin として全ターゲットに適用され、CI では `swiftlint lint --strict` としても実行されます。ルールは [.swiftlint.yml](.swiftlint.yml) で管理します
 - CI のワークフローは `*.xcodeproj` の名前と同名の共有スキームが存在することを前提にしています
-- [TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) はプライバシーマニフェストです。UserDefaults（`@AppStorage`）の利用だけを申告しています。データの収集・トラッキング・ほかの理由の申告が必要な API を足したら、ここと App Store Connect の「App のプライバシー」を更新してください
+- [TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) はプライバシーマニフェストです（下の「プライバシーマニフェスト」）。データの収集・トラッキング・ほかの理由の申告が必要な API を足したら、ここと App Store Connect の「App のプライバシー」を更新してください
+
+### プライバシーマニフェスト
+
+トラッキングとデータの収集はしていません。理由の申告が要る API は、次のものを申告しています。
+
+| カテゴリ | 理由 | 使っている所 |
+|---|---|---|
+| UserDefaults | `CA92.1`（アプリ自身だけが読み書きする設定） | 利用者の設定（`Preferences`） |
+| File timestamp | `C617.1`（アプリのコンテナの中のファイル）・`3B52.1`（利用者が選んだファイル） | FFmpeg の `stat`・`fstat`・`lstat`。file のプロトコルが、開いたファイルの大きさと種類を `fstat` で見る |
+| System boot time | `35F9.1`（アプリの中の出来事のあいだの経過時間）・`8FFB.1`（AVFAudio などの出来事の時刻の計算） | TheaterMedia の `mach_absolute_time`。音の描画で受け取る AVAudio の時刻（`hostTime`）と突き合わせ、音を最後に鳴らした時刻からの経過で映像を音に合わせる |
+
+- 静的にリンクした FFmpeg が使う API も、このアプリの申告になります。漏れていると、アップロードで ITMS-91053（Missing API declaration）の指摘を受けます
+- FFmpeg の構成（`scripts/build-ffmpeg.sh` の configure）を変えたときや、理由の申告が要る API を使うコードを足したときは、Release の実機向けのバイナリを `nm -u` で見て、[Apple の一覧](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype)の関数を参照していないか確かめます
+
+```bash
+xcodebuild build -project TheaterPlayer.xcodeproj -scheme TheaterPlayer -configuration Release -destination 'generic/platform=visionOS' -derivedDataPath /tmp/TheaterPlayer-Release CODE_SIGNING_ALLOWED=NO -skipPackagePluginValidation
+```
+
+```bash
+nm -u /tmp/TheaterPlayer-Release/Build/Products/Release-xros/TheaterPlayer.app/TheaterPlayer | grep -E '^_(stat|fstat|fstatat|lstat|getattrlist|getattrlistbulk|fgetattrlist|getattrlistat|statfs|statvfs|fstatfs|fstatvfs|mach_absolute_time)$'
+```
+
+- `ProcessInfo.systemUptime`・`UITextInputMode.activeInputModes` のような Objective-C のメソッドは `nm -u` に出ないので、コードを検索して確かめます。`sysctl`・`sysctlbyname`・`clock_gettime` はどのカテゴリにも入っていません
+- 申告を変えたら、[TheaterPlayerTests/PrivacyManifestTests.swift](TheaterPlayerTests/PrivacyManifestTests.swift) の期待値も直します
 
 ## ライセンス
 
