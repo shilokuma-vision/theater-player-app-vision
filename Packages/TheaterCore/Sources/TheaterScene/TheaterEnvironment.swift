@@ -29,9 +29,22 @@ public final class TheaterEnvironment {
     public private(set) var seatGroups: [SeatGroupEntities] = []
     /// 今の席
     public private(set) var currentSeat: Seat?
-    private var maskingRest: [String: SIMD3<Float>] = [:]
-    /// マスキングの行き先（最後に setMasking に渡した範囲）
-    private var maskingFrame: ScreenFrame?
+    /// マスキングの作った位置
+    private var maskingRest: [String: Transform] = [:]
+    /// マスキングの作った位置での範囲（x の縁。幕を閉じるとき、左右を中央まで伸ばすのに使う）
+    private var maskingRestEdges: [String: ClosedRange<Float>] = [:]
+    /// マスキングの行き先（最後に setMasking に渡した範囲と、幕を閉じているか）
+    private var maskingPose: MaskingPose?
+
+    private struct MaskingPose: Equatable {
+        let frame: ScreenFrame
+        let closed: Bool
+    }
+
+    /// 幕を閉じたとき、左右のマスキングが中央を越えて重なる幅（m。すき間から奥の映像が見えないように）
+    private static let curtainOverlap: Float = 0.06
+    /// 幕を閉じたとき、右のマスキングを客席側へ出す量（m。重なった所で左右がちらつかないように）
+    private static let curtainLayer: Float = 0.03
 
     /// アプリ（bundle）の Theater.usdz と TheaterLayout.json を読む
     public static func load(bundle: Bundle = .main, subdirectory: String? = nil) async throws -> TheaterEnvironment {
@@ -60,7 +73,9 @@ public final class TheaterEnvironment {
         try await buildSeats()
         for name in [layout.screen.masking.top, layout.screen.masking.bottom, layout.screen.masking.left, layout.screen.masking.right] {
             if let entity = model.findEntity(named: name) {
-                maskingRest[name] = entity.position
+                maskingRest[name] = entity.transform
+                let bounds = entity.visualBounds(relativeTo: entity.parent)
+                maskingRestEdges[name] = bounds.min.x...bounds.max.x
             }
         }
     }
@@ -148,12 +163,14 @@ public final class TheaterEnvironment {
 
     // MARK: - マスキング
 
-    /// 映像の範囲に合わせてマスキングを動かす（行き先が今と同じなら何もしない。動かし直すと動きが始めからになり、なかなか開かない）
-    public func setMasking(frame: ScreenFrame, duration: TimeInterval = 2.5) {
-        guard frame != maskingFrame else {
+    /// 映像の範囲に合わせてマスキングを動かす（行き先が今と同じなら何もしない。動かし直すと動きが始めからになり、なかなか開かない）。
+    /// closed：幕を閉じる（左右のマスキングを、外側の縁はそのままに中央まで伸ばし、スクリーンを覆う。上下は映像の範囲のまま）
+    public func setMasking(frame: ScreenFrame, closed: Bool = false, duration: TimeInterval = 2.5) {
+        let pose = MaskingPose(frame: frame, closed: closed)
+        guard pose != maskingPose else {
             return
         }
-        maskingFrame = frame
+        maskingPose = pose
         let offsets = frame.maskingOffsets(spec: layout.screen)
         let names = layout.screen.masking
         let moves: [(String, SIMD3<Float>)] = [
@@ -166,8 +183,22 @@ public final class TheaterEnvironment {
             guard let entity = model.findEntity(named: name), let rest = maskingRest[name] else {
                 continue
             }
-            var transform = entity.transform
-            transform.translation = rest + delta
+            var transform = rest
+            transform.translation += delta
+            if closed, name == names.left || name == names.right, let edges = maskingRestEdges[name] {
+                let isLeft = name == names.left
+                // 左の幕の内側の縁は右端（max）、右の幕は左端（min）
+                let stretch = HorizontalStretch(
+                    inner: isLeft ? edges.upperBound : edges.lowerBound,
+                    outer: isLeft ? edges.lowerBound : edges.upperBound,
+                    origin: rest.translation.x,
+                    toInner: isLeft ? Self.curtainOverlap : -Self.curtainOverlap,
+                    toOuter: isLeft ? edges.lowerBound : edges.upperBound
+                )
+                transform.scale.x *= stretch.scale
+                transform.translation.x = stretch.origin
+                transform.translation.z += isLeft ? 0 : Self.curtainLayer
+            }
             if duration > 0 {
                 entity.move(to: transform, relativeTo: entity.parent, duration: duration, timingFunction: .easeInOut)
             } else {

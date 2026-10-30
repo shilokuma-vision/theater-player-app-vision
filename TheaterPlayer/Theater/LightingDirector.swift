@@ -3,7 +3,8 @@
 //  TheaterPlayer
 //
 //  映画館の照明の演出。毎フレーム、照明の状態（客電・常時灯・スクリーンの光・全体の明るさ）を決める。
-//  - 再生が始まると客電をゆっくり落とし（約 6 秒）、止める・終わると戻す（約 4 秒）。暗くするほど電球のように暖かい色になる
+//  - 客電の行き先と速さは、上映の段階（ShowPhase）で決める。再生が始まると客電をゆっくり落とし（約 6 秒）、
+//    止める・終わると戻す（約 4 秒）。暗くするほど電球のように暖かい色になる
 //  - 開場（再生していないとき）は、照明を焼き付けたときより明るくできる（客電 1 を超える。色は白のまま）
 //  - スクリーンの光：映像の左・中央・右の色で、部屋を照らす（少しだけならして、ちらつかないように）
 //
@@ -11,6 +12,15 @@
 import Foundation
 import TheaterMedia
 import TheaterScene
+
+/// 客電の行き先と速さ。速さは、開場の明るさ（1 より暗ければ 1）の幅を何秒で動くかで表す
+struct HouseCue: Equatable {
+    var level: Double
+    /// 下げるときに、幅を動き切る秒数
+    var fall: Double = 6
+    /// 上げるときに、幅を動き切る秒数
+    var rise: Double = 4
+}
 
 @MainActor
 final class LightingDirector {
@@ -34,13 +44,42 @@ final class LightingDirector {
         exposureTarget = 1
     }
 
+    /// 開演の流れで、客電を 1 段目に落とす所（開場と上映中の明るさのあいだの割合）
+    static let preShowShare = 0.5
+    /// エンドロールで客電を上げる所（上映中の明るさから、開場の明るさまでのあいだの割合）
+    static let creditsShare = 0.15
+
+    /// 上映の段階ごとの客電。「再生すると暗くする」を切にしていれば、いつも開場の明るさ
+    static func cue(for phase: ShowPhase, preferences: Preferences) -> HouseCue {
+        let house = preferences.houseLevel
+        let show = preferences.showLevel
+        guard preferences.autoDim else {
+            return HouseCue(level: house)
+        }
+        switch phase {
+        case .lobby, .buzzer:
+            return HouseCue(level: house)
+        case .dimming, .opening:
+            // 開演の流れの 1 段目：半分まで落とし、幕が開き切るまでそのまま（本編で上映中の明るさまで落とす）
+            return HouseCue(level: show + (house - show) * preShowShare)
+        case .feature:
+            return HouseCue(level: show)
+        case .credits:
+            // 字幕・クレジットが読みにくくならないよう少しだけ、ゆっくり（約 3 秒）上げる
+            return HouseCue(level: max(show, show + (house - show) * creditsShare), rise: 20)
+        case .ended:
+            // 終映：開場の明るさへ、ふだん（約 4 秒）よりゆっくり戻す
+            return HouseCue(level: house, rise: 8)
+        }
+    }
+
     /// 1 フレーム分進め、照明の状態を返す
-    func step(deltaTime: Double, playing: Bool, hasVideo: Bool, preferences: Preferences, light: ScreenLight?) -> LightingValues {
-        let target = preferences.autoDim && playing ? preferences.showLevel : preferences.houseLevel
+    func step(deltaTime: Double, phase: ShowPhase, hasVideo: Bool, preferences: Preferences, light: ScreenLight?) -> LightingValues {
+        let cue = Self.cue(for: phase, preferences: preferences)
         // 暗くするときはゆっくり（約 6 秒）、明るくするときは少し速く（約 4 秒）。開場を明るくしても、かかる時間は同じ
         let span = max(preferences.houseLevel, 1)
-        let speed = target < house ? span / 6 : span / 4
-        house += max(-speed * deltaTime, min(speed * deltaTime, target - house))
+        let speed = cue.level < house ? span / cue.fall : span / cue.rise
+        house += max(-speed * deltaTime, min(speed * deltaTime, cue.level - house))
         let zoneTargets: [SIMD3<Float>] = hasVideo ? [light?.left, light?.center, light?.right].map {
             ($0 ?? .zero) * Float(preferences.screenSpill)
         } : [SIMD3<Float>](repeating: .zero, count: 3)
