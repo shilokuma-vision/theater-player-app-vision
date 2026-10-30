@@ -50,7 +50,7 @@ enum BuzzerSound {
         }
     }
 
-    /// 音量の設定（0〜1.5）を、音源の強さ（dB）にする。0 なら nil（鳴らさない）
+    /// 音量の設定（0〜Preferences.maxVolume）を、音源の強さ（dB）にする。映画の音と同じく、1 を超えたら大きくする。0 なら nil（鳴らさない）
     static func gain(volume: Double) -> Double? {
         guard volume > 0.001 else {
             return nil
@@ -94,7 +94,7 @@ final class TheaterBuzzer {
         parent.addChild(entity)
     }
 
-    /// 鳴らす。volume：音量の設定（0〜1.5）
+    /// 鳴らす。volume：音量の設定（0〜Preferences.maxVolume）
     func play(volume: Double) {
         guard let gain = BuzzerSound.gain(volume: volume) else {
             return
