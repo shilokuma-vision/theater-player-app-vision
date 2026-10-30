@@ -20,6 +20,15 @@ final class PlayerModel {
     private(set) var title = ""
     private(set) var currentTime: Double = 0
     private(set) var videoFormat: VideoFormat?
+    /// 3D の選び方（操作パネルの「3D」。ファイルを開くたびに「自動」に戻す）
+    var stereoMode: StereoMode = .auto {
+        didSet {
+            engine?.stereoMode = stereoMode
+            stereoPacking = engine?.stereo ?? .mono
+        }
+    }
+    /// 今のファイルを映す左右の目の並べ方（スクリーンの縦横比を片目の絵に合わせる）
+    private(set) var stereoPacking: StereoPacking = .mono
     private(set) var subtitles: [SubtitleCue] = []
     private(set) var selectedAudioTrack: Int?
     private(set) var selectedSubtitleTrack: Int?
@@ -123,8 +132,12 @@ final class PlayerModel {
             return
         }
         errorMessage = nil
+        if stereoMode != .auto {
+            stereoMode = .auto
+        }
         do {
             let opened = try await engine.open(url)
+            stereoPacking = engine.stereo
             info = opened
             self.title = opened.title ?? title
             currentItem = item
@@ -163,6 +176,7 @@ final class PlayerModel {
         }
         temporaryFile = nil
         info = nil
+        stereoPacking = .mono
         still = nil
         stillDocument = nil
         pageRequest += 1
