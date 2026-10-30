@@ -18,6 +18,7 @@ struct NowPlayingTests {
             album: nil,
             duration: duration,
             elapsed: 1_234.5,
+            isPlaying: rate > 0,
             rate: rate,
             isAudioOnly: isAudioOnly,
             chapterCount: 0

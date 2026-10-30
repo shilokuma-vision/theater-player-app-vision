@@ -23,7 +23,9 @@ final class NowPlaying {
         var duration: Double
         /// 今の位置（秒）。システムは、これと速さから位置を進めて見せる
         var elapsed: Double
-        /// 再生の速さ（止めている・データを待っているあいだは 0）
+        /// 再生している（開演の流れ・データを待っているあいだも。コントロールセンターに一時停止のボタンを出す）
+        var isPlaying: Bool
+        /// 再生の速さ（止めている・開演の流れ・データを待っているあいだは 0。位置を進めない）
         var rate: Double
         var isAudioOnly: Bool
         /// チャプターの数（2 つ以上あれば、「次の曲」「前の曲」でチャプターを移れるようにする）
@@ -164,7 +166,7 @@ final class NowPlaying {
             info[MPMediaItemPropertyArtwork] = mediaArtwork(for: image)
         }
         center.nowPlayingInfo = info
-        center.playbackState = item.rate > 0 ? .playing : .paused
+        center.playbackState = item.isPlaying ? .playing : .paused
     }
 
     /// Now Playing の情報（ジャケットを除く）

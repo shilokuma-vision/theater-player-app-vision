@@ -420,6 +420,8 @@ extension PlayerModel {
             album: info.album,
             duration: info.duration ?? 0,
             elapsed: engine.currentTime,
+            // 開演の流れのあいだも「再生中」と見せる（そこで止めると開演をやめる）。位置は、本編が始まるまで進めない
+            isPlaying: isPlaying,
             rate: state == .playing ? Double(engine.rate) : 0,
             isAudioOnly: info.isAudioOnly,
             chapterCount: info.chapters.count
