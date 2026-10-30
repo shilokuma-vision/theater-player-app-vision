@@ -112,6 +112,8 @@ Packages/TheaterMedia/Vendor/
 
 # Tools/Theater（Blender）の作業の出力（.blend・確認用の画像・焼き付けの途中）。作り直せるので入れない
 Tools/Theater/out/
+# 2D → 3D の変換の道具の深度推定のモデル（Hugging Face から取得する。約 50 MB）
+Tools/StereoConvert/Models/
 
 # Python のキャッシュ（Tools/Theater のスクリプトを Blender で流すとできる）
 __pycache__/

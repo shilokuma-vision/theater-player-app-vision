@@ -135,6 +135,10 @@ struct LibraryView: View {
         guard await enterTheater() else {
             return
         }
+        #if DEBUG
+        // デバッグの YouTube を出していたら閉じて、開いたファイルをスクリーンに出す
+        appModel.youTube.close()
+        #endif
         await open()
     }
 

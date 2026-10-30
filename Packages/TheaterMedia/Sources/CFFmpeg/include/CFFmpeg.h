@@ -24,6 +24,7 @@
 #include <libavutil/mastering_display_metadata.h>
 #include <libavutil/opt.h>
 #include <libavutil/pixdesc.h>
+#include <libavutil/stereo3d.h>
 #include <libswresample/swresample.h>
 #include <libswscale/swscale.h>
 #include <CoreVideo/CoreVideo.h>
