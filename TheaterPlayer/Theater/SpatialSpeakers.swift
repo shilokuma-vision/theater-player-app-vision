@@ -42,7 +42,7 @@ final class SpatialSpeakers {
             entity.name = "Speaker_\(emitter.id)"
             parent.addChild(entity)
             entity.look(at: emitter.position + emitter.forward, from: emitter.position, relativeTo: parent)
-            entity.components.set(Self.spatialAudio(for: emitter.bus))
+            entity.components.set([Self.audioComponent(for: emitter.bus)])
             do {
                 let controller = try entity.prepareAudio(configuration: AudioGeneratorConfiguration(layoutTag: kAudioChannelLayoutTag_Mono),
                                                          ring.renderBlock(feed: index))
@@ -73,17 +73,22 @@ final class SpatialSpeakers {
     }
 
     /// スピーカーの種類ごとの鳴り方（向きの鋭さ・距離での減り方）
-    static func spatialAudio(for bus: String) -> SpatialAudioComponent {
+    /// 映画館は、どの席でも基準の音圧（85 dB）になるように調整する。距離ではほとんど減らさない
+    /// （前は離れるほど小さくしていたので、G-17 の席でスクリーンの裏が約 −17 dB、側壁が約 −13 dB まで下がっていた）
+    static let distanceRolloff = 0.04
+
+    static func audioComponent(for bus: String) -> any Component {
         switch bus {
         case "L", "C", "R":
-            // スクリーンのスピーカー：客席へ向けた指向性。後ろの席まで届くよう距離で減りにくく
-            SpatialAudioComponent(gain: 0, directivity: .beam(focus: 0.35), distanceAttenuation: .rolloff(factor: 0.45))
+            // スクリーンのスピーカー：客席へ向けた指向性
+            SpatialAudioComponent(gain: 0, directivity: .beam(focus: 0.35), distanceAttenuation: .rolloff(factor: distanceRolloff))
         case "LFE":
-            // サブウーファー：向きは無く、部屋じゅうに回る
-            SpatialAudioComponent(gain: 2, directivity: .beam(focus: 0), distanceAttenuation: .rolloff(factor: 0.2))
+            // サブウーファー：低音には向きが無く、部屋じゅうが鳴る。空間の位置を持たせず、両耳に直接鳴らす
+            // （距離・向き・頭の向きで弱まらない。イヤホンでも低音を最大の大きさで出す）
+            ChannelAudioComponent(gain: 0)
         default:
             // サラウンド：広く拡散
-            SpatialAudioComponent(gain: 0, directivity: .beam(focus: 0.15), distanceAttenuation: .rolloff(factor: 0.6))
+            SpatialAudioComponent(gain: 0, directivity: .beam(focus: 0.15), distanceAttenuation: .rolloff(factor: distanceRolloff))
         }
     }
 }

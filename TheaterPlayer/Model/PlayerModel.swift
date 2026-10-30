@@ -286,9 +286,12 @@ final class PlayerModel {
     }
 
     /// 音響の設定・音量を反映する
+    /// 音量：1 までは鳴らす直前で下げ、1 を超えた分は映画館の音響処理のリミッターの前で上げる（最大 4 倍＝ +12 dB。割れない）
     func applyAudioPreferences() {
         engine?.processor.update(settings: preferences.audio)
-        engine?.ring.volume = Float(preferences.volume)
+        let volume = Float(preferences.volume)
+        engine?.ring.volume = min(volume, 1)
+        engine?.processor.outputGain = max(volume, 1)
     }
 
     // MARK: - 状態の更新
