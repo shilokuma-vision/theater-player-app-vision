@@ -36,8 +36,8 @@ final class TheaterStage {
     /// ブザーを鳴らした開演（ShowDirector.performance。開演ごとに 1 回だけ鳴らす）
     @ObservationIgnored private var buzzedPerformance = 0
     let lighting: LightingDirector
-    /// 座席表の列（座席のページを開くたびに並べ直さない）
-    let seatRows: [SeatRow]
+    /// 全体の座席表の寸法（座席のページを開くたびに求め直さない）
+    let seatChart: SeatChart
     @ObservationIgnored private var currentFormat: VideoFormat?
     @ObservationIgnored private var currentStereo = StereoPacking.mono
     /// スクリーンの VideoMaterial が映している renderer（3D と 2D を切り替えると、エンジンが作り直す）
@@ -56,7 +56,7 @@ final class TheaterStage {
         self.environment = environment
         lighting = LightingDirector(initialHouse: preferences.houseLevel)
         screenFrame = ScreenFrame(aspect: 2.0, spec: environment.layout.screen)
-        seatRows = environment.layout.seatRows
+        seatChart = SeatChart(rows: environment.layout.seatRows, sections: environment.layout.seatSections())
         screenSurface = environment.screenSurface
         let screen = environment.layout.screen
         screenAnchor.name = "ScreenAnchor"
