@@ -19,6 +19,15 @@ final class PlayerModel {
     private(set) var title = ""
     private(set) var currentTime: Double = 0
     private(set) var videoFormat: VideoFormat?
+    /// 3D の選び方（操作パネルの「3D」。ファイルを開くたびに「自動」に戻す）
+    var stereoMode: StereoMode = .auto {
+        didSet {
+            engine?.stereoMode = stereoMode
+            stereoPacking = engine?.stereo ?? .mono
+        }
+    }
+    /// 今のファイルを映す左右の目の並べ方（スクリーンの縦横比を片目の絵に合わせる）
+    private(set) var stereoPacking: StereoPacking = .mono
     private(set) var subtitles: [SubtitleCue] = []
     private(set) var selectedAudioTrack: Int?
     private(set) var selectedSubtitleTrack: Int?
@@ -108,8 +117,12 @@ final class PlayerModel {
             return
         }
         errorMessage = nil
+        if stereoMode != .auto {
+            stereoMode = .auto
+        }
         do {
             let opened = try await engine.open(url)
+            stereoPacking = engine.stereo
             info = opened
             self.title = opened.title ?? title
             currentItem = item
@@ -139,6 +152,7 @@ final class PlayerModel {
         }
         temporaryFile = nil
         info = nil
+        stereoPacking = .mono
         still = nil
         stillDocument = nil
         pageRequest += 1
@@ -205,15 +219,20 @@ final class PlayerModel {
     // MARK: - 操作
 
     func togglePlay() {
-        guard let engine else {
+        if isPlaying {
+            pause()
+        } else {
+            engine?.play()
+        }
+    }
+
+    /// 止める（位置を保存する）。止まっていれば何もしない
+    func pause() {
+        guard isPlaying, let engine else {
             return
         }
-        if isPlaying {
-            engine.pause()
-            saveProgress()
-        } else {
-            engine.play()
-        }
+        engine.pause()
+        saveProgress()
     }
 
     func seek(to time: Double) {
@@ -267,9 +286,12 @@ final class PlayerModel {
     }
 
     /// 音響の設定・音量を反映する
+    /// 音量：1 までは鳴らす直前で下げ、1 を超えた分は映画館の音響処理のリミッターの前で上げる（最大 4 倍＝ +12 dB。割れない）
     func applyAudioPreferences() {
         engine?.processor.update(settings: preferences.audio)
-        engine?.ring.volume = Float(preferences.volume)
+        let volume = Float(preferences.volume)
+        engine?.ring.volume = min(volume, 1)
+        engine?.processor.outputGain = max(volume, 1)
     }
 
     // MARK: - 状態の更新

@@ -12,7 +12,11 @@ import TheaterMedia
 
 struct ControlPanel: View {
     enum Page: Hashable {
-        case main, audioTracks, subtitles, speed, lighting, seats, sound
+        case main, audioTracks, subtitles, speed, stereo, lighting, seats, sound
+        #if DEBUG
+        /// デバッグ用：YouTube の検索
+        case youTube
+        #endif
     }
 
     let stage: TheaterStage?
@@ -76,12 +80,18 @@ struct ControlPanel: View {
             SubtitlePage(page: $page)
         case .speed:
             SpeedPage(page: $page)
+        case .stereo:
+            StereoPage(page: $page)
         case .lighting:
             LightingPage(page: $page)
         case .seats:
             SeatPicker(stage: stage, page: $page)
         case .sound:
             SoundPage(stage: stage, page: $page)
+        #if DEBUG
+        case .youTube:
+            YouTubePage(page: $page)
+        #endif
         }
     }
 
@@ -107,6 +117,9 @@ struct ControlPanel: View {
                     .disabled(!appModel.player.hasPlayback)
                 pageButton("速さ", systemImage: "gauge.with.dots.needle.50percent", page: .speed)
                     .disabled(!appModel.player.hasPlayback)
+                // 3D（立体視）は映像のときだけ
+                pageButton("3D", systemImage: "view.3d", page: .stereo)
+                    .disabled(appModel.player.info?.isAudioOnly ?? true)
                 pageButton("明るさ", systemImage: "lightbulb.max", page: .lighting)
                 pageButton("座席", systemImage: "chair", page: .seats)
                 pageButton("音響", systemImage: "hifispeaker.2", page: .sound)
@@ -117,6 +130,16 @@ struct ControlPanel: View {
                 } label: {
                     Label("ライブラリ", systemImage: "rectangle.stack")
                 }
+                #if DEBUG
+                // デバッグ用の YouTube（上の段はボタンで埋まっているので、こちらに置く）
+                Button {
+                    page = .youTube
+                    touch()
+                } label: {
+                    Label("YouTube", systemImage: "play.rectangle")
+                }
+                .accessibilityIdentifier("youTubePage")
+                #endif
                 Spacer()
                 // 下のつまみで動かしたパネルを、座ったときのひざの上へ戻す
                 if appModel.preferences.panelPosition != nil {
@@ -269,9 +292,13 @@ struct VolumeSlider: View {
         @Bindable var preferences = appModel.preferences
         HStack {
             Image(systemName: "speaker.fill")
-            Slider(value: $preferences.volume, in: 0...1.5)
+            Slider(value: $preferences.volume, in: 0...Preferences.maxVolume)
                 .onChange(of: preferences.volume) { appModel.player.applyAudioPreferences() }
             Image(systemName: "speaker.wave.3.fill")
+            // 等倍より上げたぶん（リミッターの前で上げる）
+            Text(preferences.volume > 1 ? String(format: "+%.0f dB", 20 * log10(preferences.volume)) : "")
+                .font(.caption.monospacedDigit())
+                .frame(width: 52, alignment: .leading)
         }
         .foregroundStyle(.secondary)
     }

@@ -8,6 +8,7 @@
 import CinemaAudio
 import Foundation
 import Testing
+import TheaterMedia
 @testable import TheaterPlayer
 import TheaterScene
 
@@ -51,6 +52,21 @@ struct TheaterLayoutTests {
         let seated = layout.units.filter { $0.number != nil }
         #expect(seated.count == layout.seats.count)
         #expect(Set(layout.units.map(\.tile)).count == layout.units.count)
+    }
+
+    /// 座席表の列は前から並び、席は席番号の順。通路はブロックの境目（L と C、C と R）の 2 か所
+    @Test func seatRowsFollowTheBlocks() throws {
+        let layout = try layout()
+        let rows = layout.seatRows
+        #expect(rows.map(\.letter) == layout.rowLetters)
+        for row in rows {
+            #expect(row.seats.map(\.number) == Array(1...34))
+            #expect(row.aisleBefore.count == 2)
+        }
+        let center = try #require(rows.first { $0.letter == "G" })
+        #expect(center.aisleBefore == ["G-9", "G-27"])
+        #expect(center.seats.first { $0.id == "G-9" }?.block == "C")
+        #expect(center.seats.first { $0.id == "G-8" }?.block == "L")
     }
 }
 
@@ -143,6 +159,69 @@ struct PreferencesTests {
         #expect(preferences.room == .rich)
         preferences.room = .dry
         #expect(Preferences(defaults: defaults).room == .dry)
+    }
+}
+
+/// 低音の既定を強めたとき（音響の設定の版 2）、前の版で保存した設定を引き上げる
+struct AudioSettingsMigrationTests {
+    func defaults(saving audio: CinemaAudioSettings) throws -> UserDefaults {
+        let suite = "AudioSettingsMigrationTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defaults.set(try JSONEncoder().encode(audio), forKey: "audio")
+        return defaults
+    }
+
+    @Test func raisesTheBassSavedByTheOldVersion() throws {
+        var old = CinemaAudioSettings()
+        old.bassBoostDB = 4
+        old.virtualBass = 0.5
+        let defaults = try defaults(saving: old)
+        let preferences = Preferences(defaults: defaults)
+        #expect(preferences.audio.bassBoostDB == CinemaAudioSettings().bassBoostDB)
+        #expect(preferences.audio.virtualBass == CinemaAudioSettings().virtualBass)
+        // 引き上げた値を保存しているので、次に読んでも同じ
+        #expect(Preferences(defaults: defaults).audio.bassBoostDB == CinemaAudioSettings().bassBoostDB)
+    }
+
+    @Test func keepsBassTheUserRaised() throws {
+        var old = CinemaAudioSettings()
+        old.bassBoostDB = 15
+        let preferences = Preferences(defaults: try defaults(saving: old))
+        #expect(preferences.audio.bassBoostDB == 15)
+    }
+}
+
+/// 3D（立体視）の並べ方の見分け方と、片目の縦横比
+struct StereoTests {
+    @Test func guessesThePackingFromTheFileName() {
+        #expect(StereoPacking.guess(fromFileName: "Movie.2010.1080p.Half-SBS.mkv") == .sideBySide)
+        #expect(StereoPacking.guess(fromFileName: "movie_HSBS.mp4") == .sideBySide)
+        #expect(StereoPacking.guess(fromFileName: "Movie (3D Side by Side).mkv") == .sideBySide)
+        #expect(StereoPacking.guess(fromFileName: "Movie.3D.HOU.mkv") == .overUnder)
+        #expect(StereoPacking.guess(fromFileName: "stereo-test_TAB.mp4") == .overUnder)
+        #expect(StereoPacking.guess(fromFileName: "Top-and-Bottom.mp4") == .overUnder)
+        // 言葉の一部に含まれるだけの文字（"you" の "ou"・"table" の "tab"）は印にしない
+        #expect(StereoPacking.guess(fromFileName: "Thank You For The Music.mp4") == nil)
+        #expect(StereoPacking.guess(fromFileName: "Round Table.mkv") == nil)
+    }
+
+    @Test func eyeAspectDependsOnFullOrHalf() {
+        // フルの左右（3840×1080）は片目 16:9、ハーフ（1920×1080）もそのまま 16:9
+        #expect(abs(StereoPacking.sideBySide.eyeAspect(frameAspect: 3840.0 / 1080) - 16.0 / 9) < 0.001)
+        #expect(abs(StereoPacking.sideBySide.eyeAspect(frameAspect: 16.0 / 9) - 16.0 / 9) < 0.001)
+        // フルの上下（1920×2160）は片目 16:9、シネスコのフルの上下（2.39 を縦に 2 つ）も 2.39 に戻る
+        #expect(abs(StereoPacking.overUnder.eyeAspect(frameAspect: 1920.0 / 2160) - 16.0 / 9) < 0.001)
+        #expect(abs(StereoPacking.overUnder.eyeAspect(frameAspect: 2.39 / 2) - 2.39) < 0.001)
+        // 空間ビデオの形式は片目の層の大きさなので、そのまま
+        #expect(StereoPacking.multiview.eyeAspect(frameAspect: 16.0 / 9) == 16.0 / 9)
+    }
+
+    @Test func modeChoosesTheContainerFirstThenTheName() {
+        #expect(StereoMode.auto.resolve(track: .multiview, fileName: "IMG_0001.MOV") == .multiview)
+        #expect(StereoMode.auto.resolve(track: .mono, fileName: "clip_SBS.mp4") == .sideBySide)
+        #expect(StereoMode.auto.resolve(track: .mono, fileName: "clip.mp4") == .mono)
+        #expect(StereoMode.off.resolve(track: .sideBySide, fileName: "clip_SBS.mp4") == .mono)
+        #expect(StereoMode.overUnder.resolve(track: .mono, fileName: "clip.mp4") == .overUnder)
     }
 }
 
