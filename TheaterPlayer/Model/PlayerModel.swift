@@ -372,19 +372,28 @@ extension PlayerModel {
         case .pause:
             pause(engine)
         case .skip, .seek, .nextChapter, .previousChapter:
-            if let target = command.seekTarget(from: currentTime, duration: duration, chapterStarts: info?.chapters.map(\.start) ?? []) {
-                engine.seek(to: target)
-                currentTime = target
-                // 開演の流れのあいだにシークした：その位置からすぐに始める（開演の流れのあいだでなければ、何もしない）
-                startNow()
-                publishNowPlaying()
-            }
+            move(engine, for: command)
         case let .setRate(newRate):
             engine.rate = newRate
             publishNowPlaying()
+        case .startNow:
+            startNow()
         case .showPanel:
             break
         }
+    }
+
+    /// 位置を動かす操作（スキップ・シーク・チャプター）。動く先が無ければ（最後のチャプターで「次へ」）何もしない
+    private func move(_ engine: MediaPlayer, for command: PlayerCommand) {
+        let chapterStarts = info?.chapters.map(\.start) ?? []
+        guard let target = command.seekTarget(from: currentTime, duration: duration, chapterStarts: chapterStarts) else {
+            return
+        }
+        engine.seek(to: target)
+        currentTime = target
+        // 開演の流れのあいだにシークした：その位置からすぐに始める（開演の流れのあいだでなければ、何もしない）
+        startNow()
+        publishNowPlaying()
     }
 
     private func pause(_ engine: MediaPlayer) {

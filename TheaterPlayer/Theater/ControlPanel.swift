@@ -275,7 +275,7 @@ struct TransportControls: View {
                 // 開演の流れ（ブザー・暗転・幕）のあいだは、省いてすぐに始められる
                 if player.show.ceremony != nil {
                     Button {
-                        player.startNow()
+                        appModel.perform(.startNow)
                     } label: {
                         Label("すぐに始める", systemImage: "forward.end.fill")
                     }

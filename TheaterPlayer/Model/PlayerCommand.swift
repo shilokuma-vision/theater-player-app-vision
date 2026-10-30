@@ -23,6 +23,8 @@ nonisolated enum PlayerCommand: Equatable, Sendable {
     case previousChapter
     /// 再生の速さ（0.5〜2.0）
     case setRate(Float)
+    /// 開演の流れ（ブザー・暗転・幕）を省いて、すぐに本編を始める
+    case startNow
     /// 畳んだ操作パネルを出す
     case showPanel
 
@@ -44,7 +46,7 @@ nonisolated enum PlayerCommand: Equatable, Sendable {
             chapterStarts.sorted().first { $0 > time + Self.chapterTolerance && (duration <= 0 || $0 < duration) }
         case .previousChapter:
             Self.previousChapterStart(from: time, chapterStarts: chapterStarts)
-        case .togglePlay, .play, .pause, .setRate, .showPanel:
+        case .togglePlay, .play, .pause, .setRate, .startNow, .showPanel:
             nil
         }
     }

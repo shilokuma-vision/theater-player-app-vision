@@ -71,7 +71,7 @@ struct PlayerCommandSeekTests {
 
     /// 位置を動かさない操作
     @Test func otherCommandsDoNotSeek() {
-        for command in [PlayerCommand.togglePlay, .play, .pause, .setRate(1.5), .showPanel] {
+        for command in [PlayerCommand.togglePlay, .play, .pause, .setRate(1.5), .startNow, .showPanel] {
             #expect(command.seekTarget(from: 100, duration: 1_800, chapterStarts: chapters) == nil)
         }
     }
@@ -98,7 +98,7 @@ struct PlayerCommandRoutingTests {
     @Test func playbackCommandsWithoutMediaDoNothing() throws {
         let appModel = try makeAppModel()
         let commands: [PlayerCommand] = [
-            .togglePlay, .play, .pause, .skip(by: 30), .seek(to: 100), .nextChapter, .previousChapter, .setRate(2)
+            .togglePlay, .play, .pause, .skip(by: 30), .seek(to: 100), .nextChapter, .previousChapter, .setRate(2), .startNow
         ]
         for command in commands {
             appModel.perform(command)
