@@ -176,6 +176,56 @@ struct SpeedPage: View {
     }
 }
 
+/// 3D（立体視）：左右の目の絵の並べ方を選ぶ。「自動」は入れ物の立体の情報・ファイル名から決める
+struct StereoPage: View {
+    @Binding var page: ControlPanel.Page
+    @Environment(AppModel.self) private var appModel
+
+    var body: some View {
+        let player = appModel.player
+        VStack(alignment: .leading, spacing: 10) {
+            PageHeader(title: "3D", page: $page)
+            ChoiceRow(
+                title: String(localized: "自動"),
+                detail: String(localized: "このファイル：\(Self.name(of: player.stereoPacking))"),
+                selected: player.stereoMode == .auto
+            ) {
+                player.stereoMode = .auto
+            }
+            ChoiceRow(title: String(localized: "2D（立体にしない）"), detail: nil, selected: player.stereoMode == .off) {
+                player.stereoMode = .off
+            }
+            ChoiceRow(
+                title: String(localized: "左右に並べた 3D"),
+                detail: String(localized: "サイドバイサイド（SBS・HSBS）"),
+                selected: player.stereoMode == .sideBySide
+            ) {
+                player.stereoMode = .sideBySide
+            }
+            ChoiceRow(
+                title: String(localized: "上下に並べた 3D"),
+                detail: String(localized: "トップアンドボトム（TAB・OU）"),
+                selected: player.stereoMode == .overUnder
+            ) {
+                player.stereoMode = .overUnder
+            }
+        }
+    }
+
+    static func name(of packing: StereoPacking) -> String {
+        switch packing {
+        case .mono:
+            String(localized: "2D")
+        case .sideBySide:
+            String(localized: "左右に並べた 3D")
+        case .overUnder:
+            String(localized: "上下に並べた 3D")
+        case .multiview:
+            String(localized: "空間ビデオ（3D）")
+        }
+    }
+}
+
 struct LightingPage: View {
     @Binding var page: ControlPanel.Page
     @Environment(AppModel.self) private var appModel
