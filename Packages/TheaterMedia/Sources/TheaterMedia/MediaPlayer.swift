@@ -72,9 +72,9 @@ public final class MediaPlayer: @unchecked Sendable {
         videoOutput.renderer
     }
 
-    /// スクリーンをつなぐ。body で VideoMaterial(videoRenderer:) を作る（コマを渡していない間に行う。渡している最中だと落ちる・映らない）。
-    /// つないだあとからコマを渡す
-    public func attachVideoScreen(_ body: () -> Void) {
+    /// スクリーンをつなぐ。body で、渡した renderer の VideoMaterial(videoRenderer:) を作る
+    /// （コマを渡していない間に行う。渡している最中だと落ちる・映らない）。つないだあとからコマを渡す
+    public func attachVideoScreen(_ body: (AVSampleBufferVideoRenderer) -> Void) {
         videoOutput.attachScreen(body)
     }
 

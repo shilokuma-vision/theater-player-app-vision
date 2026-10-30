@@ -87,10 +87,10 @@ final class VideoOutput: @unchecked Sendable {
         targetLock.withLock { screenAttached } && renderer.isReadyForMoreMediaData
     }
 
-    /// スクリーンをつなぐ：コマを渡していない間に body（VideoMaterial を作る）を行い、そのあとコマを渡し始める
-    func attachScreen(_ body: () -> Void) {
+    /// スクリーンをつなぐ：コマを渡していない間に body（renderer の VideoMaterial を作る）を行い、そのあとコマを渡し始める
+    func attachScreen(_ body: (AVSampleBufferVideoRenderer) -> Void) {
         targetLock.withLock {
-            body()
+            body(renderer)
             screenAttached = true
         }
     }
@@ -101,6 +101,19 @@ final class VideoOutput: @unchecked Sendable {
             screenAttached = false
             renderer.flush()
         }
+    }
+
+    /// renderer を作り直して、時計につなぎ替える（スクリーンは外れる。targetLock を取った中で呼ぶ）
+    private func replaceRenderer() {
+        let replaced = lock.withLock {
+            let old = rendererValue
+            rendererValue = AVSampleBufferVideoRenderer()
+            return old
+        }
+        screenAttached = false
+        synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
+        replaced.flush()
+        synchronizer.addRenderer(renderer)
     }
 
     /// 渡すフレームの左右の目の並べ方。
@@ -115,28 +128,19 @@ final class VideoOutput: @unchecked Sendable {
 
     /// targetLock を取った中で呼ぶ
     private func setStereo(_ newValue: StereoPacking) {
-        let replaced: AVSampleBufferVideoRenderer? = lock.withLock {
+        let switchesStereo: Bool = lock.withLock {
             guard stereoValue != newValue else {
-                return nil
+                return false
             }
             let wasStereo = stereoValue != .mono
             stereoValue = newValue
             // 次のフレームで、形式を作り直す
             format = nil
-            guard wasStereo != (newValue != .mono) else {
-                return nil
-            }
-            let old = rendererValue
-            rendererValue = AVSampleBufferVideoRenderer()
-            return old
+            return wasStereo != (newValue != .mono)
         }
-        guard let replaced else {
-            return
+        if switchesStereo {
+            replaceRenderer()
         }
-        screenAttached = false
-        synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
-        replaced.flush()
-        synchronizer.addRenderer(renderer)
     }
 
     /// フレームを渡す。displayImmediately なら時刻を待たずに表示する（止まっているときのシーク）

@@ -132,8 +132,7 @@ final class TheaterStage {
     /// エンジンの今の renderer の VideoMaterial を作って、スクリーンとしてつなぐ（コマを渡していない間に作る）
     private func connect(_ engine: MediaPlayer) -> VideoMaterial? {
         var created: VideoMaterial?
-        engine.attachVideoScreen {
-            let renderer = engine.videoRenderer
+        engine.attachVideoScreen { renderer in
             created = VideoMaterial(videoRenderer: renderer)
             screenRenderer = renderer
         }
