@@ -24,8 +24,9 @@ enum BuzzerSound {
     static let brightness = 3_000.0
     /// 振幅の最大
     static let peak: Float = 0.5
-    /// 音量の設定が 1 のときの、音源の強さ（dB）。倍音が多く詰まった音なので（RMS で約 -10 dBFS）、映画の台詞より大きくなりすぎないよう下げる
-    static let baseGain = -10.0
+    /// 音量の設定が 1 のときの、音源の強さ（dB）。倍音が多く詰まった音なので（RMS で約 -10 dBFS）、下げて鳴らす。
+    /// 映画の音と同じく距離でほとんど減らさないので、席では RMS で約 -26 dBFS（映画の台詞より 5 dB ほど大きい見込み。実機で合わせる）
+    static let baseGain = -14.0
 
     /// 1 チャンネルの音（sampleRate で length 秒）
     static func samples() -> [Float] {
@@ -85,12 +86,16 @@ final class TheaterBuzzer {
     private var resource: AudioBufferResource?
     private var controller: AudioPlaybackController?
 
-    /// 客席の上の天井の中央に音源を置く（どの席でも同じくらいに聞こえるよう、向きを持たせず、距離で減りにくくする）
+    /// 客席の上の天井の中央に音源を置く（どの席でも同じくらいに聞こえるよう、向きを持たせず、映画の音と同じく距離でほとんど減らさない）
     func build(layout: TheaterLayout, parent: Entity) {
         let room = layout.room
         entity.name = "Buzzer"
         entity.position = SIMD3(0, room.max.y - 1.5, (room.min.z + room.max.z) / 2)
-        entity.components.set(SpatialAudioComponent(gain: 0, directivity: .beam(focus: 0), distanceAttenuation: .rolloff(factor: 0.3)))
+        entity.components.set(SpatialAudioComponent(
+            gain: 0,
+            directivity: .beam(focus: 0),
+            distanceAttenuation: .rolloff(factor: SpatialSpeakers.distanceRolloff)
+        ))
         parent.addChild(entity)
     }
 
