@@ -7,7 +7,8 @@
 //  時計で決まり（フレームの間隔・HDR の表示はシステムが受け持つ）、音の時計に合わせてこの時計を動かす（MediaClock）。
 //  3D の映像は、左右に並べたフレーム（左が左目）にして、形式に立体の指定（左右に並べてあること）を付けて渡す。VideoMaterial が
 //  左右の目に分けて映す（実機で立体に見えた）。上下に並べた指定は実機で立体に映らなかったので、上下・空間ビデオは左右に並べ替える。
-//  3D と 2D を切り替えるときは renderer を作り直し、VideoMaterial を付け替える（3D のあとに 2D の映像を渡すと、立体のまま崩れて映った）
+//  3D と 2D を切り替えるときは renderer を作り直し、VideoMaterial を付け替える（3D のあとに 2D の映像を渡すと、立体のまま崩れて映った）。
+//  スクリーン（VideoMaterial）をつなぐときも、前のスクリーンにつないだ renderer は使わず、作り直す（rendererHasScreen）
 //
 
 @preconcurrency import AVFoundation
@@ -89,6 +90,12 @@ final class VideoOutput: @unchecked Sendable {
     /// enqueue と、スクリーンのつなぎ替え・renderer の作り直しを 1 つずつ行う（つなぎ替えの間に、渡している途中のコマが無いように）。
     /// lock より先に取る
     private let targetLock = NSLock()
+    /// 今の renderer を、スクリーンにつないだ（VideoMaterial を作った）か。renderer は 1 つのスクリーンにだけ使う。
+    /// VideoMaterial を解放しても、renderer の映す先（video target）は外れず、renderer は「受け取れる」と答えてコマを受け取り続ける。
+    /// その renderer で次のスクリーンの VideoMaterial を作ると、RealityKit が映す先を足す前（作ってから 0.1 秒ほど）にコマが流れ込み、
+    /// 足すのに失敗して（FigVideoQueue の err=-12080）、新しいスクリーンが黒いままだった（映画館を開き直して、続きから再生すると音だけになった）。
+    /// 新しい renderer は、映す先が足されるまでコマを受け取らない（isReadyForMoreMediaData が false）ので、足されてから映り始める
+    private var rendererHasScreen = false
     /// 診断：つないでから渡したコマ・外していたあいだに渡さなかったコマの数と、つないだ時刻（targetLock の中で使う）
     private var sentSinceAttach = 0
     private var withheldSinceDetach = 0
@@ -100,15 +107,17 @@ final class VideoOutput: @unchecked Sendable {
         targetLock.withLock { screenAttached } && renderer.isReadyForMoreMediaData
     }
 
-    /// スクリーンをつなぐ：コマを渡していない間に body（renderer の VideoMaterial を作る）を行い、そのあとコマを渡し始める
+    /// スクリーンをつなぐ：コマを渡していない間に body（renderer の VideoMaterial を作る）を行い、そのあとコマを渡し始める。
+    /// 前のスクリーンにつないだ renderer なら、作り直してから渡す
     func attachScreen(_ body: (AVSampleBufferVideoRenderer) -> Void) {
         targetLock.withLock {
-            if Diagnostics.freshRenderer {
-                replaceRenderer(reason: "スクリーンをつなぐ")
+            if rendererHasScreen {
+                replaceRenderer(reason: "前のスクリーンにつないでいた")
             }
             let target = renderer
             Diagnostics.log("スクリーンをつなぐ \(Self.describe(target)) 外していたあいだに渡さなかったコマ=\(withheldSinceDetach)")
             body(target)
+            rendererHasScreen = true
             screenAttached = true
             sentSinceAttach = 0
             attachedUptime = ProcessInfo.processInfo.systemUptime
@@ -133,6 +142,7 @@ final class VideoOutput: @unchecked Sendable {
             return old
         }
         screenAttached = false
+        rendererHasScreen = false
         synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
         replaced.flush()
         synchronizer.addRenderer(renderer)

@@ -89,8 +89,9 @@ final class TheaterStage {
     /// 再生のエンジンの映像・音声を、スクリーンとスピーカーにつなぐ
     func attach(_ engine: MediaPlayer) {
         // VideoMaterial は舞台を作るたびに 1 回だけ作る。作ると renderer に「映す先」が足される（コマを渡している最中は足せず、落ちる）。
-        // 映画館に入るときは、ファイルを閉じている（または映す先が無いので renderer がコマを受け取っていない）ので、ここでは足せる。
-        // 前の舞台の VideoMaterial を使い回すと、映画館を閉じたときに RealityKit 側の映す先が片付けられていて、映らない
+        // 前の舞台の VideoMaterial を使い回すと、映画館を閉じたときに RealityKit 側の映す先が片付けられていて、映らない。
+        // 前の舞台の VideoMaterial を付けた renderer も使わない（映す先が残っていて、新しい VideoMaterial に映らない）。
+        // エンジンは、つなぐたびに新しい renderer を渡す（connect）。
         // 前のスクリーンを外してから（コマを渡すのを止めてから）、新しい VideoMaterial を作ってつなぐ
         Diagnostics.log("舞台#\(number) を再生とつなぐ \(ScreenProbe.remaining())")
         engine.detachVideoScreen()

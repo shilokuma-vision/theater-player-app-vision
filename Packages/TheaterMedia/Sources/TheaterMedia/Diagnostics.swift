@@ -11,8 +11,6 @@ import Synchronization
 
 public enum Diagnostics {
     public static let enabled = ProcessInfo.processInfo.arguments.contains("-tp-diagnostics")
-    /// 調べるための切り替え（-tp-fresh-renderer）：スクリーンをつなぐたびに renderer を作り直す
-    static let freshRenderer = ProcessInfo.processInfo.arguments.contains("-tp-fresh-renderer")
 
     /// 行の頭に、起動してからの秒（systemUptime）を付ける（スレッドをまたいだ出来事の前後を見る）
     public static func log(_ message: @autoclosure () -> String) {
