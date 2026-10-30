@@ -9,6 +9,9 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
   照明は Cycles で層ごとに焼き付け、客電の明るさと、映像の色によるスクリーンの照り返しをアプリで変えます（[Tools/Theater](Tools/Theater/README.md)）
 - **映画館の空間オーディオ**：スクリーンの裏の L / C / R、サブウーファー、側壁・後方・天井のサラウンドの位置に、RealityKit の空間オーディオの音源を置いて鳴らします。
   5.1・7.1・7.1.4 はそのまま、ステレオは映画館向けに広げます。低音はサブウーファーへ集め、低音の量・低音の残響・体感の低音（倍音）を調整できます
+- **3D（立体視）**：左右・上下に並べた 3D の動画（SBS・TAB。フル・ハーフ）と、iPhone・Vision Pro で撮った空間ビデオ（MV-HEVC）を、スクリーンに立体で映します。
+  並べ方は入れ物の情報（MKV の StereoMode・MOV の vexu）かファイル名の印（`_SBS`・`_TAB` など）で見分け、操作パネルの「3D」でも選べます。
+  手元の 2D の動画は、Mac の道具で深度推定を使って 3D に変換できます（[Tools/StereoConvert](Tools/StereoConvert/README.md)）
 - **画像と PDF**：PNG・JPEG・HEIC・GIF・WebP などの画像と PDF も、スクリーンに映して見られます（縦横比に合わせてマスキングが動き、
   画像の色で部屋が照らされます）。PDF は操作パネルでページを送れ、最近の一覧から開くと前回のページから見られます
 - **部屋の明るさと座る席**：開場（再生していないとき）は明るく、再生を始めると客電がゆっくり落ち、止めると戻ります。座席表から好きな席に移れます
@@ -283,6 +286,7 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 | [Packages/TheaterMedia](Packages/TheaterMedia) | 再生のエンジン。FFmpeg で開いてデコードし、映像は `AVSampleBufferVideoRenderer` へ、音声は映画館の音響処理へ。音の時計に映像を合わせる |
 | [Packages/TheaterCore](Packages/TheaterCore) | `CinemaAudio`（映画館の音響処理：系統への振り分け・アップミックス・ベースマネジメント・低音・リミッター・スピーカーへの輪のバッファ）と、`TheaterScene`（映画館の空間：照明の状態・座席の組み立て・マスキング・スクリーンの曲面）。macOS でもテストできる |
 | [Tools/Theater](Tools/Theater) | 映画館を作る Blender のスクリプトと、RealityKit で確かめる道具 |
+| [Tools/StereoConvert](Tools/StereoConvert) | 2D の動画を、深度推定（Core ML）で左右に並べた 3D の動画に変換する Mac の道具 |
 
 ### 音の流れ
 
@@ -310,6 +314,7 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 ├── AppStore/                     # App Store の掲載情報（言語・撮る画面・説明文）
 ├── Tools/
 │   ├── Theater/                  # 映画館のモデル（Blender のスクリプト・RealityKit で確かめる道具）
+│   ├── StereoConvert/            # 2D の動画を 3D に変換する道具（Swift Package。モデルは Models/ に置き、git に入れない）
 │   └── …                         # スクリーンショットの撮影と App Store Connect への反映
 ├── docs/                         # ExportOptions.plist のサンプル・使用許諾契約（EULA）の文案
 ├── scripts/                      # build-ffmpeg.sh・rename.sh
@@ -327,6 +332,7 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 - このアプリ：[MIT License](LICENSE)
 - FFmpeg：[LGPL 2.1 以降](https://ffmpeg.org/legal.html)（LGPL の構成。GPL・nonfree の部品は使いません）
 - dav1d：[BSD 2-Clause](https://code.videolan.org/videolan/dav1d/-/blob/master/COPYING)
+- Depth Anything V2 Small（Core ML 版）：[Apache 2.0](https://huggingface.co/apple/coreml-depth-anything-v2-small)。Mac の変換の道具だけが使い、アプリには入れません
 
 ### FFmpeg（LGPL）の扱い
 
