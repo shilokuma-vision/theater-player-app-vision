@@ -17,7 +17,8 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    timeout-minutes: 30
+    # FFmpeg を作る回（キャッシュの無い初回）は 10 分ほど長くかかる
+    timeout-minutes: 50
 
     steps:
       - name: Select Xcode
@@ -30,6 +31,20 @@ jobs:
 
       - name: Allow SwiftLint build tool plugin
         run: defaults write com.apple.dt.Xcode IDESkipPackagePluginFingerprintValidatation -bool YES
+
+      - name: Restore FFmpeg
+        # FFmpeg（Packages/TheaterMedia/Vendor/FFmpeg.xcframework）はリポジトリに入れず、scripts/build-ffmpeg.sh でソースから作る。
+        # スクリプト・パッチ・Xcode・最低サポート OS が同じあいだはキャッシュを使う（作るのは初回だけ。Simulator の分で 2〜3 分）。
+        # 依存のキャッシュは完全一致のキーだけにする（restore-keys で古い物を戻さない）
+        id: ffmpeg
+        uses: actions/cache@v6
+        with:
+          path: Packages/TheaterMedia/Vendor
+          key: ffmpeg-xrsimulator-xcode${{ inputs.xcode-version }}-${{ hashFiles('scripts/build-ffmpeg.sh', 'scripts/ffmpeg/**', 'Configs/Project.xcconfig') }}
+
+      - name: Build FFmpeg
+        if: ${{ steps.ffmpeg.outputs.cache-hit != 'true' }}
+        run: scripts/build-ffmpeg.sh xrsimulator
 
       - name: Set up environment
         # プロジェクト名と同名の共有スキームが存在することを前提にする

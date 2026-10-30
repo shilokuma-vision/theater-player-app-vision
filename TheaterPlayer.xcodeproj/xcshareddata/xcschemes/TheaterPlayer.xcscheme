@@ -51,6 +51,36 @@
                ReferencedContainer = "container:TheaterPlayer.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CinemaAudioTests"
+               BuildableName = "CinemaAudioTests"
+               BlueprintName = "CinemaAudioTests"
+               ReferencedContainer = "container:Packages/TheaterCore">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "TheaterSceneTests"
+               BuildableName = "TheaterSceneTests"
+               BlueprintName = "TheaterSceneTests"
+               ReferencedContainer = "container:Packages/TheaterCore">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "TheaterMediaTests"
+               BuildableName = "TheaterMediaTests"
+               BlueprintName = "TheaterMediaTests"
+               ReferencedContainer = "container:Packages/TheaterMedia">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

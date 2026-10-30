@@ -1,0 +1,111 @@
+//
+//  LightingDirector.swift
+//  TheaterPlayer
+//
+//  映画館の照明の演出。毎フレーム、照明の状態（客電・常時灯・スクリーンの光・全体の明るさ）を決める。
+//  - 客電の行き先と速さは、上映の段階（ShowPhase）で決める。再生が始まると客電をゆっくり落とし（約 6 秒）、
+//    止める・終わると戻す（約 4 秒）。暗くするほど電球のように暖かい色になる
+//  - 開場（再生していないとき）は、照明を焼き付けたときより明るくできる（客電 1 を超える。色は白のまま）
+//  - スクリーンの光：映像の左・中央・右の色で、部屋を照らす（少しだけならして、ちらつかないように）
+//
+
+import Foundation
+import TheaterMedia
+import TheaterScene
+
+/// 客電の行き先と速さ。速さは、開場の明るさ（1 より暗ければ 1）の幅を何秒で動くかで表す
+struct HouseCue: Equatable {
+    var level: Double
+    /// 下げるときに、幅を動き切る秒数
+    var fall: Double = 6
+    /// 上げるときに、幅を動き切る秒数
+    var rise: Double = 4
+}
+
+@MainActor
+final class LightingDirector {
+    /// 今の客電の明るさ（0〜4。1 が照明を焼き付けたときの明るさ）
+    private(set) var house: Double
+    private var zones = [SIMD3<Float>](repeating: .zero, count: 3)
+    /// 全体の明るさ（席の移動の暗転）
+    var exposure: Double = 1
+    private var exposureTarget: Double = 1
+
+    init(initialHouse: Double) {
+        house = initialHouse
+    }
+
+    /// 暗転して戻す（席を移るとき）。暗くなったら changed を呼ぶ
+    func blackout(_ changed: @escaping @MainActor () -> Void) async {
+        exposureTarget = 0
+        try? await Task.sleep(for: .milliseconds(380))
+        changed()
+        try? await Task.sleep(for: .milliseconds(120))
+        exposureTarget = 1
+    }
+
+    /// 開演の流れで、客電を 1 段目に落とす所（開場と上映中の明るさのあいだの割合）
+    static let preShowShare = 0.5
+    /// エンドロールで客電を上げる所（上映中の明るさから、開場の明るさまでのあいだの割合）
+    static let creditsShare = 0.15
+
+    /// 上映の段階ごとの客電。「再生すると暗くする」を切にしていれば、いつも開場の明るさ
+    static func cue(for phase: ShowPhase, preferences: Preferences) -> HouseCue {
+        let house = preferences.houseLevel
+        let show = preferences.showLevel
+        guard preferences.autoDim else {
+            return HouseCue(level: house)
+        }
+        switch phase {
+        case .lobby, .buzzer:
+            return HouseCue(level: house)
+        case .dimming, .opening:
+            // 開演の流れの 1 段目：半分まで落とし、幕が開き切るまでそのまま（本編で上映中の明るさまで落とす）
+            return HouseCue(level: show + (house - show) * preShowShare)
+        case .feature:
+            return HouseCue(level: show)
+        case .credits:
+            // 字幕・クレジットが読みにくくならないよう少しだけ、ゆっくり（約 3 秒）上げる
+            return HouseCue(level: max(show, show + (house - show) * creditsShare), rise: 20)
+        case .ended:
+            // 終映：開場の明るさへ、ふだん（約 4 秒）よりゆっくり戻す
+            return HouseCue(level: house, rise: 8)
+        }
+    }
+
+    /// 1 フレーム分進め、照明の状態を返す
+    func step(deltaTime: Double, phase: ShowPhase, hasVideo: Bool, preferences: Preferences, light: ScreenLight?) -> LightingValues {
+        let cue = Self.cue(for: phase, preferences: preferences)
+        // 暗くするときはゆっくり（約 6 秒）、明るくするときは少し速く（約 4 秒）。開場を明るくしても、かかる時間は同じ
+        let span = max(preferences.houseLevel, 1)
+        let speed = cue.level < house ? span / cue.fall : span / cue.rise
+        house += max(-speed * deltaTime, min(speed * deltaTime, cue.level - house))
+        let zoneTargets: [SIMD3<Float>] = hasVideo ? [light?.left, light?.center, light?.right].map {
+            ($0 ?? .zero) * Float(preferences.screenSpill)
+        } : [SIMD3<Float>](repeating: .zero, count: 3)
+        let smoothing = Float(1 - exp(-deltaTime / 0.12))
+        for index in zones.indices {
+            zones[index] += (zoneTargets[index] - zones[index]) * smoothing
+        }
+        let fade = 1 - exp(-deltaTime / 0.09)
+        exposure += (exposureTarget - exposure) * fade
+        return values(preferences: preferences)
+    }
+
+    private func values(preferences: Preferences) -> LightingValues {
+        var values = LightingValues()
+        let level = Float(house)
+        // 調光すると色温度が下がる（暖かくなる）。焼き付けたときより明るくするときは白のまま
+        let full = min(level, 1)
+        let warmth = SIMD3<Float>(1, 0.82 + 0.18 * full, 0.62 + 0.38 * full)
+        values.house = warmth * level
+        values.houseEmission = warmth * pow(level, 0.8)
+        values.ambient = SIMD3(repeating: Float(preferences.ambientLevel))
+        values.zoneLeft = zones[0]
+        values.zoneCenter = zones[1]
+        values.zoneRight = zones[2]
+        values.screenAverage = (zones[0] + zones[1] + zones[2]) / 3
+        values.exposure = Float(exposure)
+        return values
+    }
+}

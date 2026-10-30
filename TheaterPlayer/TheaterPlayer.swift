@@ -10,32 +10,34 @@ import SwiftUI
 @main
 struct TheaterPlayer: App {
     @State private var appModel = AppModel()
+    @State private var immersion: ImmersionStyle = .full
+
+    init() {
+        // 「ファイル」App にアプリのフォルダを出す（空だと出ないので、空なら案内を置く）
+        SharedFolder.prepare()
+    }
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: appModel.libraryWindowID) {
             rootView
                 .environment(appModel)
         }
+        .defaultSize(width: 980, height: 720)
 
-        // 開閉は ToggleImmersiveSpaceButton から行う。open / closed は実際に表示・非表示になったときにだけ書き換える
+        // 映画館。開閉はライブラリの「映画館に入る」と、操作パネルの「映画館を出る」から行う。
+        // open / closed は TheaterView が、表示・非表示になったときに書き換える（閉じたあとの片付けと順番をそろえるため）
         ImmersiveSpace(id: appModel.immersiveSpaceID) {
-            ImmersiveView()
+            TheaterView()
                 .environment(appModel)
-                .onAppear {
-                    appModel.immersiveSpaceState = .open
-                }
-                .onDisappear {
-                    appModel.immersiveSpaceState = .closed
-                }
         }
-        .immersionStyle(selection: .constant(.mixed), in: .mixed)
+        .immersionStyle(selection: $immersion, in: .full)
     }
 
     /// 撮影モード（ScreenshotDemo）のときは、撮る画面を開く
     @ViewBuilder private var rootView: some View {
         switch ScreenshotDemo.scene {
         case .home, nil:
-            ContentView()
+            LibraryView()
         }
     }
 }

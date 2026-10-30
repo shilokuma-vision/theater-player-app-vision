@@ -150,6 +150,19 @@ jobs:
       - name: Allow SwiftLint build tool plugin
         run: defaults write com.apple.dt.Xcode IDESkipPackagePluginFingerprintValidatation -bool YES
 
+      - name: Restore FFmpeg
+        # FFmpeg（Packages/TheaterMedia/Vendor/FFmpeg.xcframework）はリポジトリに入れず、scripts/build-ffmpeg.sh でソースから作る。
+        # _build.yml と同じキーにして、ビルドのワークフローが作ったキャッシュを使う（完全一致のキーだけ。restore-keys は付けない）
+        id: ffmpeg
+        uses: actions/cache@v6
+        with:
+          path: Packages/TheaterMedia/Vendor
+          key: ffmpeg-xrsimulator-xcode${{ matrix.xcode_version }}-${{ hashFiles('scripts/build-ffmpeg.sh', 'scripts/ffmpeg/**', 'Configs/Project.xcconfig') }}
+
+      - name: Build FFmpeg
+        if: ${{ steps.ffmpeg.outputs.cache-hit != 'true' }}
+        run: scripts/build-ffmpeg.sh xrsimulator
+
       - name: Capture screenshots
         env:
           LANGUAGES: ${{ inputs.languages }}

@@ -1,0 +1,43 @@
+visionOS 向けに VideoToolbox まわりの 2 か所を直す（FFmpeg 9.0.2）
+
+- libavcodec/videotoolbox.c: visionOS は TARGET_OS_IPHONE が 1 だが OpenGL ES が無く、
+  kCVPixelBufferOpenGLESCompatibilityKey を使うとビルドできない。visionOS では
+  代わりに kCVPixelBufferMetalCompatibilityKey を指定する（RealityKit の VideoMaterial は Metal で描く）
+- libavutil/hwcontext_videotoolbox.c: visionOS は TARGET_OS_IOS が 0 のため、映像に色空間
+  （CGColorSpace）を付ける処理が素通りになる。visionOS でも CVBufferCopyAttachments を使うようにする
+
+--- a/libavcodec/videotoolbox.c
++++ b/libavcodec/videotoolbox.c
+@@ -819,7 +819,9 @@
+     CFDictionarySetValue(buffer_attributes, kCVPixelBufferIOSurfacePropertiesKey, io_surface_properties);
+     CFDictionarySetValue(buffer_attributes, kCVPixelBufferWidthKey, w);
+     CFDictionarySetValue(buffer_attributes, kCVPixelBufferHeightKey, h);
+-#if TARGET_OS_IPHONE
++#if TARGET_OS_VISION
++    CFDictionarySetValue(buffer_attributes, kCVPixelBufferMetalCompatibilityKey, kCFBooleanTrue);
++#elif TARGET_OS_IPHONE
+     CFDictionarySetValue(buffer_attributes, kCVPixelBufferOpenGLESCompatibilityKey, kCFBooleanTrue);
+ #else
+     CFDictionarySetValue(buffer_attributes, kCVPixelBufferIOSurfaceOpenGLTextureCompatibilityKey, kCFBooleanTrue);
+--- a/libavutil/hwcontext_videotoolbox.c
++++ b/libavutil/hwcontext_videotoolbox.c
+@@ -555,7 +555,8 @@
+     // Check that our SDK is at least macOS 12 / iOS 15 / tvOS 15
+     #if (TARGET_OS_OSX  && defined(__MAC_12_0)    && __MAC_OS_X_VERSION_MAX_ALLOWED  >= __MAC_12_0)     || \
+         (TARGET_OS_IOS  && defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0)  || \
+-        (TARGET_OS_TV   && defined(__TVOS_15_0)   && __TV_OS_VERSION_MAX_ALLOWED     >= __TVOS_15_0)
++        (TARGET_OS_TV   && defined(__TVOS_15_0)   && __TV_OS_VERSION_MAX_ALLOWED     >= __TVOS_15_0)   || \
++        TARGET_OS_VISION
+         // On recent enough versions, just use the respective API
+         if (__builtin_available(macOS 12.0, iOS 15.0, tvOS 15.0, *))
+             return CVBufferCopyAttachments(buffer, attachment_mode);
+@@ -632,7 +633,8 @@
+         CVBufferRemoveAttachment(pixbuf, kCVImageBufferGammaLevelKey);
+ 
+ #if (TARGET_OS_OSX && __MAC_OS_X_VERSION_MAX_ALLOWED >= 100800) || \
+-    (TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000)
++    (TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000) || \
++    TARGET_OS_VISION
+     if (__builtin_available(macOS 10.8, iOS 10, *)) {
+         CFDictionaryRef attachments =
+             vt_cv_buffer_copy_attachments(pixbuf, kCVAttachmentMode_ShouldPropagate);

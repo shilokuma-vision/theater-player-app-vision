@@ -1,0 +1,260 @@
+#usda 1.0
+(
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+# 操作パネルのつまみ（visionOS の窓のバーと同じ形）。板（PlaneSize）の中に、カプセルを距離関数で描く。
+# 見ている間（Hover State）と掴んでいる間（Grab。アプリが 0〜1 を渡す）は、カプセルを ActiveSize へ広げて明るくする。
+# 大きさ・明るさの値は、アプリ（PanelPlacement）が読み込んだあとに渡す。ここの値は既定
+def Xform "Root"
+{
+    def Material "PanelHandle"
+    {
+        float inputs:Grab = 0
+        float2 inputs:PlaneSize = (0.112, 0.016)
+        float2 inputs:IdleSize = (0.096, 0.008)
+        float2 inputs:ActiveSize = (0.108, 0.012)
+        float inputs:IdleOpacity = 0.5
+        float inputs:HoverOpacity = 0.85
+        float inputs:GrabOpacity = 1
+        token outputs:mtlx:surface.connect = </Root/PanelHandle/Surface.outputs:out>
+        token outputs:realitykit:vertex
+        token outputs:surface
+
+        # 板の上の位置（m。中心が 0）
+        def Shader "Texcoord"
+        {
+            uniform token info:id = "ND_texcoord_vector2"
+            float2 outputs:out
+        }
+
+        def Shader "Centered"
+        {
+            uniform token info:id = "ND_subtract_vector2"
+            float2 inputs:in1.connect = </Root/PanelHandle/Texcoord.outputs:out>
+            float2 inputs:in2 = (0.5, 0.5)
+            float2 outputs:out
+        }
+
+        def Shader "Point"
+        {
+            uniform token info:id = "ND_multiply_vector2"
+            float2 inputs:in1.connect = </Root/PanelHandle/Centered.outputs:out>
+            float2 inputs:in2.connect = </Root/PanelHandle.inputs:PlaneSize>
+            float2 outputs:out
+        }
+
+        # 見ている（0〜1。フェードはシステムが付ける）と掴んでいるの、強いほうで広げる
+        def Shader "Hover"
+        {
+            uniform token info:id = "ND_realitykit_hover_state"
+            float outputs:intensity
+            bool outputs:isActive
+            float3 outputs:position
+            float outputs:timeSinceHoverStart
+        }
+
+        def Shader "Active"
+        {
+            uniform token info:id = "ND_max_float"
+            float inputs:in1.connect = </Root/PanelHandle/Hover.outputs:intensity>
+            float inputs:in2.connect = </Root/PanelHandle.inputs:Grab>
+            float outputs:out
+        }
+
+        def Shader "Size"
+        {
+            uniform token info:id = "ND_mix_vector2"
+            float2 inputs:bg.connect = </Root/PanelHandle.inputs:IdleSize>
+            float2 inputs:fg.connect = </Root/PanelHandle.inputs:ActiveSize>
+            float inputs:mix.connect = </Root/PanelHandle/Active.outputs:out>
+            float2 outputs:out
+        }
+
+        def Shader "HalfSize"
+        {
+            uniform token info:id = "ND_multiply_vector2FA"
+            float2 inputs:in1.connect = </Root/PanelHandle/Size.outputs:out>
+            float inputs:in2 = 0.5
+            float2 outputs:out
+        }
+
+        def Shader "SplitHalf"
+        {
+            uniform token info:id = "ND_separate2_vector2"
+            float2 inputs:in.connect = </Root/PanelHandle/HalfSize.outputs:out>
+            float outputs:outx
+            float outputs:outy
+        }
+
+        # カプセルまでの距離：q = (max(|x| - (半分の長さ - 半径), 0), |y|)、距離 = |q| - 半径（半径は高さの半分）
+        def Shader "AbsPoint"
+        {
+            uniform token info:id = "ND_absval_vector2"
+            float2 inputs:in.connect = </Root/PanelHandle/Point.outputs:out>
+            float2 outputs:out
+        }
+
+        def Shader "SplitPoint"
+        {
+            uniform token info:id = "ND_separate2_vector2"
+            float2 inputs:in.connect = </Root/PanelHandle/AbsPoint.outputs:out>
+            float outputs:outx
+            float outputs:outy
+        }
+
+        def Shader "Straight"
+        {
+            uniform token info:id = "ND_subtract_float"
+            float inputs:in1.connect = </Root/PanelHandle/SplitHalf.outputs:outx>
+            float inputs:in2.connect = </Root/PanelHandle/SplitHalf.outputs:outy>
+            float outputs:out
+        }
+
+        def Shader "BeyondStraight"
+        {
+            uniform token info:id = "ND_subtract_float"
+            float inputs:in1.connect = </Root/PanelHandle/SplitPoint.outputs:outx>
+            float inputs:in2.connect = </Root/PanelHandle/Straight.outputs:out>
+            float outputs:out
+        }
+
+        def Shader "ClampX"
+        {
+            uniform token info:id = "ND_max_float"
+            float inputs:in1.connect = </Root/PanelHandle/BeyondStraight.outputs:out>
+            float inputs:in2 = 0
+            float outputs:out
+        }
+
+        def Shader "Offset"
+        {
+            uniform token info:id = "ND_combine2_vector2"
+            float inputs:in1.connect = </Root/PanelHandle/ClampX.outputs:out>
+            float inputs:in2.connect = </Root/PanelHandle/SplitPoint.outputs:outy>
+            float2 outputs:out
+        }
+
+        def Shader "OffsetLength"
+        {
+            uniform token info:id = "ND_magnitude_vector2"
+            float2 inputs:in.connect = </Root/PanelHandle/Offset.outputs:out>
+            float outputs:out
+        }
+
+        def Shader "Distance"
+        {
+            uniform token info:id = "ND_subtract_float"
+            float inputs:in1.connect = </Root/PanelHandle/OffsetLength.outputs:out>
+            float inputs:in2.connect = </Root/PanelHandle/SplitHalf.outputs:outy>
+            float outputs:out
+        }
+
+        # 縁のぼかしの幅は、目からの距離に比例させる（1 m で約 0.6 mm ≒ 1 画素強）
+        def Shader "WorldPosition"
+        {
+            uniform token info:id = "ND_position_vector3"
+            uniform string inputs:space = "world"
+            float3 outputs:out
+        }
+
+        def Shader "CameraPosition"
+        {
+            uniform token info:id = "ND_realitykit_cameraposition_vector3"
+            float3 outputs:out
+        }
+
+        def Shader "ToCamera"
+        {
+            uniform token info:id = "ND_subtract_vector3"
+            float3 inputs:in1.connect = </Root/PanelHandle/WorldPosition.outputs:out>
+            float3 inputs:in2.connect = </Root/PanelHandle/CameraPosition.outputs:out>
+            float3 outputs:out
+        }
+
+        def Shader "CameraDistance"
+        {
+            uniform token info:id = "ND_magnitude_vector3"
+            float3 inputs:in.connect = </Root/PanelHandle/ToCamera.outputs:out>
+            float outputs:out
+        }
+
+        def Shader "EdgeWidth"
+        {
+            uniform token info:id = "ND_multiply_float"
+            float inputs:in1.connect = </Root/PanelHandle/CameraDistance.outputs:out>
+            float inputs:in2 = 0.0006
+            float outputs:out
+        }
+
+        def Shader "MinEdgeWidth"
+        {
+            uniform token info:id = "ND_max_float"
+            float inputs:in1.connect = </Root/PanelHandle/EdgeWidth.outputs:out>
+            float inputs:in2 = 0.0002
+            float outputs:out
+        }
+
+        def Shader "ScaledDistance"
+        {
+            uniform token info:id = "ND_divide_float"
+            float inputs:in1.connect = </Root/PanelHandle/Distance.outputs:out>
+            float inputs:in2.connect = </Root/PanelHandle/MinEdgeWidth.outputs:out>
+            float outputs:out
+        }
+
+        def Shader "Inside"
+        {
+            uniform token info:id = "ND_subtract_float"
+            float inputs:in1 = 0.5
+            float inputs:in2.connect = </Root/PanelHandle/ScaledDistance.outputs:out>
+            float outputs:out
+        }
+
+        def Shader "Coverage"
+        {
+            uniform token info:id = "ND_clamp_float"
+            float inputs:in.connect = </Root/PanelHandle/Inside.outputs:out>
+            float inputs:low = 0
+            float inputs:high = 1
+            float outputs:out
+        }
+
+        # 明るさ：通常 → 見ている（Hover）→ 掴んでいる（Grab）
+        def Shader "HoverLevel"
+        {
+            uniform token info:id = "ND_mix_float"
+            float inputs:bg.connect = </Root/PanelHandle.inputs:IdleOpacity>
+            float inputs:fg.connect = </Root/PanelHandle.inputs:HoverOpacity>
+            float inputs:mix.connect = </Root/PanelHandle/Hover.outputs:intensity>
+            float outputs:out
+        }
+
+        def Shader "Level"
+        {
+            uniform token info:id = "ND_mix_float"
+            float inputs:bg.connect = </Root/PanelHandle/HoverLevel.outputs:out>
+            float inputs:fg.connect = </Root/PanelHandle.inputs:GrabOpacity>
+            float inputs:mix.connect = </Root/PanelHandle.inputs:Grab>
+            float outputs:out
+        }
+
+        def Shader "Opacity"
+        {
+            uniform token info:id = "ND_multiply_float"
+            float inputs:in1.connect = </Root/PanelHandle/Coverage.outputs:out>
+            float inputs:in2.connect = </Root/PanelHandle/Level.outputs:out>
+            float outputs:out
+        }
+
+        def Shader "Surface"
+        {
+            uniform token info:id = "ND_realitykit_unlit_surfaceshader"
+            color3f inputs:color = (1, 1, 1)
+            float inputs:opacity.connect = </Root/PanelHandle/Opacity.outputs:out>
+            token outputs:out
+        }
+    }
+}
