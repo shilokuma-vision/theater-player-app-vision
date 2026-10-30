@@ -12,11 +12,21 @@ import Synchronization
 public enum Diagnostics {
     public static let enabled = ProcessInfo.processInfo.arguments.contains("-tp-diagnostics")
 
+    /// 行の頭に、起動してからの秒（systemUptime）を付ける（スレッドをまたいだ出来事の前後を見る）
     public static func log(_ message: @autoclosure () -> String) {
         guard enabled else {
             return
         }
-        FileHandle.standardError.write(Data("[TheaterPlayer] \(message())\n".utf8))
+        let time = String(format: "%.3f", ProcessInfo.processInfo.systemUptime)
+        FileHandle.standardError.write(Data("[TheaterPlayer] \(time) \(message())\n".utf8))
+    }
+
+    /// 物を見分ける短い名前（アドレスの下の桁）。renderer・VideoMaterial・エンティティが同じ物かをログで見る
+    public static func id(_ object: AnyObject?) -> String {
+        guard let object else {
+            return "なし"
+        }
+        return String(String(UInt(bitPattern: ObjectIdentifier(object).hashValue), radix: 16).suffix(6))
     }
 }
 
