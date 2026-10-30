@@ -14,3 +14,5 @@
 - visionOS の Simulator では `XCUIScreen.main.screenshot()` が真っ黒（1280 × 1280）になる。画面は `xcrun simctl io <UDID> screenshot` で撮る（2026-10-28）
 - GitHub Actions の macOS ランナー（仮想マシン）の visionOS Simulator では、この映画館を描くと描画サーバー（backboardd）が `re::createArgumentBuffer` で落ち、アプリと UI テストがまとめて signal 9 で止められる（手元の Mac の Simulator では落ちない）。仮想マシンかは `sysctlbyname("kern.hv_vmm_present")` で見分ける（Simulator の中の GPU の名前は手元も CI も「Apple xrOS simulator GPU」で見分けられない）（2026-10-28）
 - CI の UI テストの失敗の原因は、`TestResults.xcresult` を `xcrun xcresulttool export diagnostics` で書き出すと追える（アプリの標準出力・Simulator のクラッシュの記録・システムのログ）（2026-10-28）
+- visionOS 26.5 の Simulator の XCUITest：映画館（ImmersiveSpace だけが開いていて、ウィンドウが無い状態）に `app.coordinate(withNormalizedOffset:).tap()` を送ると、「Received invalid scene ID (nil) from Accessibility」で 3 回とも失敗する。RealityKit のエンティティ（`InputTargetComponent`）をつまむ操作は UI テストで確かめられないので、実機で確かめる（2026-10-30）
+- visionOS 27 の NowPlaying フレームワーク（`MediaSession`・`MediaCommand`）は 27.0 から。最低が 26 のあいだは MediaPlayer の `MPNowPlayingInfoCenter`・`MPRemoteCommandCenter` を使う（どちらも visionOS 1.0 から。`MPNowPlayingInfoCenter.playbackState` も `ios(13.0)` で visionOS にある）（2026-10-30）
