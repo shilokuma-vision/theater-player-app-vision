@@ -69,7 +69,7 @@ struct TheaterView: View {
             let hasVideo = !showsWeb && (player.info.map { !$0.isAudioOnly } ?? false)
             stage.show(still: showsWeb ? nil : player.still)
             if hasVideo {
-                stage.update(format: player.videoFormat, hasVideo: true, stereo: player.stereoPacking)
+                stage.update(format: player.videoFormat, hasVideo: true, stereo: player.stereoPacking, ceremony: player.show.ceremony)
             } else {
                 stage.update(format: nil, hasVideo: false, stereo: .mono)
                 if showsWeb {

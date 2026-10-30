@@ -15,6 +15,9 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
 - **画像と PDF**：PNG・JPEG・HEIC・GIF・WebP などの画像と PDF も、スクリーンに映して見られます（縦横比に合わせてマスキングが動き、
   画像の色で部屋が照らされます）。PDF は操作パネルでページを送れ、最近の一覧から開くと前回のページから見られます
 - **部屋の明るさと座る席**：開場（再生していないとき）は明るく、再生を始めると客電がゆっくり落ち、止めると戻ります。座席表から好きな席に移れます
+- **上映の進行**：動画を開いて頭から再生すると、開演のブザーが場内の天井から鳴り、客電が半分まで落ちて、閉じた幕（左右のマスキング）が開いてから本編が始まります（約 8.5 秒。操作パネルの「すぐに始める」で省けます）。
+  エンドロールでは客電を少し上げ、終わるとゆっくり開場の明るさに戻します。エンドロールは、チャプターの名前（Credits・エンドロール など）か、長い作品の終わり近くで黒地に文字の画面が続いたところで見つけます。
+  続きから再生するとき・5 分より短い動画では、ブザーと幕は省きます。操作パネルの「部屋の明るさ」で切にできます
 - **動かせる操作パネル**：手元の操作パネルは、下のつまみをつまんで好きな位置へ動かせます（位置は覚えます）
 
 ## ファイルの入れ方
@@ -288,7 +291,7 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 | 場所 | 役割 |
 |---|---|
 | [TheaterPlayer/Library](TheaterPlayer/Library) | ライブラリ（最初のウィンドウ）。「ファイル」・写真から選ぶ、最近の一覧から続きを再生する |
-| [TheaterPlayer/Theater](TheaterPlayer/Theater) | 映画館（`ImmersiveSpace`、Full）。映画館のモデル・スクリーンの映像（`VideoMaterial(videoRenderer:)`）・空間オーディオのスピーカー・照明の演出・手元の操作パネル・座席表・字幕 |
+| [TheaterPlayer/Theater](TheaterPlayer/Theater) | 映画館（`ImmersiveSpace`、Full）。映画館のモデル・スクリーンの映像（`VideoMaterial(videoRenderer:)`）・空間オーディオのスピーカー・照明の演出・上映の進行（`ShowDirector`：開演の流れ・エンドロール）・開演のブザー・手元の操作パネル・座席表・字幕 |
 | [TheaterPlayer/Model](TheaterPlayer/Model) | 再生の状態（`PlayerModel`）・設定（`Preferences`）・最近の一覧（`RecentItems`） |
 | [TheaterPlayer/About](TheaterPlayer/About) | ライセンス（ライブラリのウィンドウのツールバーから開く）。使っているオープンソースのソフトウェアと、この版のソースの入手先 |
 | [TheaterPlayer/Resources/Theater](TheaterPlayer/Resources/Theater) | 映画館のモデル（`Theater.usdz`）と配置（`TheaterLayout.json`）。[Tools/Theater](Tools/Theater/README.md) のスクリプトが書く |
