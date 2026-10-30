@@ -103,6 +103,9 @@ final class VideoOutput: @unchecked Sendable {
     /// スクリーンをつなぐ：コマを渡していない間に body（renderer の VideoMaterial を作る）を行い、そのあとコマを渡し始める
     func attachScreen(_ body: (AVSampleBufferVideoRenderer) -> Void) {
         targetLock.withLock {
+            if Diagnostics.freshRenderer {
+                replaceRenderer(reason: "スクリーンをつなぐ")
+            }
             let target = renderer
             Diagnostics.log("スクリーンをつなぐ \(Self.describe(target)) 外していたあいだに渡さなかったコマ=\(withheldSinceDetach)")
             body(target)
