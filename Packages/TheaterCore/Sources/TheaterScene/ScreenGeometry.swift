@@ -50,6 +50,26 @@ public struct MaskingOffsets: Equatable, Sendable {
     public let right: Float
 }
 
+/// 物を横（x）に伸ばして動かす量。作った位置で内側・外側の縁が inner・outer にある物を、縁が toInner・toOuter に来るようにする。
+/// 幕を閉じるとき、左右のマスキングを中央まで伸ばすのに使う（マスキングは最大の範囲の外側を覆うだけの幅しかない）
+public struct HorizontalStretch: Equatable, Sendable {
+    /// x の倍率（物の原点を中心に伸ばす）
+    public let scale: Float
+    /// 物の原点の x
+    public let origin: Float
+
+    /// origin：作った位置での物の原点の x
+    public init(inner: Float, outer: Float, origin: Float, toInner: Float, toOuter: Float) {
+        scale = (toInner - toOuter) / (inner - outer)
+        self.origin = toInner - scale * (inner - origin)
+    }
+
+    /// 作った位置で x にあった点の、伸ばしたあとの x
+    public func map(_ x: Float, restOrigin: Float) -> Float {
+        origin + scale * (x - restOrigin)
+    }
+}
+
 /// 映像を貼る曲面（スクリーンの面より少し客席側）
 public enum ScreenMesh {
     /// スクリーンの面から客席側へ離す量（m）

@@ -15,6 +15,9 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
 - **画像と PDF**：PNG・JPEG・HEIC・GIF・WebP などの画像と PDF も、スクリーンに映して見られます（縦横比に合わせてマスキングが動き、
   画像の色で部屋が照らされます）。PDF は操作パネルでページを送れ、最近の一覧から開くと前回のページから見られます
 - **部屋の明るさと座る席**：開場（再生していないとき）は明るく、再生を始めると客電がゆっくり落ち、止めると戻ります。座席表から好きな席に移れます
+- **上映の進行**：動画を開いて頭から再生すると、開演のブザーが場内の天井から鳴り、客電が半分まで落ちて、閉じた幕（左右のマスキング）が開いてから本編が始まります（約 8.5 秒。操作パネルの「すぐに始める」で省けます）。
+  エンドロールでは客電を少し上げ、終わるとゆっくり開場の明るさに戻します。エンドロールは、チャプターの名前（Credits・エンドロール など）か、長い作品の終わり近くで黒地に文字の画面が続いたところで見つけます。
+  続きから再生するとき・5 分より短い動画では、ブザーと幕は省きます。操作パネルの「部屋の明るさ」で切にできます
 - **動かせる操作パネル**：手元の操作パネルは、下のつまみをつまんで好きな位置へ動かせます（位置は覚えます）
 - **パネルを出さずに操作**：コントロールセンター・AirPods・Siri・メディアキーから、再生・一時停止・スキップ・シーク・チャプターの移動ができます（再生中の題名・位置・ジャケットはコントロールセンターに出ます）。
   畳んだ操作パネルは、スクリーンを見てつまむと出ます
@@ -280,7 +283,7 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 | 場所 | 役割 |
 |---|---|
 | [TheaterPlayer/Library](TheaterPlayer/Library) | ライブラリ（最初のウィンドウ）。「ファイル」・写真から選ぶ、最近の一覧から続きを再生する |
-| [TheaterPlayer/Theater](TheaterPlayer/Theater) | 映画館（`ImmersiveSpace`、Full）。映画館のモデル・スクリーンの映像（`VideoMaterial(videoRenderer:)`）・空間オーディオのスピーカー・照明の演出・手元の操作パネル・座席表・字幕 |
+| [TheaterPlayer/Theater](TheaterPlayer/Theater) | 映画館（`ImmersiveSpace`、Full）。映画館のモデル・スクリーンの映像（`VideoMaterial(videoRenderer:)`）・空間オーディオのスピーカー・照明の演出・上映の進行（`ShowDirector`：開演の流れ・エンドロール）・開演のブザー・手元の操作パネル・座席表・字幕 |
 | [TheaterPlayer/Model](TheaterPlayer/Model) | 再生の状態（`PlayerModel`）・設定（`Preferences`）・最近の一覧（`RecentItems`） |
 | [TheaterPlayer/About](TheaterPlayer/About) | ライセンス（ライブラリのウィンドウのツールバーから開く）。使っているオープンソースのソフトウェアと、この版のソースの入手先 |
 | [TheaterPlayer/Resources/Theater](TheaterPlayer/Resources/Theater) | 映画館のモデル（`Theater.usdz`）と配置（`TheaterLayout.json`）。[Tools/Theater](Tools/Theater/README.md) のスクリプトが書く |
@@ -327,7 +330,31 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 - プロジェクトはフォルダ同期グループ（Xcode 16 以降の形式）で管理しているため、ファイルの追加・削除で pbxproj は変わりません
 - SwiftLint は Build Tool Plugin として全ターゲットに適用され、CI では `swiftlint lint --strict` としても実行されます。ルールは [.swiftlint.yml](.swiftlint.yml) で管理します
 - CI のワークフローは `*.xcodeproj` の名前と同名の共有スキームが存在することを前提にしています
-- [TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) はプライバシーマニフェストです。UserDefaults（`@AppStorage`）の利用だけを申告しています。データの収集・トラッキング・ほかの理由の申告が必要な API を足したら、ここと App Store Connect の「App のプライバシー」を更新してください
+- [TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) はプライバシーマニフェストです（下の「プライバシーマニフェスト」）。データの収集・トラッキング・ほかの理由の申告が必要な API を足したら、ここと App Store Connect の「App のプライバシー」を更新してください
+
+### プライバシーマニフェスト
+
+トラッキングとデータの収集はしていません。理由の申告が要る API は、次のものを申告しています。
+
+| カテゴリ | 理由 | 使っている所 |
+|---|---|---|
+| UserDefaults | `CA92.1`（アプリ自身だけが読み書きする設定） | 利用者の設定（`Preferences`） |
+| File timestamp | `C617.1`（アプリのコンテナの中のファイル）・`3B52.1`（利用者が選んだファイル） | FFmpeg の `stat`・`fstat`・`lstat`。file のプロトコルが、開いたファイルの大きさと種類を `fstat` で見る |
+| System boot time | `35F9.1`（アプリの中の出来事のあいだの経過時間）・`8FFB.1`（AVFAudio などの出来事の時刻の計算） | TheaterMedia の `mach_absolute_time`。音の描画で受け取る AVAudio の時刻（`hostTime`）と突き合わせ、音を最後に鳴らした時刻からの経過で映像を音に合わせる |
+
+- 静的にリンクした FFmpeg が使う API も、このアプリの申告になります。漏れていると、アップロードで ITMS-91053（Missing API declaration）の指摘を受けます
+- FFmpeg の構成（`scripts/build-ffmpeg.sh` の configure）を変えたときや、理由の申告が要る API を使うコードを足したときは、Release の実機向けのバイナリを `nm -u` で見て、[Apple の一覧](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype)の関数を参照していないか確かめます
+
+```bash
+xcodebuild build -project TheaterPlayer.xcodeproj -scheme TheaterPlayer -configuration Release -destination 'generic/platform=visionOS' -derivedDataPath /tmp/TheaterPlayer-Release CODE_SIGNING_ALLOWED=NO -skipPackagePluginValidation
+```
+
+```bash
+nm -u /tmp/TheaterPlayer-Release/Build/Products/Release-xros/TheaterPlayer.app/TheaterPlayer | grep -E '^_(stat|fstat|fstatat|lstat|getattrlist|getattrlistbulk|fgetattrlist|getattrlistat|statfs|statvfs|fstatfs|fstatvfs|mach_absolute_time)$'
+```
+
+- `ProcessInfo.systemUptime`・`UITextInputMode.activeInputModes` のような Objective-C のメソッドは `nm -u` に出ないので、コードを検索して確かめます。`sysctl`・`sysctlbyname`・`clock_gettime` はどのカテゴリにも入っていません
+- 申告を変えたら、[TheaterPlayerTests/PrivacyManifestTests.swift](TheaterPlayerTests/PrivacyManifestTests.swift) の期待値も直します
 
 ## ライセンス
 

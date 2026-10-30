@@ -4,6 +4,7 @@
 //
 //  画面から使う再生の状態（MainActor）。TheaterMedia の MediaPlayer を包み、時刻・トラック・字幕を View に見せる。
 //  画像・PDF（静止画）は MediaPlayer を使わずに開き、スクリーンに貼る 1 枚（still）を持つ。
+//  動画を開いて頭から再生するときは、上映の進行（show）の開演の流れのあとに再生を始める。
 //
 
 import CinemaAudio
@@ -43,6 +44,8 @@ final class PlayerModel {
     let speakers: [CinemaBus]
     /// 再生のエンジン（作れなければ nil。Metal・音声の準備に失敗したとき）
     let engine: MediaPlayer?
+    /// 上映の進行（開演の流れ・エンドロール）
+    let show = ShowDirector()
     /// システムの「再生中」（コントロールセンター・AirPods・Siri からの操作と、題名・位置の表示）
     let nowPlaying = NowPlaying()
     private let preferences: Preferences
@@ -68,8 +71,9 @@ final class PlayerModel {
         info?.duration ?? 0
     }
 
+    /// 再生している（開演の流れを流しているあいだも。そのあいだに止めると、本編を始めずに止める）
     var isPlaying: Bool {
-        state == .playing || state == .buffering
+        state == .playing || state == .buffering || show.ceremony != nil
     }
 
     /// 何か開いている（動画・音楽・画像・PDF）
@@ -128,13 +132,21 @@ final class PlayerModel {
             info = opened
             self.title = opened.title ?? title
             currentItem = item
+            show.prepare(duration: opened.duration, chapters: opened.chapters, isVideo: !opened.isAudioOnly)
             selectedAudioTrack = engine.selectedAudioTrack
             selectedSubtitleTrack = engine.selectedSubtitleTrack
+            nowPlaying.activate()
             if let resume = item?.resumePosition {
                 engine.seek(to: resume)
+                engine.play()
+            } else if preferences.showtime, ShowDirector.wantsCeremony(isAudioOnly: opened.isAudioOnly, duration: opened.duration) {
+                // 頭から再生する動画は、開演の流れ（ブザー → 客電を半分 → 幕が開く）のあとに始める
+                show.begin { [weak self] in
+                    self?.engine?.play()
+                }
+            } else {
+                engine.play()
             }
-            nowPlaying.activate()
-            engine.play()
             startRefreshing()
             publishNowPlaying()
         } catch {
@@ -146,6 +158,7 @@ final class PlayerModel {
     /// 再生をやめる（位置を保存する）
     func close() {
         saveProgress()
+        show.reset()
         refreshTask?.cancel()
         refreshTask = nil
         engine?.close()
@@ -321,6 +334,10 @@ final class PlayerModel {
         }
         currentTime = engine.currentTime
         subtitles = engine.subtitles(at: engine.displayTime)
+        // 本編のあいだ、エンドロールの始まりを探す（チャプターが無いとき、終わり近くの暗い画面で）
+        if showPhase == .feature, let light = engine.screenLight() {
+            show.observe(time: currentTime, light: light)
+        }
     }
 
     private func saveProgress(position: Double? = nil) {
@@ -334,7 +351,8 @@ final class PlayerModel {
 // MARK: - 再生の操作（PlayerCommand）と Now Playing
 
 extension PlayerModel {
-    /// 再生の操作を行う（AppModel.perform(_:) から呼ぶ。パネルを出す操作は AppModel が受ける）。動画・音楽を開いていなければ何もしない
+    /// 再生の操作を行う（AppModel.perform(_:) から呼ぶ。パネルを出す操作は AppModel が受ける）。動画・音楽を開いていなければ何もしない。
+    /// 開演の流れ（show.ceremony）のあいだは、止めると本編を始めずに止め、シークするとその位置からすぐに始める
     func perform(_ command: PlayerCommand) {
         guard hasPlayback, let engine else {
             return
@@ -347,13 +365,18 @@ extension PlayerModel {
                 engine.play()
             }
         case .play:
-            engine.play()
+            // 開演の流れのあいだは、もう始まりかけているので何もしない
+            if show.ceremony == nil {
+                engine.play()
+            }
         case .pause:
             pause(engine)
         case .skip, .seek, .nextChapter, .previousChapter:
             if let target = command.seekTarget(from: currentTime, duration: duration, chapterStarts: info?.chapters.map(\.start) ?? []) {
                 engine.seek(to: target)
                 currentTime = target
+                // 開演の流れのあいだにシークした：その位置からすぐに始める（開演の流れのあいだでなければ、何もしない）
+                startNow()
                 publishNowPlaying()
             }
         case let .setRate(newRate):
@@ -365,6 +388,12 @@ extension PlayerModel {
     }
 
     private func pause(_ engine: MediaPlayer) {
+        // 開演の流れのあいだに止めた：本編を始めずに止める（エンジンはまだ止まったまま）
+        if show.ceremony != nil {
+            show.cancel()
+            publishNowPlaying()
+            return
+        }
         engine.pause()
         saveProgress()
     }
@@ -387,5 +416,29 @@ extension PlayerModel {
             chapterCount: info.chapters.count
         )
         nowPlaying.update(item, artwork: info.artwork)
+    }
+}
+
+// MARK: - 上映の進行
+
+extension PlayerModel {
+    /// 今の上映の段階（客電・幕を決める）
+    var showPhase: ShowPhase {
+        ShowPhase.resolve(
+            ceremony: show.ceremony,
+            state: state,
+            showingStill: still != nil,
+            inCredits: show.isCredits(at: currentTime),
+            showtime: preferences.showtime && info.map { !$0.isAudioOnly } ?? false
+        )
+    }
+
+    /// 開演の流れを省いて、すぐに本編を始める
+    func startNow() {
+        guard show.ceremony != nil else {
+            return
+        }
+        show.cancel()
+        engine?.play()
     }
 }

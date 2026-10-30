@@ -272,6 +272,16 @@ struct TransportControls: View {
             HStack {
                 Text(TimeFormat.clock(scrubbing ?? player.currentTime)).monospacedDigit()
                 Spacer()
+                // 開演の流れ（ブザー・暗転・幕）のあいだは、省いてすぐに始められる
+                if player.show.ceremony != nil {
+                    Button {
+                        player.startNow()
+                    } label: {
+                        Label("すぐに始める", systemImage: "forward.end.fill")
+                    }
+                    .buttonStyle(.borderless)
+                    Spacer()
+                }
                 Text("-" + TimeFormat.clock(max(0, player.duration - (scrubbing ?? player.currentTime)))).monospacedDigit()
             }
             .font(.footnote)
