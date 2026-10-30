@@ -46,6 +46,8 @@
 			<array>
 				<!-- 35F9.1: アプリの中の出来事のあいだの経過時間を測る（端末の外には送らない） -->
 				<string>35F9.1</string>
+				<!-- 8FFB.1: 音の描画で受け取る AVAudio の時刻（hostTime）を mach_absolute_time と突き合わせ、音（31 本）と映像の時刻を計算する -->
+				<string>8FFB.1</string>
 			</array>
 		</dict>
 	</array>

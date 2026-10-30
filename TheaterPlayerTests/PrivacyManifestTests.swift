@@ -15,7 +15,7 @@ struct PrivacyManifestTests {
         // FFmpeg の stat・fstat・lstat
         "NSPrivacyAccessedAPICategoryFileTimestamp": ["C617.1", "3B52.1"],
         // TheaterMedia の mach_absolute_time
-        "NSPrivacyAccessedAPICategorySystemBootTime": ["35F9.1"]
+        "NSPrivacyAccessedAPICategorySystemBootTime": ["35F9.1", "8FFB.1"]
     ]
 
     func manifest() throws -> [String: Any] {
