@@ -8,6 +8,7 @@
 
 import PhotosUI
 import SwiftUI
+import TheaterMedia
 import UniformTypeIdentifiers
 
 struct LibraryView: View {
@@ -175,7 +176,10 @@ struct LibraryView: View {
             return true
         case .closed:
             appModel.immersiveSpaceState = .inTransition
-            switch await openImmersiveSpace(id: appModel.immersiveSpaceID) {
+            Diagnostics.log("映画館を開く（openImmersiveSpace）")
+            let result = await openImmersiveSpace(id: appModel.immersiveSpaceID)
+            Diagnostics.log("映画館を開いた（openImmersiveSpace の結果）：\(result)")
+            switch result {
             case .opened:
                 closeIfInTheater()
                 return true
@@ -206,7 +210,7 @@ struct RecentList: View {
             ContentUnavailableView(
                 "まだ再生したファイルはありません",
                 systemImage: "clock",
-                description: Text("「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます")
+                description: Text("「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の TheaterPlayer のフォルダに入れたものも開けます")
             )
         } else {
             List {

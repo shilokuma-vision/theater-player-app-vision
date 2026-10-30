@@ -24,6 +24,7 @@ struct TheaterView: View {
 
     var body: some View {
         RealityView { content, attachments in
+            Diagnostics.log("RealityView の make を始めた（前の舞台#\(appModel.activeStage?.number ?? 0)）")
             let anchor = Entity()
             anchor.name = "ImmersiveRoot"
             content.add(anchor)
@@ -36,7 +37,8 @@ struct TheaterView: View {
                 appModel.activeStage?.detach()
                 appModel.activeStage = stage
                 appModel.stagesCreated += 1
-                Diagnostics.log("舞台を作った（\(appModel.stagesCreated) 回目）")
+                stage.number = appModel.stagesCreated
+                Diagnostics.log("舞台を作った（\(appModel.stagesCreated) 回目） state=\(appModel.player.state)")
                 if let engine = appModel.player.engine {
                     stage.attach(engine)
                 }
@@ -120,9 +122,13 @@ struct TheaterView: View {
         #endif
         // open / closed は実際に表示・非表示になったときにだけ書き換える（システムの操作でも開閉するため）
         .onAppear {
+            Diagnostics.log("映画館を出した（onAppear）")
             appModel.immersiveSpaceState = .open
         }
         .onDisappear {
+            Diagnostics.log("映画館を片付ける（onDisappear） 舞台#\(stage?.number ?? 0) activeStage=#\(appModel.activeStage?.number ?? 0)")
+            ScreenProbe.track(stage, "舞台#\(stage?.number ?? 0)")
+            ScreenProbe.track(stage?.root, "舞台#\(stage?.number ?? 0) の root")
             stage?.detach()
             if appModel.activeStage === stage {
                 appModel.activeStage = nil

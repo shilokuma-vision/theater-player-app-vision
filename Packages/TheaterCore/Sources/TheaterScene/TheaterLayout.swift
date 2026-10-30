@@ -44,6 +44,29 @@ public struct TheaterLayout: Decodable, Sendable {
             return SeatRow(id: index, letter: sorted.first?.row ?? "", seats: sorted, aisleBefore: Set(aisles.map(\.1.id)))
         }
     }
+
+    /// 座席表の区画（前から、左から）。列を前から depthCount 個のまとまりに、列の数がそろうように分け（13 列なら 3・3・3・4）、
+    /// それぞれをブロック（L・C・R）で分ける。座席表では、区画を選んでから席を選ぶ
+    public func seatSections(depthCount: Int = 4) -> [SeatSection] {
+        let rows = seatRows
+        let count = min(depthCount, rows.count)
+        guard count > 0 else {
+            return []
+        }
+        return (0..<count).flatMap { depth in
+            let band = rows[(depth * rows.count / count)..<((depth + 1) * rows.count / count)]
+            // ブロックは席番号の小さい順（スクリーンに向かって左から）
+            var blocks: [String] = []
+            for seat in band.flatMap(\.seats).sorted(by: { $0.number < $1.number }) where !blocks.contains(seat.block) {
+                blocks.append(seat.block)
+            }
+            return blocks.map { block in
+                SeatSection(block: block, rows: band.map { row in
+                    SeatRow(id: row.id, letter: row.letter, seats: row.seats.filter { $0.block == block }, aisleBefore: [])
+                })
+            }
+        }
+    }
 }
 
 /// 座席表の 1 列
@@ -56,6 +79,27 @@ public struct SeatRow: Sendable, Identifiable {
     public let seats: [Seat]
     /// 通路のすぐ右の席（左どなりとブロックが違う）。座席表では、この席の前にすき間を空ける
     public let aisleBefore: Set<String>
+}
+
+/// 座席表の区画（ブロック 1 つの、前後に続く数列）
+public struct SeatSection: Sendable, Identifiable {
+    /// ブロック（L・C・R）
+    public let block: String
+    /// 区画の列（前から）。席はこのブロックの席だけ（席番号の順）。区画の中に通路は無い
+    public let rows: [SeatRow]
+
+    /// 「C-G」のような id（ブロックと、最初の列の文字）
+    public var id: String {
+        "\(block)-\(rows.first?.letter ?? "")"
+    }
+
+    public var seats: [Seat] {
+        rows.flatMap(\.seats)
+    }
+
+    public func contains(_ seat: Seat) -> Bool {
+        seat.block == block && rows.contains { $0.id == seat.rowIndex }
+    }
 }
 
 /// 部屋の範囲

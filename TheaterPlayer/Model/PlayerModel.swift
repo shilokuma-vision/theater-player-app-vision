@@ -135,6 +135,7 @@ final class PlayerModel {
             show.prepare(duration: opened.duration, chapters: opened.chapters, isVideo: !opened.isAudioOnly)
             selectedAudioTrack = engine.selectedAudioTrack
             selectedSubtitleTrack = engine.selectedSubtitleTrack
+            Diagnostics.log("ファイルを開いた resume=\(item?.resumePosition.map { String($0) } ?? "なし")")
             nowPlaying.activate()
             if let resume = item?.resumePosition {
                 engine.seek(to: resume)

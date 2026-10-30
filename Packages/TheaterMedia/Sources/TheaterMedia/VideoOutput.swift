@@ -7,7 +7,8 @@
 //  時計で決まり（フレームの間隔・HDR の表示はシステムが受け持つ）、音の時計に合わせてこの時計を動かす（MediaClock）。
 //  3D の映像は、左右に並べたフレーム（左が左目）にして、形式に立体の指定（左右に並べてあること）を付けて渡す。VideoMaterial が
 //  左右の目に分けて映す（実機で立体に見えた）。上下に並べた指定は実機で立体に映らなかったので、上下・空間ビデオは左右に並べ替える。
-//  3D と 2D を切り替えるときは renderer を作り直し、VideoMaterial を付け替える（3D のあとに 2D の映像を渡すと、立体のまま崩れて映った）
+//  3D と 2D を切り替えるときは renderer を作り直し、VideoMaterial を付け替える（3D のあとに 2D の映像を渡すと、立体のまま崩れて映った）。
+//  スクリーン（VideoMaterial）をつなぐときも、前のスクリーンにつないだ renderer は使わず、作り直す（rendererHasScreen）
 //
 
 @preconcurrency import AVFoundation
@@ -40,6 +41,13 @@ final class VideoOutput: @unchecked Sendable {
     init() {
         synchronizer.addRenderer(rendererValue)
         synchronizer.delaysRateChangeUntilHasSufficientMediaData = false
+        if Diagnostics.enabled {
+            observeRenderers()
+        }
+    }
+
+    deinit {
+        observers.forEach(NotificationCenter.default.removeObserver)
     }
 
     /// 表示の時計の時刻（秒）
@@ -82,24 +90,89 @@ final class VideoOutput: @unchecked Sendable {
     /// enqueue と、スクリーンのつなぎ替え・renderer の作り直しを 1 つずつ行う（つなぎ替えの間に、渡している途中のコマが無いように）。
     /// lock より先に取る
     private let targetLock = NSLock()
+    /// 今の renderer を、スクリーンにつないだ（VideoMaterial を作った）か。renderer は 1 つのスクリーンにだけ使う。
+    /// VideoMaterial を解放しても、renderer の映す先（video target）は外れず、renderer は「受け取れる」と答えてコマを受け取り続ける。
+    /// その renderer で次のスクリーンの VideoMaterial を作ると、RealityKit が映す先を足す前（作ってから 0.1 秒ほど）にコマが流れ込み、
+    /// 足すのに失敗して（FigVideoQueue の err=-12080）、新しいスクリーンが黒いままだった（映画館を開き直して、続きから再生すると音だけになった）。
+    /// 新しい renderer は、映す先が足されるまでコマを受け取らない（isReadyForMoreMediaData が false）ので、足されてから映り始める
+    private var rendererHasScreen = false
+    /// 診断：つないでから渡したコマ・外していたあいだに渡さなかったコマの数と、つないだ時刻（targetLock の中で使う）
+    private var sentSinceAttach = 0
+    private var withheldSinceDetach = 0
+    private var attachedUptime: TimeInterval = 0
+    /// 診断：renderer の知らせ（デコードの失敗・flush が要る）の受け手
+    private var observers: [NSObjectProtocol] = []
 
     var isReady: Bool {
         targetLock.withLock { screenAttached } && renderer.isReadyForMoreMediaData
     }
 
-    /// スクリーンをつなぐ：コマを渡していない間に body（VideoMaterial を作る）を行い、そのあとコマを渡し始める
-    func attachScreen(_ body: () -> Void) {
+    /// スクリーンをつなぐ：コマを渡していない間に body（renderer の VideoMaterial を作る）を行い、そのあとコマを渡し始める。
+    /// 前のスクリーンにつないだ renderer なら、作り直してから渡す
+    func attachScreen(_ body: (AVSampleBufferVideoRenderer) -> Void) {
         targetLock.withLock {
-            body()
+            if rendererHasScreen {
+                replaceRenderer(reason: "前のスクリーンにつないでいた")
+            }
+            let target = renderer
+            Diagnostics.log("スクリーンをつなぐ \(Self.describe(target)) 外していたあいだに渡さなかったコマ=\(withheldSinceDetach)")
+            body(target)
+            rendererHasScreen = true
             screenAttached = true
+            sentSinceAttach = 0
+            attachedUptime = ProcessInfo.processInfo.systemUptime
         }
     }
 
     /// スクリーンを外す：コマを渡すのをやめ、renderer に残ったコマを捨てる
     func detachScreen() {
         targetLock.withLock {
+            Diagnostics.log("スクリーンを外す attached=\(screenAttached) 渡したコマ=\(sentSinceAttach) \(Self.describe(renderer))")
             screenAttached = false
+            withheldSinceDetach = 0
             renderer.flush()
+        }
+    }
+
+    /// renderer を作り直して、時計につなぎ替える（スクリーンは外れる。targetLock を取った中で呼ぶ）
+    private func replaceRenderer(reason: String) {
+        let replaced = lock.withLock {
+            let old = rendererValue
+            rendererValue = AVSampleBufferVideoRenderer()
+            return old
+        }
+        screenAttached = false
+        rendererHasScreen = false
+        synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
+        replaced.flush()
+        synchronizer.addRenderer(renderer)
+        Diagnostics.log("renderer を作り直した（\(reason)） \(Diagnostics.id(replaced)) → \(Diagnostics.id(renderer))")
+    }
+
+    /// 診断：renderer の状態
+    static func describe(_ renderer: AVSampleBufferVideoRenderer) -> String {
+        let status = switch renderer.status {
+        case .rendering: "rendering"
+        case .failed: "failed"
+        default: "unknown"
+        }
+        let displayed = renderer.displayedPixelBuffer().map { Diagnostics.id($0) } ?? "なし"
+        return "renderer=\(Diagnostics.id(renderer)) status=\(status) error=\(renderer.error?.localizedDescription ?? "なし") " +
+            "ready=\(renderer.isReadyForMoreMediaData) requiresFlush=\(renderer.requiresFlushToResumeDecoding) displayed=\(displayed) " +
+            "renderer.time=\(String(format: "%.3f", CMTimebaseGetTime(renderer.timebase).seconds))"
+    }
+
+    /// 診断：renderer の知らせ（デコードの失敗・flush が要るようになった）をログに書く
+    private func observeRenderers() {
+        let names = [
+            AVSampleBufferVideoRenderer.didFailToDecodeNotification,
+            AVSampleBufferVideoRenderer.requiresFlushToResumeDecodingDidChangeNotification
+        ]
+        observers = names.map { name in
+            NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { notification in
+                let renderer = notification.object as AnyObject?
+                Diagnostics.log("renderer の知らせ \(name.rawValue) renderer=\(Diagnostics.id(renderer)) \(notification.userInfo ?? [:])")
+            }
         }
     }
 
@@ -115,28 +188,19 @@ final class VideoOutput: @unchecked Sendable {
 
     /// targetLock を取った中で呼ぶ
     private func setStereo(_ newValue: StereoPacking) {
-        let replaced: AVSampleBufferVideoRenderer? = lock.withLock {
+        let switchesStereo: Bool = lock.withLock {
             guard stereoValue != newValue else {
-                return nil
+                return false
             }
             let wasStereo = stereoValue != .mono
             stereoValue = newValue
             // 次のフレームで、形式を作り直す
             format = nil
-            guard wasStereo != (newValue != .mono) else {
-                return nil
-            }
-            let old = rendererValue
-            rendererValue = AVSampleBufferVideoRenderer()
-            return old
+            return wasStereo != (newValue != .mono)
         }
-        guard let replaced else {
-            return
+        if switchesStereo {
+            replaceRenderer(reason: "3D と 2D を切り替えた")
         }
-        screenAttached = false
-        synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
-        replaced.flush()
-        synchronizer.addRenderer(renderer)
     }
 
     /// フレームを渡す。displayImmediately なら時刻を待たずに表示する（止まっているときのシーク）
@@ -167,8 +231,18 @@ final class VideoOutput: @unchecked Sendable {
         targetLock.withLock {
             // スクリーンを外した後（つなぎ替えの途中）・並べ方を変えた後（作り直した renderer）は渡さない
             let (target, current) = lock.withLock { (rendererValue, stereoValue) }
-            if screenAttached, current == stereo {
-                target.enqueue(sample)
+            guard screenAttached, current == stereo else {
+                withheldSinceDetach += 1
+                return
+            }
+            target.enqueue(sample)
+            sentSinceAttach += 1
+            if sentSinceAttach == 1 {
+                let elapsed = (ProcessInfo.processInfo.systemUptime - attachedUptime) * 1_000
+                Diagnostics.log(
+                    "つないだあとの最初のコマ time=\(String(format: "%.3f", frame.time)) immediately=\(displayImmediately) " +
+                        "つないでから=\(Int(elapsed))ms \(Self.describe(target))"
+                )
             }
         }
     }
