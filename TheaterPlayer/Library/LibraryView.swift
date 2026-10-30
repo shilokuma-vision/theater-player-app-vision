@@ -206,7 +206,7 @@ struct RecentList: View {
             ContentUnavailableView(
                 "まだ再生したファイルはありません",
                 systemImage: "clock",
-                description: Text("「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます")
+                description: Text("「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の TheaterPlayer のフォルダに入れたものも開けます")
             )
         } else {
             List {
