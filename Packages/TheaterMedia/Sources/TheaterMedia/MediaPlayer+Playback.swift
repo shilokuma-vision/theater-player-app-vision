@@ -248,12 +248,6 @@ extension MediaPlayer {
             return
         }
         lastDiagnosticsHost = now
-        let renderer = videoOutput.renderer
-        let status = switch renderer.status {
-        case .rendering: "rendering"
-        case .failed: "failed"
-        default: "unknown"
-        }
         let video = session.video?.stats.withLock { $0 }
         let videoText = video.map {
             "decoded=\($0.decoded) enqueued=\($0.enqueued) late=\($0.droppedLate) beforeSeek=\($0.droppedBeforeSeekTarget) " +
@@ -264,11 +258,7 @@ extension MediaPlayer {
         let readers = "readers=\(spread.readers) sampleTimeSpread=\(Int(spread.sampleTime)) " +
             "hostSpread=\(String(format: "%.4f", spread.host))"
         let output = "out.time=\(String(format: "%.3f", videoOutput.time)) out.rate=\(videoOutput.rate)"
-        let displayed = renderer.displayedPixelBuffer().map { String(UInt(bitPattern: ObjectIdentifier($0).hashValue) % 10_000) } ?? "なし"
-        let rendererTime = CMTimebaseGetTime(renderer.timebase).seconds
-        let errorText = renderer.error?.localizedDescription ?? "なし"
-        let rendererText = "renderer=\(status) error=\(errorText) ready=\(renderer.isReadyForMoreMediaData) " +
-            "displayed=\(displayed) renderer.time=\(String(format: "%.3f", rendererTime))"
+        let rendererText = VideoOutput.describe(videoOutput.renderer)
         let audioText = "audioClock=\(clock) ring=\(ring.pendingFrames) \(readers)"
         Diagnostics.log("state=\(state) video[\(videoText)] \(output) \(rendererText) \(audioText)")
     }

@@ -46,6 +46,8 @@ final class TheaterStage {
     @ObservationIgnored private var curtainClosed = false
     /// 字幕・音楽の表示を置く、スクリーンの中心の手前の点（表示は、さらに曲面の出っ張りの分だけ手前に置く。overlayDepth）
     let screenAnchor = Entity()
+    /// 何回目に作った舞台か（診断のログ用）
+    @ObservationIgnored var number = 0
 
     static func load(preferences: Preferences) async throws -> TheaterStage {
         let environment = try await TheaterEnvironment.load(bundle: .main)
@@ -90,11 +92,15 @@ final class TheaterStage {
         // 映画館に入るときは、ファイルを閉じている（または映す先が無いので renderer がコマを受け取っていない）ので、ここでは足せる。
         // 前の舞台の VideoMaterial を使い回すと、映画館を閉じたときに RealityKit 側の映す先が片付けられていて、映らない
         // 前のスクリーンを外してから（コマを渡すのを止めてから）、新しい VideoMaterial を作ってつなぐ
+        Diagnostics.log("舞台#\(number) を再生とつなぐ \(ScreenProbe.remaining())")
         engine.detachVideoScreen()
         self.engine = engine
         if let material = connect(engine), let mesh = try? ScreenMesh.make(frame: screenFrame, spec: layout.screen) {
             let screen = makeVideoScreen(mesh: mesh, material: material)
-            Diagnostics.log("VideoScreen を作った position=\(screen.position) bounds=\(screen.visualBounds(relativeTo: nil).extents)")
+            Diagnostics.log(
+                "VideoScreen を作った 舞台#\(number) position=\(screen.position) bounds=\(screen.visualBounds(relativeTo: nil).extents) " +
+                    ScreenProbe.describe(screen)
+            )
         }
         speakers.build(layout: layout, ring: engine.ring, parent: environment.model)
         speakers.play()
@@ -102,6 +108,9 @@ final class TheaterStage {
 
     /// 再生のエンジンから外す（映画館を閉じた・別の舞台に替わった）。同じ renderer を、古い VideoMaterial が持ったままにしない
     func detach() {
+        Diagnostics.log("舞台#\(number) を再生から外す \(ScreenProbe.describe(videoScreen))")
+        ScreenProbe.track(videoScreen, "舞台#\(number) の VideoScreen")
+        ScreenProbe.track((videoScreen?.model?.materials.first as? VideoMaterial)?.__videoResource, "舞台#\(number) の VideoMaterial")
         speakers.remove()
         buzzer.stop()
         // スクリーンを外したら、次のスクリーンをつなぐまでコマを渡さない（外したスクリーンの映す先に渡し続けると、
@@ -133,8 +142,13 @@ final class TheaterStage {
     private func connect(_ engine: MediaPlayer) -> VideoMaterial? {
         var created: VideoMaterial?
         engine.attachVideoScreen { renderer in
-            created = VideoMaterial(videoRenderer: renderer)
+            let material = VideoMaterial(videoRenderer: renderer)
+            created = material
             screenRenderer = renderer
+            Diagnostics.log(
+                "VideoMaterial を作った 舞台#\(number) material=\(Diagnostics.id(material.__videoResource)) " +
+                    "renderer=\(Diagnostics.id(renderer)) material.renderer=\(Diagnostics.id(material.videoRenderer))"
+            )
         }
         return created
     }
@@ -147,9 +161,10 @@ final class TheaterStage {
               let material = connect(engine) else {
             return
         }
+        ScreenProbe.track(old, "舞台#\(number) の古い VideoScreen（renderer を付け替えた）")
         old.removeFromParent()
-        makeVideoScreen(mesh: mesh, material: material)
-        Diagnostics.log("VideoScreen を作り直した（renderer を付け替えた）")
+        let screen = makeVideoScreen(mesh: mesh, material: material)
+        Diagnostics.log("VideoScreen を作り直した（renderer を付け替えた） \(ScreenProbe.describe(screen))")
     }
 
     func setRoom(_ room: SpatialSpeakers.Room) {
@@ -284,6 +299,7 @@ final class TheaterStage {
         if let engine = player.engine {
             followRenderer(of: engine)
         }
+        ScreenProbe.report(stage: number, screen: videoScreen, room: environment.model, engine: player.engine)
         // 開演の流れは、映画館が描き始めてから進める
         player.show.theaterDidRender()
         let phase = player.showPhase

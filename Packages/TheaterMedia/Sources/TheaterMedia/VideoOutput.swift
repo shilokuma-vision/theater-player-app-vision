@@ -40,6 +40,13 @@ final class VideoOutput: @unchecked Sendable {
     init() {
         synchronizer.addRenderer(rendererValue)
         synchronizer.delaysRateChangeUntilHasSufficientMediaData = false
+        if Diagnostics.enabled {
+            observeRenderers()
+        }
+    }
+
+    deinit {
+        observers.forEach(NotificationCenter.default.removeObserver)
     }
 
     /// 表示の時計の時刻（秒）
@@ -82,6 +89,12 @@ final class VideoOutput: @unchecked Sendable {
     /// enqueue と、スクリーンのつなぎ替え・renderer の作り直しを 1 つずつ行う（つなぎ替えの間に、渡している途中のコマが無いように）。
     /// lock より先に取る
     private let targetLock = NSLock()
+    /// 診断：つないでから渡したコマ・外していたあいだに渡さなかったコマの数と、つないだ時刻（targetLock の中で使う）
+    private var sentSinceAttach = 0
+    private var withheldSinceDetach = 0
+    private var attachedUptime: TimeInterval = 0
+    /// 診断：renderer の知らせ（デコードの失敗・flush が要る）の受け手
+    private var observers: [NSObjectProtocol] = []
 
     var isReady: Bool {
         targetLock.withLock { screenAttached } && renderer.isReadyForMoreMediaData
@@ -90,21 +103,27 @@ final class VideoOutput: @unchecked Sendable {
     /// スクリーンをつなぐ：コマを渡していない間に body（renderer の VideoMaterial を作る）を行い、そのあとコマを渡し始める
     func attachScreen(_ body: (AVSampleBufferVideoRenderer) -> Void) {
         targetLock.withLock {
-            body(renderer)
+            let target = renderer
+            Diagnostics.log("スクリーンをつなぐ \(Self.describe(target)) 外していたあいだに渡さなかったコマ=\(withheldSinceDetach)")
+            body(target)
             screenAttached = true
+            sentSinceAttach = 0
+            attachedUptime = ProcessInfo.processInfo.systemUptime
         }
     }
 
     /// スクリーンを外す：コマを渡すのをやめ、renderer に残ったコマを捨てる
     func detachScreen() {
         targetLock.withLock {
+            Diagnostics.log("スクリーンを外す attached=\(screenAttached) 渡したコマ=\(sentSinceAttach) \(Self.describe(renderer))")
             screenAttached = false
+            withheldSinceDetach = 0
             renderer.flush()
         }
     }
 
     /// renderer を作り直して、時計につなぎ替える（スクリーンは外れる。targetLock を取った中で呼ぶ）
-    private func replaceRenderer() {
+    private func replaceRenderer(reason: String) {
         let replaced = lock.withLock {
             let old = rendererValue
             rendererValue = AVSampleBufferVideoRenderer()
@@ -114,6 +133,34 @@ final class VideoOutput: @unchecked Sendable {
         synchronizer.removeRenderer(replaced, at: synchronizer.currentTime(), completionHandler: nil)
         replaced.flush()
         synchronizer.addRenderer(renderer)
+        Diagnostics.log("renderer を作り直した（\(reason)） \(Diagnostics.id(replaced)) → \(Diagnostics.id(renderer))")
+    }
+
+    /// 診断：renderer の状態
+    static func describe(_ renderer: AVSampleBufferVideoRenderer) -> String {
+        let status = switch renderer.status {
+        case .rendering: "rendering"
+        case .failed: "failed"
+        default: "unknown"
+        }
+        let displayed = renderer.displayedPixelBuffer().map { Diagnostics.id($0) } ?? "なし"
+        return "renderer=\(Diagnostics.id(renderer)) status=\(status) error=\(renderer.error?.localizedDescription ?? "なし") " +
+            "ready=\(renderer.isReadyForMoreMediaData) requiresFlush=\(renderer.requiresFlushToResumeDecoding) displayed=\(displayed) " +
+            "renderer.time=\(String(format: "%.3f", CMTimebaseGetTime(renderer.timebase).seconds))"
+    }
+
+    /// 診断：renderer の知らせ（デコードの失敗・flush が要るようになった）をログに書く
+    private func observeRenderers() {
+        let names = [
+            AVSampleBufferVideoRenderer.didFailToDecodeNotification,
+            AVSampleBufferVideoRenderer.requiresFlushToResumeDecodingDidChangeNotification
+        ]
+        observers = names.map { name in
+            NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { notification in
+                let renderer = notification.object as AnyObject?
+                Diagnostics.log("renderer の知らせ \(name.rawValue) renderer=\(Diagnostics.id(renderer)) \(notification.userInfo ?? [:])")
+            }
+        }
     }
 
     /// 渡すフレームの左右の目の並べ方。
@@ -139,7 +186,7 @@ final class VideoOutput: @unchecked Sendable {
             return wasStereo != (newValue != .mono)
         }
         if switchesStereo {
-            replaceRenderer()
+            replaceRenderer(reason: "3D と 2D を切り替えた")
         }
     }
 
@@ -171,8 +218,18 @@ final class VideoOutput: @unchecked Sendable {
         targetLock.withLock {
             // スクリーンを外した後（つなぎ替えの途中）・並べ方を変えた後（作り直した renderer）は渡さない
             let (target, current) = lock.withLock { (rendererValue, stereoValue) }
-            if screenAttached, current == stereo {
-                target.enqueue(sample)
+            guard screenAttached, current == stereo else {
+                withheldSinceDetach += 1
+                return
+            }
+            target.enqueue(sample)
+            sentSinceAttach += 1
+            if sentSinceAttach == 1 {
+                let elapsed = (ProcessInfo.processInfo.systemUptime - attachedUptime) * 1_000
+                Diagnostics.log(
+                    "つないだあとの最初のコマ time=\(String(format: "%.3f", frame.time)) immediately=\(displayImmediately) " +
+                        "つないでから=\(Int(elapsed))ms \(Self.describe(target))"
+                )
             }
         }
     }
