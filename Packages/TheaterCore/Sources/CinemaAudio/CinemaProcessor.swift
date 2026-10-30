@@ -21,6 +21,10 @@ public final class CinemaProcessor: @unchecked Sendable {
     public static let latencyFrames = StereoUpmixer.latency + LookaheadLimiter.lookahead
     private let maxFrames: Int
     private let pendingSettings = Mutex(CinemaAudioSettings())
+    /// リミッターの前に掛ける音量（等倍が 1）。上げても、リミッターが上限で抑えるので割れない
+    private let outputGainBits = Atomic<UInt32>(Float(1).bitPattern)
+    /// 前の処理の終わりで掛けていた出力の音量（変えたとき、処理の 1 回の中でなめらかに移す）
+    private var appliedOutputGain: Float = 1
     private var settings = CinemaAudioSettings()
     private var matrix = ChannelMatrix(layout: [.frontLeft, .frontRight])
     private let buses: PlanarBuffer
@@ -40,6 +44,12 @@ public final class CinemaProcessor: @unchecked Sendable {
     /// 設定を変える（次の処理から効く）
     public func update(settings newSettings: CinemaAudioSettings) {
         pendingSettings.withLock { $0 = newSettings }
+    }
+
+    /// 出力の音量（リミッターの前。1 で等倍、4 で +12 dB）
+    public var outputGain: Float {
+        get { Float(bitPattern: outputGainBits.load(ordering: .relaxed)) }
+        set { outputGainBits.store(max(0, newValue).bitPattern, ordering: .relaxed) }
     }
 
     /// 入力のチャンネルの並びを変える（ファイル・音声トラックを開いたとき）
@@ -185,20 +195,25 @@ public final class CinemaProcessor: @unchecked Sendable {
     }
 
     private func writeFeeds(output: [UnsafeMutablePointer<Float>], frames: Int) {
+        let start = appliedOutputGain
+        let end = outputGain
+        let step = (end - start) / Float(max(frames, 1))
         for (index, feed) in feeds.enumerated() where index < output.count {
             let target = output[index]
-            let gain = feed.gain
             if feed.bus == .lfe {
                 for frame in 0..<frames {
+                    let gain = feed.gain * (start + step * Float(frame + 1))
                     target[frame] = state.feedDelays[index].process((sub.channels[0][frame] + sub.channels[1][frame]) * gain)
                 }
             } else {
                 let source = buses.channels[feed.bus.index]
                 for frame in 0..<frames {
+                    let gain = feed.gain * (start + step * Float(frame + 1))
                     target[frame] = state.feedDelays[index].process(source[frame] * gain)
                 }
             }
         }
+        appliedOutputGain = end
     }
 }
 
