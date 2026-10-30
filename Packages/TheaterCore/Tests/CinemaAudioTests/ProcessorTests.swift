@@ -118,6 +118,24 @@ struct ProcessorTests {
         #expect(largestStep < 0.02)
     }
 
+    /// 出力の音量を上げると小さな音は大きくなり、大きな音でもリミッターの上限は超えない（割れない）
+    @Test func outputGainRaisesTheLevelUnderTheCeiling() throws {
+        func peakAndLevel(gain: Float, amplitude: Float) throws -> (peak: Float, level: Float) {
+            let processor = try CinemaProcessor(speakers: speakers)
+            processor.update(settings: flatSettings())
+            processor.configure(input: [.frontCenter])
+            processor.outputGain = gain
+            let output = process(processor, input: [sine(frequency: 1_000, amplitude: amplitude, frames: 24_000)])
+            let center = try #require(speakers.firstIndex(of: .center))
+            return (output.map { $0.map(abs).max() ?? 0 }.max() ?? 0, steadyRMS(output[center]))
+        }
+        let quiet = try peakAndLevel(gain: 1, amplitude: 0.05)
+        let raised = try peakAndLevel(gain: 4, amplitude: 0.05)
+        #expect(abs(20 * log10(raised.level / quiet.level) - 12) < 0.5)
+        let loud = try peakAndLevel(gain: 4, amplitude: 0.8)
+        #expect(loud.peak <= 0.9)
+    }
+
     @Test func surroundArraysShareThePower() {
         let feeds = SpeakerFeed.feeds(for: [.leftSideSurround, .leftSideSurround, .leftSideSurround, .leftSideSurround, .center],
                                       sampleRate: 48_000)

@@ -45,12 +45,12 @@ public struct CinemaAudioSettings: Sendable, Equatable, Codable {
     public var ambienceAmount: Float = 0.6
     /// 天井のスピーカーが無い音声のとき、サラウンドを天井にも少し鳴らす（0〜0.5）
     public var heightAmount: Float = 0.2
-    /// 低音の量（dB、60 Hz より下を持ち上げる。0〜12）
-    public var bassBoostDB: Float = 4
+    /// 低音の量（dB、60 Hz より下を持ち上げる。0〜18）。イヤホン（AirPods など）でも低音の迫力が出るよう、既定を強めにする
+    public var bassBoostDB: Float = 9
     /// 低音の残響（0〜1）
     public var rumble: Float = 0.35
     /// 体感の低音（倍音で低音を感じやすくする。0〜1）
-    public var virtualBass: Float = 0.5
+    public var virtualBass: Float = 0.75
     /// LFE（.1）の大きさ（映画館の決まりは +10 dB）
     public var lfeGainDB: Float = 10
     /// 低音をサブウーファーへ分ける周波数（Hz）
