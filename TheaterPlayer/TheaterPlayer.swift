@@ -5,14 +5,19 @@
 //  Created by 村石 拓海 on 2024/05/12.
 //
 
+import AppIntents
 import SwiftUI
 
 @main
 struct TheaterPlayer: App {
-    @State private var appModel = AppModel()
+    @State private var appModel: AppModel
     @State private var immersion: ImmersionStyle = .full
 
     init() {
+        let appModel = AppModel()
+        _appModel = State(initialValue: appModel)
+        // Siri・ショートカットの App の操作（PlaybackIntents）にも、同じ AppModel を渡す
+        AppDependencyManager.shared.add(dependency: appModel)
         // 「ファイル」App にアプリのフォルダを出す（空だと出ないので、空なら案内を置く）
         SharedFolder.prepare()
     }

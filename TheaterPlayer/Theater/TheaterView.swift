@@ -113,6 +113,7 @@ struct TheaterView: View {
             #endif
         }
         .gesture(panelDrag)
+        .simultaneousGesture(screenTap)
         #if DEBUG
         // 止めていた動画をまた再生したら（操作パネルの再生・ライブラリで開いた）、YouTube を閉じてスクリーンを返す
         .onChange(of: appModel.player.isPlaying) {
@@ -138,6 +139,8 @@ struct TheaterView: View {
             #if DEBUG
             appModel.youTube.close()
             #endif
+            // スピーカーを外したので、音声のセッションを止める（止めていたほかのアプリの音を再開できるように）
+            appModel.player.nowPlaying.deactivate()
             // 「映画館を出る」は .inTransition にして、ライブラリを開いてから閉じる。
             // それ以外（Digital Crown などシステムの操作で閉じた）は、ウィンドウが 1 つも無くなるので、ここでライブラリを開き直す
             if appModel.immersiveSpaceState != .inTransition, !appModel.isLibraryOpen {
@@ -194,6 +197,18 @@ struct TheaterView: View {
                 dragOffset = nil
                 appModel.isMovingPanel = false
                 appModel.panelInteraction += 1
+            }
+    }
+
+    /// スクリーンをつまむ（視線＋ピンチ）と、畳んだ操作パネルを出す。
+    /// 食事中などに手が偶然つまむ形になっても、パネルが出るだけ（6 秒で畳む）なので、再生・一時停止・シークにはつながない
+    private var screenTap: some Gesture {
+        SpatialTapGesture()
+            .targetedToAnyEntity()
+            .onEnded { value in
+                if value.entity.name == TheaterStage.screenTargetName {
+                    appModel.perform(.showPanel)
+                }
             }
     }
 

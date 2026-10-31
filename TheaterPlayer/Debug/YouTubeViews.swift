@@ -83,7 +83,7 @@ struct YouTubePage: View {
         guard YouTubeLinks.searchURL(for: query) != nil else {
             return
         }
-        appModel.player.pause()
+        appModel.perform(.pause)
         appModel.youTube.search(query)
     }
 }

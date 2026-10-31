@@ -58,9 +58,14 @@ struct ControlPanel: View {
                 withAnimation { collapsed = true }
             }
         }
-        // 下のつまみでパネルを動かし終えたら、畳むまでの待ちをやり直す
+        // 下のつまみでパネルを動かし終えた・スクリーンをつまんで呼ばれたら、開いて、畳むまでの待ちをやり直す
         .onChange(of: appModel.panelInteraction) {
             touch()
+        }
+        // パネルの外（コントロールセンター・AirPods・Siri など）から再生を始めた・止めたときも、畳むまでの待ちをやり直す。
+        // 止めているあいだに待ちが終わっていると、外から再生を始めたあと、パネルが開いたまま残る
+        .onChange(of: appModel.player.isPlaying) {
+            lastInteraction = Date()
         }
         .simultaneousGesture(TapGesture().onEnded { touch() })
     }
@@ -260,7 +265,7 @@ struct TransportControls: View {
                 in: 0...max(player.duration, 1)
             ) { editing in
                 if !editing, let target = scrubbing {
-                    player.seek(to: target)
+                    appModel.perform(.seek(to: target))
                     scrubbing = nil
                 }
             }
@@ -270,7 +275,7 @@ struct TransportControls: View {
                 // 開演の流れ（ブザー・暗転・幕）のあいだは、省いてすぐに始められる
                 if player.show.ceremony != nil {
                     Button {
-                        player.startNow()
+                        appModel.perform(.startNow)
                     } label: {
                         Label("すぐに始める", systemImage: "forward.end.fill")
                     }
@@ -282,12 +287,12 @@ struct TransportControls: View {
             .font(.footnote)
             .foregroundStyle(.secondary)
             HStack(spacing: 28) {
-                Button { player.skip(by: -10) } label: { Image(systemName: "gobackward.10").font(.title) }
-                Button { player.togglePlay() } label: {
+                Button { appModel.perform(.skip(by: -10)) } label: { Image(systemName: "gobackward.10").font(.title) }
+                Button { appModel.perform(.togglePlay) } label: {
                     Image(systemName: player.isPlaying ? "pause.fill" : "play.fill").font(.largeTitle)
                         .frame(width: 64, height: 64)
                 }
-                Button { player.skip(by: 30) } label: { Image(systemName: "goforward.30").font(.title) }
+                Button { appModel.perform(.skip(by: 30)) } label: { Image(systemName: "goforward.30").font(.title) }
             }
             .buttonStyle(.borderless)
             VolumeSlider()
