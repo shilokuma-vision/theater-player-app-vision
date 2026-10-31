@@ -29,7 +29,7 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
 
 - **「ファイル」App の TheaterPlayer のフォルダ**：「ファイル」App の「この Apple Vision Pro内」（On My Apple Vision Pro）に「TheaterPlayer」のフォルダがあります（アプリのフォルダを共有しています。`UIFileSharingEnabled`）。
   ここに入れた動画・音楽・画像・PDF は、ライブラリの「ファイルを選ぶ」でこのフォルダを開いて選べます。
-  フォルダは空だと「ファイル」App に出ないので、空なら起動したときに案内（`使い方.txt`）を置きます（消してもかまいません。ほかのファイルがあれば置き直しません）
+  フォルダは空だと「ファイル」App に出ないので、空なら起動したときに案内（`使い方.txt`。英語のときは `How to Use.txt`）を置きます（消してもかまいません。ほかのファイルがあれば置き直しません）
 - **Mac から送る**：iCloud Drive に入れる・AirDrop で送る・「ファイル」App の「サーバへ接続」で Mac の共有フォルダを開く、のどれかで Vision Pro に届け、「ファイル」App で TheaterPlayer のフォルダへ移します。
   Finder のファイル共有（ケーブルでつないだ端末の「ファイル」タブ）は、Apple の案内では iPhone・iPad が対象で、Vision Pro は載っていません
 - **コピーせずに開く**：iCloud Drive・外部ストレージ・ファイルサーバのファイルも、「ファイルを選ぶ」でその場所のまま開けます（`LSSupportsOpeningDocumentsInPlace`）。最近の一覧から開き直せます
@@ -368,6 +368,24 @@ nm -u /tmp/TheaterPlayer-Release/Build/Products/Release-xros/TheaterPlayer.app/T
 
 - `ProcessInfo.systemUptime`・`UITextInputMode.activeInputModes` のような Objective-C のメソッドは `nm -u` に出ないので、コードを検索して確かめます。`sysctl`・`sysctlbyname`・`clock_gettime` はどのカテゴリにも入っていません
 - 申告を変えたら、[TheaterPlayerTests/PrivacyManifestTests.swift](TheaterPlayerTests/PrivacyManifestTests.swift) の期待値も直します
+
+### 多言語（ローカライズ）
+
+英語（en）と日本語（ja）に対応しています。開発の言語は英語で、画面の文字はコードに英語で書き、訳は String Catalog に置きます。
+利用者の言語にアプリが対応していないとき（ドイツ語など）は、開発の言語の英語が出ます。
+
+| String Catalog | 中身 |
+|---|---|
+| [TheaterPlayer/Localizable.xcstrings](TheaterPlayer/Localizable.xcstrings) | 画面の文字・エラーの文言・「ファイル」App に置く案内 |
+| [Packages/TheaterMedia/Sources/TheaterMedia/Localizable.xcstrings](Packages/TheaterMedia/Sources/TheaterMedia/Localizable.xcstrings) | 再生のエラーの文言（`MediaError(localized:)`・`check(_:_:)`。パッケージのバンドル `.module` から引く） |
+
+- キーは英語の文言そのものです（`Text("Choose a File")`）。同じ英語で訳を変えたいときだけ、`String(localized: "key", defaultValue: "…")` で別のキーにします。意味の取りにくい短い語には、catalog か `comment:` で訳す人への説明を付けます
+- 数と単位は [UnitFormat](TheaterPlayer/Theater/UnitFormat.swift)（割合・dB・秒・速さ・周波数）で書きます。`String(format: "%.0f 倍")` のように、単位を文字列に決め打ちしません
+- 文字を足したら、Xcode でビルドすると catalog にキーが入ります（訳の無いものは「New」）。日本語の訳を入れてください。
+  訳の漏れ・`%@` などの数の食い違いは [TheaterPlayerTests/LocalizationTests.swift](TheaterPlayerTests/LocalizationTests.swift) が見つけます
+- コマンドラインのビルド（`xcodebuild`）では catalog は書き換わりません。ビルドの抽出結果（DerivedData の `*.stringsdata`）から `xcrun xcstringstool sync <catalog> --stringsdata <ファイル>...` で入れられます
+- 言語を足すときは、catalog に言語を足して訳し、`LocalizationTests.languages`・`TheaterPlayer.xcodeproj` の `knownRegions`・`AppStore/languages.json`・`AppStore/metadata/<言語>.json` にも足します
+- 見え方は、Simulator の起動引数（Scheme の Run → Arguments）で確かめます。`-AppleLanguages (en)` で言語を、`-NSDoubleLocalizedStrings YES` で文字を倍の長さにした擬似ローカライズを出せます
 
 ## ライセンス
 
