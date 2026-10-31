@@ -71,9 +71,23 @@ struct PlayerCommandSeekTests {
 
     /// 位置を動かさない操作
     @Test func otherCommandsDoNotSeek() {
-        for command in [PlayerCommand.togglePlay, .play, .pause, .setRate(1.5), .startNow, .showPanel] {
+        for command in [PlayerCommand.togglePlay, .play, .pause, .setRate(1.5), .startNow, .changeVolume(by: 0.1), .showPanel] {
             #expect(command.seekTarget(from: 100, duration: 1_800, chapterStarts: chapters) == nil)
         }
+    }
+}
+
+struct PlayerCommandVolumeTests {
+    /// 音量は 0〜上限に収め、0.01 刻みに丸める（足し続けても端数がたまらない）
+    @Test func volumeStaysWithinRangeAndRounds() {
+        #expect(PlayerCommand.volume(1, changedBy: 0.1, maximum: 1.5) == 1.1)
+        #expect(PlayerCommand.volume(1.45, changedBy: 0.1, maximum: 1.5) == 1.5)
+        #expect(PlayerCommand.volume(0.05, changedBy: -0.1, maximum: 1.5) == 0)
+        var volume = 0.0
+        for _ in 0..<7 {
+            volume = PlayerCommand.volume(volume, changedBy: 0.1, maximum: 1.5)
+        }
+        #expect(volume == 0.7)
     }
 }
 
@@ -106,5 +120,22 @@ struct PlayerCommandRoutingTests {
         #expect(appModel.player.currentTime == 0)
         #expect(!appModel.player.isPlaying)
         #expect(appModel.player.rate == 1)
+    }
+
+    /// 音量は、何も開いていなくても変えられ、設定に残る。上限・0 で止まる
+    @Test func volumeChangesWithoutMedia() throws {
+        let appModel = try makeAppModel()
+        appModel.preferences.volume = 1
+        appModel.perform(.changeVolume(by: 0.1))
+        #expect(appModel.preferences.volume == 1.1)
+        // 上限まで上げて、さらに上げても上限のまま。0 まで下げて、さらに下げても 0 のまま
+        for _ in 0...Int(Preferences.maxVolume * 10) {
+            appModel.perform(.changeVolume(by: 0.1))
+        }
+        #expect(appModel.preferences.volume == Preferences.maxVolume)
+        for _ in 0...Int(Preferences.maxVolume * 10) + 1 {
+            appModel.perform(.changeVolume(by: -0.1))
+        }
+        #expect(appModel.preferences.volume == 0)
     }
 }

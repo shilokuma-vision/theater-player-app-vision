@@ -25,6 +25,8 @@ nonisolated enum PlayerCommand: Equatable, Sendable {
     case setRate(Float)
     /// 開演の流れ（ブザー・暗転・幕）を省いて、すぐに本編を始める
     case startNow
+    /// 音量を変える（負なら下げる。何も開いていなくても変えられる）
+    case changeVolume(by: Double)
     /// 畳んだ操作パネルを出す
     case showPanel
 
@@ -46,9 +48,14 @@ nonisolated enum PlayerCommand: Equatable, Sendable {
             chapterStarts.sorted().first { $0 > time + Self.chapterTolerance && (duration <= 0 || $0 < duration) }
         case .previousChapter:
             Self.previousChapterStart(from: time, chapterStarts: chapterStarts)
-        case .togglePlay, .play, .pause, .setRate, .startNow, .showPanel:
+        case .togglePlay, .play, .pause, .setRate, .startNow, .changeVolume, .showPanel:
             nil
         }
+    }
+
+    /// 音量を delta だけ変えた値（0〜上限に収め、0.01 刻みに丸める。足し続けても端数がたまらないように）
+    static func volume(_ volume: Double, changedBy delta: Double, maximum: Double) -> Double {
+        (max(0, min(volume + delta, maximum)) * 100).rounded() / 100
     }
 
     private func clamp(_ time: Double, duration: Double) -> Double {
