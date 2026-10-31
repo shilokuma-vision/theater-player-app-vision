@@ -371,7 +371,7 @@ nm -u /tmp/TheaterPlayer-Release/Build/Products/Release-xros/TheaterPlayer.app/T
 
 ### 多言語（ローカライズ）
 
-英語（en）と日本語（ja）に対応しています。開発の言語は英語で、画面の文字はコードに英語で書き、訳は String Catalog に置きます。
+英語（en）・日本語（ja）・簡体字中国語（zh-Hans）・繁体字中国語（zh-Hant）・韓国語（ko）に対応しています。開発の言語は英語で、画面の文字はコードに英語で書き、訳は String Catalog に置きます。
 利用者の言語にアプリが対応していないとき（ドイツ語など）は、開発の言語の英語が出ます。
 
 | String Catalog | 中身 |
@@ -386,6 +386,7 @@ nm -u /tmp/TheaterPlayer-Release/Build/Products/Release-xros/TheaterPlayer.app/T
 - 文字を足したら、Xcode でビルドすると catalog にキーが入ります（訳の無いものは「New」）。日本語の訳を入れてください。
   訳の漏れ・`%@` などの数の食い違いは [TheaterPlayerTests/LocalizationTests.swift](TheaterPlayerTests/LocalizationTests.swift) が見つけます
 - コマンドラインのビルド（`xcodebuild`）では catalog は書き換わりません。ビルドの抽出結果（DerivedData の `*.stringsdata`）から `xcrun xcstringstool sync <catalog> --stringsdata <ファイル>...` で入れられます
+- 日本語以外の訳は、Claude の下訳を Apple の用語に合わせたものです（その言語を話す人の確認はまだ）。Apple の用語は、Simulator のランタイムの中の Apple の訳（`RuntimeRoot/System/Library/Frameworks/AVKit.framework/<言語>.lproj/Localizable.strings` など。`xcrun simctl runtime list` でランタイムの場所が分かる）で調べられます
 - 言語を足すときは、catalog に言語を足して訳し、`LocalizationTests.languages`・`TheaterPlayer.xcodeproj` の `knownRegions`・`AppStore/languages.json`・`AppStore/metadata/<言語>.json` にも足します
 - App Intents の名前・説明・Siri の返事は `Localizable.xcstrings` に入ります。日本語の Siri で「シアタープレイヤー」と呼べるよう、Info.plist の `INAlternativeAppNames` に別名を入れています
 - 見え方は、Simulator の起動引数（Scheme の Run → Arguments）で確かめます。`-AppleLanguages (en)` で言語を、`-NSDoubleLocalizedStrings YES` で文字を倍の長さにした擬似ローカライズを出せます
