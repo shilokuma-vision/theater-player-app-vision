@@ -42,7 +42,7 @@ struct LibraryView: View {
                     NavigationLink {
                         LicensesView()
                     } label: {
-                        Label("ライセンス", systemImage: "doc.text")
+                        Label("Licenses", systemImage: "doc.text")
                     }
                 }
             }
@@ -81,9 +81,14 @@ struct LibraryView: View {
     private var header: some View {
         VStack(spacing: 8) {
             Image(systemName: "film.stack").font(.system(size: 56)).foregroundStyle(.secondary)
-            Text("映画館の大きなスクリーンで、手元の動画・音楽・画像を")
+            Text("Your videos, music, and pictures on the big screen of a movie theater")
                 .font(.title3)
-            Text("MKV・MP4・AVI・WMV・TS などの動画と、FLAC・MP3・AAC・WAV などの音楽を再生できます。PNG・JPEG・HEIC などの画像と PDF も映せます")
+            Text(
+                """
+                Plays videos such as MKV, MP4, AVI, WMV, and TS, and music such as FLAC, MP3, AAC, and WAV. \
+                Also shows pictures such as PNG, JPEG, and HEIC, and PDFs.
+                """
+            )
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -91,13 +96,13 @@ struct LibraryView: View {
     }
 
     private var actions: some View {
-        let photoTitle = loadingPhoto ? String(localized: "読み込み中…") : String(localized: "写真から選ぶ")
+        let photoTitle = loadingPhoto ? String(localized: "Loading…") : String(localized: "Choose from Photos")
         return HStack(spacing: 16) {
             Button {
                 importTarget = .media
                 importing = true
             } label: {
-                Label("ファイルを選ぶ", systemImage: "folder")
+                Label("Choose a File", systemImage: "folder")
                     .frame(minWidth: 180)
             }
             .buttonStyle(.borderedProminent)
@@ -110,7 +115,7 @@ struct LibraryView: View {
             Button {
                 Task { await enterTheater() }
             } label: {
-                Label("映画館に入る", systemImage: "theatermasks")
+                Label("Enter the Theater", systemImage: "theatermasks")
                     .frame(minWidth: 180)
             }
             .disabled(appModel.immersiveSpaceState == .inTransition)
@@ -210,13 +215,18 @@ struct RecentList: View {
         let items = appModel.recents.items
         if items.isEmpty {
             ContentUnavailableView(
-                "まだ再生したファイルはありません",
+                "No Recent Files",
                 systemImage: "clock",
-                description: Text("「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の TheaterPlayer のフォルダに入れたものも開けます")
+                description: Text(
+                    """
+                    Use “Choose a File” to open videos, music, pictures, and PDFs in iCloud Drive or on external storage.
+                    You can also open files you put in the TheaterPlayer folder in the Files app.
+                    """
+                )
             )
         } else {
             List {
-                Section("最近開いたもの") {
+                Section("Recently Opened") {
                     ForEach(items) { item in
                         Button {
                             open(item)
@@ -224,7 +234,7 @@ struct RecentList: View {
                             row(item)
                         }
                         .swipeActions {
-                            Button("削除", role: .destructive) { appModel.recents.remove(item) }
+                            Button("Delete", role: .destructive) { appModel.recents.remove(item) }
                         }
                     }
                 }
@@ -251,9 +261,9 @@ struct RecentList: View {
             VStack(alignment: .leading) {
                 Text(item.name).lineLimit(1)
                 if let page = item.page, page > 0 {
-                    Text("\(page + 1) ページ目から").font(.caption).foregroundStyle(.secondary)
+                    Text("From page \(page + 1)").font(.caption).foregroundStyle(.secondary)
                 } else if let resume = item.resumePosition {
-                    Text("続きから \(TimeFormat.clock(resume))").font(.caption).foregroundStyle(.secondary)
+                    Text("Resume from \(TimeFormat.clock(resume))").font(.caption).foregroundStyle(.secondary)
                 }
             }
             Spacer()

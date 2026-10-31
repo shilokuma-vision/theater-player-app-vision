@@ -18,7 +18,7 @@ struct PageHeader: View {
             Button {
                 page = .main
             } label: {
-                Label("戻る", systemImage: "chevron.left")
+                Label("Back", systemImage: "chevron.left")
             }
             Spacer()
             Text(title).font(.title3.weight(.semibold))
@@ -60,13 +60,14 @@ struct AudioTrackPage: View {
     var body: some View {
         let player = appModel.player
         VStack(alignment: .leading, spacing: 10) {
-            PageHeader(title: "音声", page: $page)
+            PageHeader(title: "Audio", page: $page)
             ScrollView {
                 VStack(alignment: .leading) {
                     ForEach(player.info?.audioTracks ?? []) { track in
                         ChoiceRow(
                             title: Self.name(track),
-                            detail: "\(track.codec.uppercased())・\(track.layoutName)・\(track.sampleRate / 1_000) kHz",
+                            detail: [track.codec.uppercased(), track.layoutName, "\(track.sampleRate / 1_000) kHz"]
+                                .joined(separator: ListSeparator.text),
                             selected: player.selectedAudioTrack == track.id
                         ) {
                             player.selectAudioTrack(track.id)
@@ -75,13 +76,13 @@ struct AudioTrackPage: View {
                 }
             }
             .frame(maxHeight: 320)
-            DelayStepper(title: "音のずれ", value: Binding(get: { player.audioDelay }, set: { player.audioDelay = $0 }))
+            DelayStepper(title: "Audio Delay", value: Binding(get: { player.audioDelay }, set: { player.audioDelay = $0 }))
         }
     }
 
     static func name(_ track: AudioTrack) -> String {
-        [track.title, track.language.map(LanguageName.display)].compactMap { $0 }.joined(separator: "・").nonEmpty
-            ?? String(localized: "トラック \(track.id)")
+        [track.title, track.language.map(LanguageName.display)].compactMap { $0 }.joined(separator: ListSeparator.text).nonEmpty
+            ?? String(localized: "Track \(track.id)")
     }
 }
 
@@ -93,11 +94,11 @@ struct SubtitlePage: View {
     var body: some View {
         let player = appModel.player
         VStack(alignment: .leading, spacing: 10) {
-            PageHeader(title: "字幕", page: $page)
+            PageHeader(title: "Subtitles", page: $page)
             ScrollView {
                 VStack(alignment: .leading) {
                     ChoiceRow(
-                        title: String(localized: "字幕なし"),
+                        title: String(localized: "Off", comment: "Subtitle choice: show no subtitles."),
                         detail: nil,
                         selected: player.selectedSubtitleTrack == nil && player.externalSubtitle == nil
                     ) {
@@ -113,7 +114,7 @@ struct SubtitlePage: View {
                         }
                     }
                     if let external = player.externalSubtitle {
-                        ChoiceRow(title: external.title ?? "", detail: String(localized: "ファイルから読んだ字幕"), selected: true) {}
+                        ChoiceRow(title: external.title ?? "", detail: String(localized: "Subtitles from a file"), selected: true) {}
                     }
                 }
             }
@@ -122,18 +123,18 @@ struct SubtitlePage: View {
                 openWindow(id: appModel.libraryWindowID)
                 appModel.requestSubtitleFile = true
             } label: {
-                Label("字幕ファイルを選ぶ（ライブラリ）", systemImage: "doc.badge.plus")
+                Label("Choose a Subtitle File (Library)", systemImage: "doc.badge.plus")
             }
-            DelayStepper(title: "字幕のずれ", value: Binding(get: { player.subtitleDelay }, set: { player.subtitleDelay = $0 }))
+            DelayStepper(title: "Subtitle Delay", value: Binding(get: { player.subtitleDelay }, set: { player.subtitleDelay = $0 }))
         }
     }
 
     static func name(_ track: SubtitleTrack) -> String {
         var parts = [track.title, track.language.map(LanguageName.display)].compactMap { $0 }
         if track.isForced {
-            parts.append(String(localized: "強制"))
+            parts.append(String(localized: "Forced", comment: "Subtitle track that is shown only for foreign-language lines."))
         }
-        return parts.joined(separator: "・").nonEmpty ?? String(localized: "字幕 \(track.id)")
+        return parts.joined(separator: ListSeparator.text).nonEmpty ?? String(localized: "Subtitles \(track.id)")
     }
 }
 
@@ -162,11 +163,11 @@ struct SpeedPage: View {
     var body: some View {
         let player = appModel.player
         VStack(alignment: .leading, spacing: 10) {
-            PageHeader(title: "再生の速さ", page: $page)
+            PageHeader(title: "Playback Speed", page: $page)
             ForEach(Self.speeds, id: \.self) { speed in
                 ChoiceRow(
                     title: String(format: "%.2g 倍", speed),
-                    detail: speed == 1 ? String(localized: "ふつう") : nil,
+                    detail: speed == 1 ? String(localized: "Normal", comment: "Playback speed of 1×.") : nil,
                     selected: abs(player.rate - speed) < 0.01
                 ) {
                     appModel.perform(.setRate(speed))
@@ -186,25 +187,25 @@ struct StereoPage: View {
         VStack(alignment: .leading, spacing: 10) {
             PageHeader(title: "3D", page: $page)
             ChoiceRow(
-                title: String(localized: "自動"),
-                detail: String(localized: "このファイル：\(Self.name(of: player.stereoPacking))"),
+                title: String(localized: "Automatic"),
+                detail: String(localized: "This file: \(Self.name(of: player.stereoPacking))"),
                 selected: player.stereoMode == .auto
             ) {
                 player.stereoMode = .auto
             }
-            ChoiceRow(title: String(localized: "2D（立体にしない）"), detail: nil, selected: player.stereoMode == .off) {
+            ChoiceRow(title: String(localized: "2D (No 3D)"), detail: nil, selected: player.stereoMode == .off) {
                 player.stereoMode = .off
             }
             ChoiceRow(
-                title: String(localized: "左右に並べた 3D"),
-                detail: String(localized: "サイドバイサイド（SBS・HSBS）"),
+                title: String(localized: "Side-by-Side 3D"),
+                detail: String(localized: "Left and right halves (SBS, HSBS)"),
                 selected: player.stereoMode == .sideBySide
             ) {
                 player.stereoMode = .sideBySide
             }
             ChoiceRow(
-                title: String(localized: "上下に並べた 3D"),
-                detail: String(localized: "トップアンドボトム（TAB・OU）"),
+                title: String(localized: "Top-and-Bottom 3D"),
+                detail: String(localized: "Top and bottom halves (TAB, OU)"),
                 selected: player.stereoMode == .overUnder
             ) {
                 player.stereoMode = .overUnder
@@ -217,11 +218,11 @@ struct StereoPage: View {
         case .mono:
             String(localized: "2D")
         case .sideBySide:
-            String(localized: "左右に並べた 3D")
+            String(localized: "Side-by-Side 3D")
         case .overUnder:
-            String(localized: "上下に並べた 3D")
+            String(localized: "Top-and-Bottom 3D")
         case .multiview:
-            String(localized: "空間ビデオ（3D）")
+            String(localized: "Spatial Video (3D)")
         }
     }
 }
@@ -233,22 +234,27 @@ struct LightingPage: View {
     var body: some View {
         @Bindable var preferences = appModel.preferences
         VStack(alignment: .leading, spacing: 14) {
-            PageHeader(title: "部屋の明るさ", page: $page)
+            PageHeader(title: "Room Lighting", page: $page)
             // 開場（止めているとき）の明るさと、上映中の明るさの組み合わせ
             HStack {
-                presetButton("明るい", house: Preferences.maxHouseLevel, show: 0.25)
-                presetButton("映画館", house: Preferences.defaultHouseLevel, show: 0)
-                presetButton("ほの暗い", house: 0.45, show: 0.08)
-                presetButton("真っ暗", house: 0, show: 0)
+                presetButton("Bright", house: Preferences.maxHouseLevel, show: 0.25)
+                presetButton("Theater", house: Preferences.defaultHouseLevel, show: 0)
+                presetButton("Dim", house: 0.45, show: 0.08)
+                presetButton("Dark", house: 0, show: 0)
             }
-            LabeledSlider(title: "客電（止めているとき）", value: $preferences.houseLevel, range: 0...Preferences.maxHouseLevel)
-            LabeledSlider(title: "客電（上映中）", value: $preferences.showLevel, range: 0...1)
-            LabeledSlider(title: "足元灯・誘導灯", value: $preferences.ambientLevel, range: 0...1.5)
-            LabeledSlider(title: "スクリーンの照り返し", value: $preferences.screenSpill, range: 0...2)
-            Toggle("再生すると暗くする", isOn: $preferences.autoDim)
+            LabeledSlider(title: "House Lights (Paused)", value: $preferences.houseLevel, range: 0...Preferences.maxHouseLevel)
+            LabeledSlider(title: "House Lights (Playing)", value: $preferences.showLevel, range: 0...1)
+            LabeledSlider(title: "Aisle and Exit Lights", value: $preferences.ambientLevel, range: 0...1.5)
+            LabeledSlider(title: "Light from the Screen", value: $preferences.screenSpill, range: 0...2)
+            Toggle("Dim the Lights When Playing", isOn: $preferences.autoDim)
             Toggle(isOn: $preferences.showtime) {
-                Text("上映の演出")
-                Text("動画を頭から再生すると、開演のブザーのあとに暗くなり、幕が開いてから始まります。エンドロールでは少し明るくします")
+                Text("Showtime")
+                Text(
+                    """
+                    When a video plays from the beginning, a buzzer sounds, the lights go down, \
+                    and the curtain opens before it starts. The lights come up a little during the end credits.
+                    """
+                )
             }
         }
     }
@@ -280,6 +286,17 @@ struct LabeledSlider: View {
             }
             Slider(value: $value, in: range)
         }
+    }
+}
+
+/// 項目を 1 行に並べるときの区切り（「AAC・5.1・48 kHz」）
+enum ListSeparator {
+    static var text: String {
+        String(
+            localized: "list.separator",
+            defaultValue: " · ",
+            comment: "Separator between items on one line, such as AAC · stereo · 48 kHz."
+        )
     }
 }
 

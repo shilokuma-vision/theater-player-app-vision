@@ -97,7 +97,7 @@ final class PlayerModel {
     /// 最近の一覧から開く（その項目を書き換える）
     func open(_ item: RecentItems.Item) async {
         guard let url = recents.resolve(item) else {
-            errorMessage = String(localized: "ファイルが見つかりません。もう一度選んでください。")
+            errorMessage = String(localized: "Can’t find the file. Choose it again.")
             return
         }
         await open(url: url, recentID: item.id, temporary: false)
@@ -119,7 +119,7 @@ final class PlayerModel {
 
     private func start(url: URL, title: String, item: RecentItems.Item?) async {
         guard let engine else {
-            errorMessage = String(localized: "再生の準備ができませんでした。")
+            errorMessage = String(localized: "Couldn’t get ready to play.")
             return
         }
         errorMessage = nil

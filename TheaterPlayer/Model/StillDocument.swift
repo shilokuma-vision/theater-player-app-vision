@@ -49,22 +49,22 @@ nonisolated struct StillDocument: Sendable {
         switch kind(of: url) {
         case .pdf:
             guard let document = CGPDFDocument(url as CFURL) else {
-                throw StillError(String(localized: "この PDF は開けません"))
+                throw StillError(String(localized: "Can’t open this PDF."))
             }
             guard document.isUnlocked else {
-                throw StillError(String(localized: "パスワードのかかった PDF は開けません"))
+                throw StillError(String(localized: "Can’t open a password-protected PDF."))
             }
             guard document.numberOfPages > 0 else {
-                throw StillError(String(localized: "この PDF にはページがありません"))
+                throw StillError(String(localized: "This PDF has no pages."))
             }
             return StillDocument(url: url, kind: .pdf, pageCount: document.numberOfPages)
         case .image:
             guard let source = CGImageSourceCreateWithURL(url as CFURL, nil), CGImageSourceGetCount(source) > 0 else {
-                throw StillError(String(localized: "この画像は開けません"))
+                throw StillError(String(localized: "Can’t open this picture."))
             }
             return StillDocument(url: url, kind: .image, pageCount: 1)
         case nil:
-            throw StillError(String(localized: "画像・PDF ではありません"))
+            throw StillError(String(localized: "This isn’t a picture or a PDF."))
         }
     }
 
@@ -90,7 +90,7 @@ nonisolated struct StillDocument: Sendable {
 
     private static func renderImage(_ url: URL, maxPixels: Int) throws -> CGImage {
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
-            throw StillError(String(localized: "この画像は開けません"))
+            throw StillError(String(localized: "Can’t open this picture."))
         }
         // 縮めて読む（大きな写真でもメモリを使いすぎない）。写真の向き（EXIF）も直す
         let options: [CFString: Any] = [
@@ -100,7 +100,7 @@ nonisolated struct StillDocument: Sendable {
             kCGImageSourceShouldCacheImmediately: true
         ]
         guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
-            throw StillError(String(localized: "この画像は開けません"))
+            throw StillError(String(localized: "Can’t open this picture."))
         }
         return image
     }
@@ -109,13 +109,13 @@ nonisolated struct StillDocument: Sendable {
 
     private static func renderPDF(_ url: URL, page index: Int, maxPixels: Int) throws -> CGImage {
         guard let document = CGPDFDocument(url as CFURL), let page = document.page(at: index + 1) else {
-            throw StillError(String(localized: "この PDF のページを開けません"))
+            throw StillError(String(localized: "Can’t open this page of the PDF."))
         }
         let box = page.getBoxRect(.cropBox)
         let angle = ((Int(page.rotationAngle) % 360) + 360) % 360
         let size = angle.isMultiple(of: 180) ? box.size : CGSize(width: box.height, height: box.width)
         guard size.width > 0, size.height > 0 else {
-            throw StillError(String(localized: "この PDF のページを開けません"))
+            throw StillError(String(localized: "Can’t open this page of the PDF."))
         }
         let scale = CGFloat(maxPixels) / max(size.width, size.height)
         let width = max(1, Int((size.width * scale).rounded()))
@@ -130,7 +130,7 @@ nonisolated struct StillDocument: Sendable {
                   space: space,
                   bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
               ) else {
-            throw StillError(String(localized: "この PDF のページを描けません"))
+            throw StillError(String(localized: "Can’t draw this page of the PDF."))
         }
         // 紙の白の地に描く（透明な所が黒くならないように）
         context.setFillColor(CGColor(gray: 1, alpha: 1))
@@ -155,7 +155,7 @@ nonisolated struct StillDocument: Sendable {
         context.clip(to: box)
         context.drawPDFPage(page)
         guard let image = context.makeImage() else {
-            throw StillError(String(localized: "この PDF のページを描けません"))
+            throw StillError(String(localized: "Can’t draw this page of the PDF."))
         }
         return image
     }

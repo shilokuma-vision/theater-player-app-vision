@@ -11,13 +11,15 @@ import Foundation
 nonisolated enum SharedFolder {
     /// 案内のファイルの名前
     static var guideName: String {
-        String(localized: "使い方.txt")
+        String(localized: "How to Use.txt", comment: "File name of the guide placed in the app’s folder in the Files app.")
     }
 
     static var guideText: String {
         String(localized: """
-        このフォルダに入れた動画・音楽・画像・PDF は、Theater Player のライブラリの「ファイルを選ぶ」で、このフォルダを開いて選べます。
-        このファイルは消してもかまいません。フォルダが空になると「ファイル」App に出なくなるので、次に Theater Player を開いたときにまた置きます。
+        To play videos, music, pictures, and PDFs you put in this folder, \
+        use “Choose a File” in the Theater Player library and open this folder.
+        You can delete this file. When the folder is empty, it no longer appears in the Files app, \
+        so Theater Player puts this file back the next time you open it.
 
         """)
     }

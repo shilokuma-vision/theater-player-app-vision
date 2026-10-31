@@ -74,7 +74,7 @@ final class YouTubeBrowser {
     }
 
     private func blockedShorts() {
-        notice = String(localized: "ショートは再生しません")
+        notice = String(localized: "Shorts don’t play.")
     }
 
     private func makePage() -> WebPage {

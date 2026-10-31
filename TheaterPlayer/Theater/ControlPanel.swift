@@ -34,7 +34,7 @@ struct ControlPanel: View {
                 Button {
                     touch()
                 } label: {
-                    Label("操作を表示", systemImage: "chevron.up")
+                    Label("Show Controls", systemImage: "chevron.up")
                 }
                 .padding(12)
                 .glassBackgroundEffect()
@@ -111,29 +111,29 @@ struct ControlPanel: View {
             } else if appModel.player.hasPlayback {
                 TransportControls()
             } else {
-                Text("ライブラリでファイルを選ぶと、ここで再生します")
+                Text("Choose a file in the library to play it here.")
                     .foregroundStyle(.secondary)
             }
             HStack(spacing: 12) {
                 // 音声・字幕・速さは、動画・音楽のときだけ（画像・PDF には無い）
-                pageButton("音声", systemImage: "waveform", page: .audioTracks)
+                pageButton("Audio", systemImage: "waveform", page: .audioTracks)
                     .disabled(!appModel.player.hasPlayback)
-                pageButton("字幕", systemImage: "captions.bubble", page: .subtitles)
+                pageButton("Subtitles", systemImage: "captions.bubble", page: .subtitles)
                     .disabled(!appModel.player.hasPlayback)
-                pageButton("速さ", systemImage: "gauge.with.dots.needle.50percent", page: .speed)
+                pageButton("Speed", systemImage: "gauge.with.dots.needle.50percent", page: .speed)
                     .disabled(!appModel.player.hasPlayback)
                 // 3D（立体視）は映像のときだけ
                 pageButton("3D", systemImage: "view.3d", page: .stereo)
                     .disabled(appModel.player.info?.isAudioOnly ?? true)
-                pageButton("明るさ", systemImage: "lightbulb.max", page: .lighting)
-                pageButton("座席", systemImage: "chair", page: .seats)
-                pageButton("音響", systemImage: "hifispeaker.2", page: .sound)
+                pageButton("Lighting", systemImage: "lightbulb.max", page: .lighting)
+                pageButton("Seats", systemImage: "chair", page: .seats)
+                pageButton("Sound", systemImage: "hifispeaker.2", page: .sound)
             }
             HStack {
                 Button {
                     openWindow(id: appModel.libraryWindowID)
                 } label: {
-                    Label("ライブラリ", systemImage: "rectangle.stack")
+                    Label("Library", systemImage: "rectangle.stack")
                 }
                 #if DEBUG
                 // デバッグ用の YouTube（上の段はボタンで埋まっているので、こちらに置く）
@@ -151,17 +151,19 @@ struct ControlPanel: View {
                     Button {
                         appModel.preferences.panelPosition = nil
                     } label: {
-                        Label("パネルを元の位置へ", systemImage: "arrow.uturn.down")
+                        Label("Reset Panel", systemImage: "arrow.uturn.down")
                     }
                     Spacer()
                 }
                 Button(role: .destructive) {
                     leave()
                 } label: {
-                    Label("映画館を出る", systemImage: "door.left.hand.open")
+                    Label("Leave the Theater", systemImage: "door.left.hand.open")
                 }
                 .accessibilityIdentifier("leaveTheater")
             }
+            // 長い言語で折り返すと、パネルの高さが変わる
+            .lineLimit(1)
         }
     }
 
@@ -189,7 +191,8 @@ struct ControlPanel: View {
         } label: {
             VStack(spacing: 6) {
                 Image(systemName: systemImage).font(.title2)
-                Text(title).font(.caption)
+                // 長い言語でも 1 行に収める（ボタンの幅は決まっている）
+                Text(title).font(.caption).lineLimit(1).minimumScaleFactor(0.7)
             }
             .frame(width: 88, height: 64)
         }
@@ -232,8 +235,8 @@ struct StillControls: View {
                     Image(systemName: "chevron.left").font(.title).frame(width: 64, height: 64)
                 }
                 .disabled(still.page == 0)
-                .accessibilityLabel("前のページ")
-                Text("\(still.page + 1) / \(still.pageCount) ページ")
+                .accessibilityLabel("Previous Page")
+                Text("Page \(still.page + 1) of \(still.pageCount)")
                     .font(.title3)
                     .monospacedDigit()
                 Button {
@@ -242,12 +245,18 @@ struct StillControls: View {
                     Image(systemName: "chevron.right").font(.title).frame(width: 64, height: 64)
                 }
                 .disabled(still.page + 1 >= still.pageCount)
-                .accessibilityLabel("次のページ")
+                .accessibilityLabel("Next Page")
             }
             .buttonStyle(.borderless)
         } else {
-            Label(still.kind == .pdf ? "PDF" : "画像", systemImage: still.kind == .pdf ? "doc.richtext" : "photo")
-                .foregroundStyle(.secondary)
+            Group {
+                if still.kind == .pdf {
+                    Label("PDF", systemImage: "doc.richtext")
+                } else {
+                    Label("Picture", systemImage: "photo")
+                }
+            }
+            .foregroundStyle(.secondary)
         }
     }
 }
@@ -277,7 +286,7 @@ struct TransportControls: View {
                     Button {
                         appModel.perform(.startNow)
                     } label: {
-                        Label("すぐに始める", systemImage: "forward.end.fill")
+                        Label("Start Now", systemImage: "forward.end.fill")
                     }
                     .buttonStyle(.borderless)
                     Spacer()

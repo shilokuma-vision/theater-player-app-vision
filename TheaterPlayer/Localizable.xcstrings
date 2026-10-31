@@ -1,0 +1,1308 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "0" : {
+      "comment" : "Button that resets the audio or subtitle delay to zero.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0"
+          }
+        }
+      }
+    },
+    "2D" : {
+      "comment" : "The file is not 3D.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D"
+          }
+        }
+      }
+    },
+    "2D (No 3D)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D（立体にしない）"
+          }
+        }
+      }
+    },
+    "3D" : {
+      "comment" : "Control panel button that opens the 3D (stereoscopic) settings.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D"
+          }
+        }
+      }
+    },
+    "Aisle and Exit Lights" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "足元灯・誘導灯"
+          }
+        }
+      }
+    },
+    "All Seats" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全体の座席表"
+          }
+        }
+      }
+    },
+    "Ambience to Surrounds" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "響きをサラウンドへ"
+          }
+        }
+      }
+    },
+    "As Is" : {
+      "comment" : "Stereo sound option: play the two channels without spreading them.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "そのまま"
+          }
+        }
+      }
+    },
+    "Audio" : {
+      "comment" : "Control panel button and page title for the audio tracks.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音声"
+          }
+        }
+      }
+    },
+    "Audio Delay" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音のずれ"
+          }
+        }
+      }
+    },
+    "Automatic" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動"
+          }
+        }
+      }
+    },
+    "Back" : {
+      "comment" : "Button that goes back to the main page of the control panel.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "戻る"
+          }
+        }
+      }
+    },
+    "Bass" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低音"
+          }
+        }
+      }
+    },
+    "Bass Boost" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低音の量"
+          }
+        }
+      }
+    },
+    "Bass Reverb (Large Room)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低音の残響（大きな部屋の響き）"
+          }
+        }
+      }
+    },
+    "Bright" : {
+      "comment" : "Lighting preset.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "明るい"
+          }
+        }
+      }
+    },
+    "Can’t draw this page of the PDF." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この PDF のページを描けません"
+          }
+        }
+      }
+    },
+    "Can’t find the file. Choose it again." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルが見つかりません。もう一度選んでください。"
+          }
+        }
+      }
+    },
+    "Can’t open a password-protected PDF." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パスワードのかかった PDF は開けません"
+          }
+        }
+      }
+    },
+    "Can’t open this PDF." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この PDF は開けません"
+          }
+        }
+      }
+    },
+    "Can’t open this page of the PDF." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この PDF のページを開けません"
+          }
+        }
+      }
+    },
+    "Can’t open this picture." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この画像は開けません"
+          }
+        }
+      }
+    },
+    "Ceiling Speakers" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "天井のスピーカー"
+          }
+        }
+      }
+    },
+    "Center (Best)" : {
+      "comment" : "Seat shortcut: the recommended seat in the center of the theater.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中央（おすすめ）"
+          }
+        }
+      }
+    },
+    "Center Block, Rows %@–%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Center Block, Rows %1$@–%2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中央ブロック・%1$@〜%2$@ 列"
+          }
+        }
+      }
+    },
+    "Choose a File" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルを選ぶ"
+          }
+        }
+      }
+    },
+    "Choose a Subtitle File (Library)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕ファイルを選ぶ（ライブラリ）"
+          }
+        }
+      }
+    },
+    "Choose a file in the library to play it here." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライブラリでファイルを選ぶと、ここで再生します"
+          }
+        }
+      }
+    },
+    "Choose from Photos" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真から選ぶ"
+          }
+        }
+      }
+    },
+    "Close YouTube" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube を閉じる"
+          }
+        }
+      }
+    },
+    "Couldn’t get ready to play." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再生の準備ができませんでした。"
+          }
+        }
+      }
+    },
+    "Couldn’t load the full license text." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライセンスの全文を読み込めませんでした"
+          }
+        }
+      }
+    },
+    "Dark" : {
+      "comment" : "Lighting preset: all lights off.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "真っ暗"
+          }
+        }
+      }
+    },
+    "Decodes AV1 video in software (used by FFmpeg)." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AV1 の映像をソフトウェアでデコードするのに使っています（FFmpeg から使う）。"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "削除"
+          }
+        }
+      }
+    },
+    "Dialogue Boost" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "台詞を聞きやすく"
+          }
+        }
+      }
+    },
+    "Dialogue to Center" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "台詞をセンターへ"
+          }
+        }
+      }
+    },
+    "Dim" : {
+      "comment" : "Lighting preset: lights a little on.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ほの暗い"
+          }
+        }
+      }
+    },
+    "Dim the Lights When Playing" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再生すると暗くする"
+          }
+        }
+      }
+    },
+    "Dynamic Range" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音量の幅"
+          }
+        }
+      }
+    },
+    "Enter the Theater" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館に入る"
+          }
+        }
+      }
+    },
+    "Forced" : {
+      "comment" : "Subtitle track that is shown only for foreign-language lines.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "強制"
+          }
+        }
+      }
+    },
+    "From page %lld" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld ページ目から"
+          }
+        }
+      }
+    },
+    "Front" : {
+      "comment" : "Seat shortcut: a seat near the screen.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前方"
+          }
+        }
+      }
+    },
+    "GNU Lesser General Public License v2.1 or later" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GNU Lesser General Public License 2.1 以降"
+          }
+        }
+      }
+    },
+    "House Lights (Paused)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "客電（止めているとき）"
+          }
+        }
+      }
+    },
+    "House Lights (Playing)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "客電（上映中）"
+          }
+        }
+      }
+    },
+    "How to Use.txt" : {
+      "comment" : "File name of the guide placed in the app’s folder in the Files app.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使い方.txt"
+          }
+        }
+      }
+    },
+    "Last Row" : {
+      "comment" : "Seat shortcut: a seat in the last row.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後列"
+          }
+        }
+      }
+    },
+    "Leave the Theater" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館を出る"
+          }
+        }
+      }
+    },
+    "Left Block, Rows %@–%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Left Block, Rows %1$@–%2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左ブロック・%1$@〜%2$@ 列"
+          }
+        }
+      }
+    },
+    "Left and right halves (SBS, HSBS)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サイドバイサイド（SBS・HSBS）"
+          }
+        }
+      }
+    },
+    "Library" : {
+      "comment" : "Button that opens the library window, where you choose files.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライブラリ"
+          }
+        }
+      }
+    },
+    "Licenses" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライセンス"
+          }
+        }
+      }
+    },
+    "Light from the Screen" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スクリーンの照り返し"
+          }
+        }
+      }
+    },
+    "Lighting" : {
+      "comment" : "Control panel button that opens the room lighting settings.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "明るさ"
+          }
+        }
+      }
+    },
+    "Loading…" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込み中…"
+          }
+        }
+      }
+    },
+    "Next Page" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次のページ"
+          }
+        }
+      }
+    },
+    "Night" : {
+      "comment" : "Dynamic range option: quiet scenes louder and loud scenes quieter, for watching at night.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "夜"
+          }
+        }
+      }
+    },
+    "No Recent Files" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだ再生したファイルはありません"
+          }
+        }
+      }
+    },
+    "Normal" : {
+      "comment" : "Playback speed of 1×.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ふつう"
+          }
+        }
+      }
+    },
+    "Off" : {
+      "comment" : "Subtitle choice: show no subtitles.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕なし"
+          }
+        }
+      }
+    },
+    "Opens video and music files and decodes their video, audio, and subtitles. It is built in an LGPL configuration (without GPL or nonfree components) and statically linked into the app. It is patched to build for visionOS." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画・音楽のファイルを開き、映像・音声・字幕をデコードするのに使っています。LGPL の構成（GPL・nonfree の部品は使わない）でビルドし、アプリに静的にリンクしています。visionOS でビルドするためのパッチを当てています。"
+          }
+        }
+      }
+    },
+    "Original Source Code" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "元のソース"
+          }
+        }
+      }
+    },
+    "PDF" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF"
+          }
+        }
+      }
+    },
+    "Page %lld of %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Page %1$lld of %2$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld / %2$lld ページ"
+          }
+        }
+      }
+    },
+    "Picture" : {
+      "comment" : "The file on the screen is a still image.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像"
+          }
+        }
+      }
+    },
+    "Playback Speed" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再生の速さ"
+          }
+        }
+      }
+    },
+    "Plays videos such as MKV, MP4, AVI, WMV, and TS, and music such as FLAC, MP3, AAC, and WAV. Also shows pictures such as PNG, JPEG, and HEIC, and PDFs." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MKV・MP4・AVI・WMV・TS などの動画と、FLAC・MP3・AAC・WAV などの音楽を再生できます。PNG・JPEG・HEIC などの画像と PDF も映せます"
+          }
+        }
+      }
+    },
+    "Previous Page" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前のページ"
+          }
+        }
+      }
+    },
+    "Rear" : {
+      "comment" : "Seat shortcut: a seat near the back of the theater.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "後方"
+          }
+        }
+      }
+    },
+    "Recently Opened" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近開いたもの"
+          }
+        }
+      }
+    },
+    "Reset Panel" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パネルを元の位置へ"
+          }
+        }
+      }
+    },
+    "Reset to Defaults" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "初期値に戻す"
+          }
+        }
+      }
+    },
+    "Resume from %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "続きから %@"
+          }
+        }
+      }
+    },
+    "Rich" : {
+      "comment" : "Room reverb option: a lot of reverb.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "豊か"
+          }
+        }
+      }
+    },
+    "Right Block, Rows %@–%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right Block, Rows %1$@–%2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右ブロック・%1$@〜%2$@ 列"
+          }
+        }
+      }
+    },
+    "Room Lighting" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部屋の明るさ"
+          }
+        }
+      }
+    },
+    "Room Reverb" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部屋の響き"
+          }
+        }
+      }
+    },
+    "Row %@, Seat %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Row %1$@, Seat %2$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 列 %2$lld 番"
+          }
+        }
+      }
+    },
+    "Screen" : {
+      "comment" : "Label at the top of the seating chart that shows where the movie screen is.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スクリーン"
+          }
+        }
+      }
+    },
+    "Search" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索"
+          }
+        }
+      }
+    },
+    "Search YouTube" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube を検索"
+          }
+        }
+      }
+    },
+    "Search results and videos appear on the screen. Shorts don’t play. The sound doesn’t go through the theater’s sound system." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索結果と動画はスクリーンに出ます。ショートは再生しません。音は映画館の音響を通りません"
+          }
+        }
+      }
+    },
+    "Seats" : {
+      "comment" : "Control panel button and page title for choosing a seat.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "座席"
+          }
+        }
+      }
+    },
+    "Shorts don’t play." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ショートは再生しません"
+          }
+        }
+      }
+    },
+    "Show Controls" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作を表示"
+          }
+        }
+      }
+    },
+    "Showtime" : {
+      "comment" : "Setting that plays a buzzer, dims the lights, and opens the curtain before a video starts.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上映の演出"
+          }
+        }
+      }
+    },
+    "Side-by-Side 3D" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右に並べた 3D"
+          }
+        }
+      }
+    },
+    "Software" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ソフトウェア"
+          }
+        }
+      }
+    },
+    "Sound" : {
+      "comment" : "Control panel button and page title for the sound settings.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音響"
+          }
+        }
+      }
+    },
+    "Source Code of This Version (%@)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この版（%@）のソース"
+          }
+        }
+      }
+    },
+    "Spatial Video (3D)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空間ビデオ（3D）"
+          }
+        }
+      }
+    },
+    "Speed" : {
+      "comment" : "Control panel button that opens the playback speed settings.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速さ"
+          }
+        }
+      }
+    },
+    "Spread Like a Theater" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館のように広げる"
+          }
+        }
+      }
+    },
+    "Standard" : {
+      "comment" : "Option between the strongest and the weakest setting.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準"
+          }
+        }
+      }
+    },
+    "Start Now" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すぐに始める"
+          }
+        }
+      }
+    },
+    "Stereo Sound" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ステレオの音"
+          }
+        }
+      }
+    },
+    "Subtitle Delay" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕のずれ"
+          }
+        }
+      }
+    },
+    "Subtitles" : {
+      "comment" : "Control panel button and page title for the subtitle tracks.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕"
+          }
+        }
+      }
+    },
+    "Subtitles %lld" : {
+      "comment" : "Subtitle track without a name. The number is the stream index.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕 %lld"
+          }
+        }
+      }
+    },
+    "Subtitles from a file" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルから読んだ字幕"
+          }
+        }
+      }
+    },
+    "Subtle" : {
+      "comment" : "Room reverb option: little reverb.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控えめ"
+          }
+        }
+      }
+    },
+    "Surround" : {
+      "comment" : "Heading of the sound settings that spread the sound around you.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "広がり"
+          }
+        }
+      }
+    },
+    "The source code of this app itself." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアプリ自身のソースです。"
+          }
+        }
+      }
+    },
+    "Theater" : {
+      "comment" : "Option that matches a real movie theater (lighting preset or dynamic range).",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館"
+          }
+        }
+      }
+    },
+    "Theater Player" : {
+      "comment" : "The app name.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theater Player"
+          }
+        }
+      }
+    },
+    "This PDF has no pages." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この PDF にはページがありません"
+          }
+        }
+      }
+    },
+    "This app uses the following open source software. FFmpeg is distributed under the GNU Lesser General Public License version 2.1 or later and is statically linked into this app. The source code of this version (the app, and the scripts and patches that build FFmpeg) and the source distributions of FFmpeg and dav1d are available from the GitHub release. You can replace FFmpeg and rebuild this app." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアプリは、次のオープンソースのソフトウェアを使っています。FFmpeg は GNU Lesser General Public License 2.1 以降で配布されており、このアプリに静的にリンクしています。この版のソース（アプリ・FFmpeg を作るスクリプトとパッチ）と、FFmpeg・dav1d のソースの配布物は、GitHub の Release から入手できます。FFmpeg を差し替えて、このアプリを作り直すことができます。"
+          }
+        }
+      }
+    },
+    "This file: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このファイル：%@"
+          }
+        }
+      }
+    },
+    "This isn’t a picture or a PDF." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像・PDF ではありません"
+          }
+        }
+      }
+    },
+    "To play videos, music, pictures, and PDFs you put in this folder, use “Choose a File” in the Theater Player library and open this folder.\nYou can delete this file. When the folder is empty, it no longer appears in the Files app, so Theater Player puts this file back the next time you open it.\n" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このフォルダに入れた動画・音楽・画像・PDF は、Theater Player のライブラリの「ファイルを選ぶ」で、このフォルダを開いて選べます。\nこのファイルは消してもかまいません。フォルダが空になると「ファイル」App に出なくなるので、次に Theater Player を開いたときにまた置きます。\n"
+          }
+        }
+      }
+    },
+    "Top and bottom halves (TAB, OU)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トップアンドボトム（TAB・OU）"
+          }
+        }
+      }
+    },
+    "Top-and-Bottom 3D" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上下に並べた 3D"
+          }
+        }
+      }
+    },
+    "Track %lld" : {
+      "comment" : "Audio track without a name. The number is the stream index.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トラック %lld"
+          }
+        }
+      }
+    },
+    "Use “Choose a File” to open videos, music, pictures, and PDFs in iCloud Drive or on external storage.\nYou can also open files you put in the TheaterPlayer folder in the Files app." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の TheaterPlayer のフォルダに入れたものも開けます"
+          }
+        }
+      }
+    },
+    "Virtual Bass (Harmonics You Can Feel)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "体感の低音（倍音で低音を感じやすく）"
+          }
+        }
+      }
+    },
+    "When a video plays from the beginning, a buzzer sounds, the lights go down, and the curtain opens before it starts. The lights come up a little during the end credits." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動画を頭から再生すると、開演のブザーのあとに暗くなり、幕が開いてから始まります。エンドロールでは少し明るくします"
+          }
+        }
+      }
+    },
+    "YouTube" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube"
+          }
+        }
+      }
+    },
+    "YouTube (Debug)" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube（デバッグ）"
+          }
+        }
+      }
+    },
+    "Your seat: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "いまの席：%@"
+          }
+        }
+      }
+    },
+    "Your videos, music, and pictures on the big screen of a movie theater" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館の大きなスクリーンで、手元の動画・音楽・画像を"
+          }
+        }
+      }
+    },
+    "list.separator" : {
+      "comment" : "Separator between items on one line, such as AAC · stereo · 48 kHz.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · "
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "・"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

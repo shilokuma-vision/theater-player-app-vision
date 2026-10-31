@@ -51,13 +51,13 @@ enum OpenSourceLicenses {
         OpenSourceComponent(
             name: "FFmpeg",
             version: ffmpegVersion,
-            license: "GNU Lesser General Public License 2.1 以降",
+            license: String(localized: "GNU Lesser General Public License v2.1 or later"),
             copyright: "Copyright © the FFmpeg developers",
-            usage: """
-            動画・音楽のファイルを開き、映像・音声・字幕をデコードするのに使っています。\
-            LGPL の構成（GPL・nonfree の部品は使わない）でビルドし、アプリに静的にリンクしています。\
-            visionOS でビルドするためのパッチを当てています。
-            """,
+            usage: String(localized: """
+            Opens video and music files and decodes their video, audio, and subtitles. \
+            It is built in an LGPL configuration (without GPL or nonfree components) and statically linked into the app. \
+            It is patched to build for visionOS.
+            """),
             licenseFile: "FFmpeg-LGPL-2.1",
             source: URL(string: "https://ffmpeg.org/releases/ffmpeg-\(ffmpegVersion).tar.xz")!
         ),
@@ -66,7 +66,7 @@ enum OpenSourceLicenses {
             version: dav1dVersion,
             license: "BSD 2-Clause License",
             copyright: "Copyright © 2018-2025, VideoLAN and dav1d authors",
-            usage: "AV1 の映像をソフトウェアでデコードするのに使っています（FFmpeg から使う）。",
+            usage: String(localized: "Decodes AV1 video in software (used by FFmpeg)."),
             licenseFile: "dav1d-BSD-2-Clause",
             source: URL(string: "https://downloads.videolan.org/pub/videolan/dav1d/\(dav1dVersion)/dav1d-\(dav1dVersion).tar.xz")!
         ),
@@ -75,7 +75,7 @@ enum OpenSourceLicenses {
             version: appVersion,
             license: "MIT License",
             copyright: "Copyright © 2024 Shilokuma Inc.",
-            usage: "このアプリ自身のソースです。",
+            usage: String(localized: "The source code of this app itself."),
             licenseFile: "TheaterPlayer-MIT",
             source: repository
         )
