@@ -371,7 +371,7 @@ nm -u /tmp/TheaterPlayer-Release/Build/Products/Release-xros/TheaterPlayer.app/T
 
 ### 多言語（ローカライズ）
 
-英語（en）・日本語（ja）・簡体字中国語（zh-Hans）・繁体字中国語（zh-Hant）・韓国語（ko）に対応しています。開発の言語は英語で、画面の文字はコードに英語で書き、訳は String Catalog に置きます。
+英語（en）・日本語（ja）・簡体字中国語（zh-Hans）・繁体字中国語（zh-Hant）・韓国語（ko）・ドイツ語（de）・フランス語（fr）に対応しています。開発の言語は英語で、画面の文字はコードに英語で書き、訳は String Catalog に置きます。
 利用者の言語にアプリが対応していないとき（ドイツ語など）は、開発の言語の英語が出ます。
 
 | String Catalog | 中身 |
