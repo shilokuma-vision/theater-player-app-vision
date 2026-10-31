@@ -16,12 +16,13 @@ nonisolated enum SkipAmount: Int, AppEnum {
     case oneMinute = 60
     case fiveMinutes = 300
 
-    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "長さ")
+    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Duration")
+    // 言い換え（synonyms）は、Siri が数を文字（ten・十）や詰めた形（10 sec・10秒）で聞き取ったときのため
     static let caseDisplayRepresentations: [SkipAmount: DisplayRepresentation] = [
-        .tenSeconds: "10 秒",
-        .thirtySeconds: "30 秒",
-        .oneMinute: "1 分",
-        .fiveMinutes: "5 分"
+        .tenSeconds: DisplayRepresentation(title: "10 seconds", synonyms: ["ten seconds", "10 sec"]),
+        .thirtySeconds: DisplayRepresentation(title: "30 seconds", synonyms: ["thirty seconds", "30 sec"]),
+        .oneMinute: DisplayRepresentation(title: "1 minute", synonyms: ["one minute", "1 min"]),
+        .fiveMinutes: DisplayRepresentation(title: "5 minutes", synonyms: ["five minutes", "5 min"])
     ]
 
     var seconds: Double {
@@ -37,85 +38,87 @@ private func performPlayback(
     done: LocalizedStringResource
 ) -> some IntentResult & ProvidesDialog {
     guard appModel.player.hasPlayback else {
-        return .result(dialog: "映画館で動画・音楽を再生していません。")
+        return .result(dialog: "Nothing is playing in the theater.")
     }
     appModel.perform(command)
     return .result(dialog: IntentDialog(done))
 }
 
 struct PausePlaybackIntent: AudioPlaybackIntent {
-    static let title: LocalizedStringResource = "一時停止"
-    static let description = IntentDescription("映画館で再生している動画・音楽を一時停止します。")
+    static let title: LocalizedStringResource = "Pause"
+    static let description = IntentDescription("Pauses the video or music playing in the theater.")
     @Dependency private var appModel: AppModel
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        performPlayback(.pause, on: appModel, done: "一時停止しました。")
+        performPlayback(.pause, on: appModel, done: "Paused.")
     }
 }
 
 struct ResumePlaybackIntent: AudioPlaybackIntent {
-    static let title: LocalizedStringResource = "再生"
-    static let description = IntentDescription("映画館で止めている動画・音楽を再生します。")
+    static let title: LocalizedStringResource = "Play"
+    static let description = IntentDescription("Plays the paused video or music in the theater.")
     @Dependency private var appModel: AppModel
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        performPlayback(.play, on: appModel, done: "再生します。")
+        performPlayback(.play, on: appModel, done: "Playing.")
     }
 }
 
 struct SkipBackwardIntent: AudioPlaybackIntent {
-    static let title: LocalizedStringResource = "戻す"
-    static let description = IntentDescription("映画館で再生している動画・音楽を、指定した長さだけ戻します。")
-    @Parameter(title: "長さ", default: .tenSeconds) var amount: SkipAmount
+    static let title: LocalizedStringResource = "Skip Back"
+    static let description = IntentDescription("Skips the video or music playing in the theater back by the duration you choose.")
+    @Parameter(title: "Duration", default: .tenSeconds) var amount: SkipAmount
     @Dependency private var appModel: AppModel
 
     static var parameterSummary: some ParameterSummary {
-        Summary("\(\.$amount)戻す")
+        Summary("Skip back \(\.$amount)")
     }
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        performPlayback(.skip(by: -amount.seconds), on: appModel, done: "戻しました。")
+        performPlayback(.skip(by: -amount.seconds), on: appModel, done: "Skipped back.")
     }
 }
 
 struct SkipForwardIntent: AudioPlaybackIntent {
-    static let title: LocalizedStringResource = "進む"
-    static let description = IntentDescription("映画館で再生している動画・音楽を、指定した長さだけ進めます。")
-    @Parameter(title: "長さ", default: .tenSeconds) var amount: SkipAmount
+    static let title: LocalizedStringResource = "Skip Forward"
+    static let description = IntentDescription("Skips the video or music playing in the theater forward by the duration you choose.")
+    @Parameter(title: "Duration", default: .tenSeconds) var amount: SkipAmount
     @Dependency private var appModel: AppModel
 
     static var parameterSummary: some ParameterSummary {
-        Summary("\(\.$amount)進む")
+        Summary("Skip forward \(\.$amount)")
     }
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        performPlayback(.skip(by: amount.seconds), on: appModel, done: "進めました。")
+        performPlayback(.skip(by: amount.seconds), on: appModel, done: "Skipped forward.")
     }
 }
 
 struct NextChapterIntent: AudioPlaybackIntent {
-    static let title: LocalizedStringResource = "次のチャプター"
-    static let description = IntentDescription("映画館で再生している動画の、次のチャプターへ移ります。")
+    static let title: LocalizedStringResource = "Next Chapter"
+    static let description = IntentDescription("Moves to the next chapter of the video playing in the theater.")
     @Dependency private var appModel: AppModel
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        performPlayback(.nextChapter, on: appModel, done: "次のチャプターへ移りました。")
+        performPlayback(.nextChapter, on: appModel, done: "Moved to the next chapter.")
     }
 }
 
 struct PreviousChapterIntent: AudioPlaybackIntent {
-    static let title: LocalizedStringResource = "前のチャプター"
-    static let description = IntentDescription("映画館で再生している動画の、前のチャプター（今のチャプターの始まり）へ移ります。")
+    static let title: LocalizedStringResource = "Previous Chapter"
+    static let description = IntentDescription(
+        "Moves to the previous chapter (the start of the current chapter) of the video playing in the theater."
+    )
     @Dependency private var appModel: AppModel
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        performPlayback(.previousChapter, on: appModel, done: "前のチャプターへ移りました。")
+        performPlayback(.previousChapter, on: appModel, done: "Moved to the previous chapter.")
     }
 }
 
