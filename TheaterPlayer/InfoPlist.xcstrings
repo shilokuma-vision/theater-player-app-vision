@@ -5,6 +5,12 @@
       "comment" : "Document type name (CFBundleTypeName) for audio files.",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -41,6 +47,12 @@
       "comment" : "Bundle display name: the app name under the icon, in the Files app, and for Siri.",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theater Player"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -77,6 +89,12 @@
       "comment" : "Document type name (CFBundleTypeName) for image files.",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -113,6 +131,12 @@
       "comment" : "Document type name (CFBundleTypeName) for video files.",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Film"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -149,6 +173,12 @@
       "comment" : "Document type name (CFBundleTypeName) for PDF files.",
       "extractionState" : "manual",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",

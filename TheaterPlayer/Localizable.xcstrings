@@ -4,6 +4,12 @@
     "%@ dB" : {
       "comment" : "Loudness in decibels. The number has a sign, such as +6.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ dB"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -33,6 +39,12 @@
     "%@×" : {
       "comment" : "Playback speed, such as 1.5×.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ×"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -62,6 +74,12 @@
     "0" : {
       "comment" : "Button that resets the audio or subtitle delay to zero.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -91,6 +109,12 @@
     "1 min" : {
       "comment" : "Another way to say the duration, so that Siri understands it.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Min."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -119,6 +143,12 @@
     },
     "1 minute" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Minute"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -148,6 +178,12 @@
     "10 sec" : {
       "comment" : "Another way to say the duration, so that Siri understands it.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 Sek."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -176,6 +212,12 @@
     },
     "10 seconds" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 Sekunden"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -205,6 +247,12 @@
     "2D" : {
       "comment" : "The file is not 3D.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -233,6 +281,12 @@
     },
     "2D (No 3D)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D (kein 3D)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -262,6 +316,12 @@
     "30 sec" : {
       "comment" : "Another way to say the duration, so that Siri understands it.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 Sek."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -290,6 +350,12 @@
     },
     "30 seconds" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 Sekunden"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -319,6 +385,12 @@
     "3D" : {
       "comment" : "Control panel button that opens the 3D (stereoscopic) settings.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -348,6 +420,12 @@
     "5 min" : {
       "comment" : "Another way to say the duration, so that Siri understands it.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 Min."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -376,6 +454,12 @@
     },
     "5 minutes" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 Minuten"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -404,6 +488,12 @@
     },
     "Aisle and Exit Lights" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gang- und Notbeleuchtung"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -432,6 +522,12 @@
     },
     "All Seats" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Plätze"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -460,6 +556,12 @@
     },
     "Ambience to Surrounds" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Umgebungsklang zu Surround"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -489,6 +591,12 @@
     "As Is" : {
       "comment" : "Stereo sound option: play the two channels without spreading them.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unverändert"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -518,6 +626,12 @@
     "Audio" : {
       "comment" : "Control panel button and page title for the audio tracks.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -546,6 +660,12 @@
     },
     "Audio Delay" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audioverzögerung"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -574,6 +694,12 @@
     },
     "Automatic" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -603,6 +729,12 @@
     "Back" : {
       "comment" : "Button that goes back to the main page of the control panel.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -631,6 +763,12 @@
     },
     "Back 10 Seconds" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 Sekunden zurückspringen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -659,6 +797,12 @@
     },
     "Bass" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bass"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -687,6 +831,12 @@
     },
     "Bass Boost" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bassanhebung"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -715,6 +865,12 @@
     },
     "Bass Reverb (Large Room)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bassnachhall (großer Raum)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -744,6 +900,12 @@
     "Bright" : {
       "comment" : "Lighting preset.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hell"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -772,6 +934,12 @@
     },
     "Can’t draw this page of the PDF." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese PDF-Seite kann nicht dargestellt werden."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -800,6 +968,12 @@
     },
     "Can’t find the file. Choose it again." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Datei wurde nicht gefunden. Wähle sie erneut aus."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -828,6 +1002,12 @@
     },
     "Can’t open a password-protected PDF." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passwortgeschützte PDFs können nicht geöffnet werden."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -856,6 +1036,12 @@
     },
     "Can’t open this PDF." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses PDF kann nicht geöffnet werden."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -884,6 +1070,12 @@
     },
     "Can’t open this page of the PDF." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese PDF-Seite kann nicht geöffnet werden."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -912,6 +1104,12 @@
     },
     "Can’t open this picture." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Bild kann nicht geöffnet werden."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -940,6 +1138,12 @@
     },
     "Ceiling Speakers" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deckenlautsprecher"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -969,6 +1173,12 @@
     "Center (Best)" : {
       "comment" : "Seat shortcut: the recommended seat in the center of the theater.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitte (ideal)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -997,6 +1207,12 @@
     },
     "Center Block, Rows %@–%@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittelblock, Reihen %1$@–%2$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1031,6 +1247,12 @@
     },
     "Choose a File" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datei auswählen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1059,6 +1281,12 @@
     },
     "Choose a Subtitle File (Library)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untertiteldatei auswählen (Mediathek)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1087,6 +1315,12 @@
     },
     "Choose a file in the library to play it here." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle in der Mediathek eine Datei aus, um sie hier wiederzugeben."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1115,6 +1349,12 @@
     },
     "Choose from Photos" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus Fotos auswählen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1143,6 +1383,12 @@
     },
     "Close YouTube" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube schließen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1171,6 +1417,12 @@
     },
     "Couldn’t get ready to play." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Wiedergabe konnte nicht vorbereitet werden."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1199,6 +1451,12 @@
     },
     "Couldn’t load the full license text." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der vollständige Lizenztext konnte nicht geladen werden."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1228,6 +1486,12 @@
     "Dark" : {
       "comment" : "Lighting preset: all lights off.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dunkel"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1256,6 +1520,12 @@
     },
     "Decodes AV1 video in software (used by FFmpeg)." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decodiert AV1-Videos per Software (wird von FFmpeg verwendet)."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1284,6 +1554,12 @@
     },
     "Delete" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1312,6 +1588,12 @@
     },
     "Dialogue Boost" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dialoganhebung"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1340,6 +1622,12 @@
     },
     "Dialogue to Center" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dialog zum Center"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1369,6 +1657,12 @@
     "Dim" : {
       "comment" : "Lighting preset: lights a little on.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gedämpft"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1397,6 +1691,12 @@
     },
     "Dim the Lights When Playing" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht bei Wiedergabe dimmen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1426,6 +1726,12 @@
     "Duration" : {
       "comment" : "How far to skip back or forward (10 seconds, 1 minute, and so on).",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dauer"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1454,6 +1760,12 @@
     },
     "Dynamic Range" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dynamikumfang"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1483,6 +1795,12 @@
     "Earlier" : {
       "comment" : "Accessibility label of the minus button that moves the audio or subtitles earlier.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Früher"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1511,6 +1829,12 @@
     },
     "Enter the Theater" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kino betreten"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1540,6 +1864,12 @@
     "Forced" : {
       "comment" : "Subtitle track that is shown only for foreign-language lines.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erzwungen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1568,6 +1898,12 @@
     },
     "Forward 30 Seconds" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 Sekunden vorspringen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1596,6 +1932,12 @@
     },
     "From page %lld" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ab Seite %lld"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1625,6 +1967,12 @@
     "Front" : {
       "comment" : "Seat shortcut: a seat near the screen.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorne"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1653,6 +2001,12 @@
     },
     "GNU Lesser General Public License v2.1 or later" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GNU Lesser General Public License v2.1 oder neuer"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1681,6 +2035,12 @@
     },
     "House Lights (Paused)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saallicht (bei Pause)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1709,6 +2069,12 @@
     },
     "House Lights (Playing)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saallicht (bei Wiedergabe)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1738,6 +2104,12 @@
     "How to Use.txt" : {
       "comment" : "File name of the guide placed in the app’s folder in the Files app.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anleitung.txt"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1767,6 +2139,12 @@
     "Last Row" : {
       "comment" : "Seat shortcut: a seat in the last row.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Reihe"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1796,6 +2174,12 @@
     "Later" : {
       "comment" : "Accessibility label of the plus button that moves the audio or subtitles later.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Später"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1824,6 +2208,12 @@
     },
     "Leave the Theater" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kino verlassen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1852,6 +2242,12 @@
     },
     "Left Block, Rows %@–%@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linker Block, Reihen %1$@–%2$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1886,6 +2282,12 @@
     },
     "Left and right halves (SBS, HSBS)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linke und rechte Hälfte (SBS, HSBS)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1915,6 +2317,12 @@
     "Library" : {
       "comment" : "Button that opens the library window, where you choose files.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mediathek"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1943,6 +2351,12 @@
     },
     "Licenses" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lizenzen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1971,6 +2385,12 @@
     },
     "Light from the Screen" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht von der Leinwand"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2000,6 +2420,12 @@
     "Lighting" : {
       "comment" : "Control panel button that opens the room lighting settings.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licht"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2028,6 +2454,12 @@
     },
     "Loading…" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laden …"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2056,6 +2488,12 @@
     },
     "Moved to the next chapter." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum nächsten Kapitel gesprungen."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2084,6 +2522,12 @@
     },
     "Moved to the previous chapter." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum vorherigen Kapitel gesprungen."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2112,6 +2556,12 @@
     },
     "Moves to the next chapter of the video playing in the theater." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Springt im Video, das im Kino läuft, zum nächsten Kapitel."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2140,6 +2590,12 @@
     },
     "Moves to the previous chapter (the start of the current chapter) of the video playing in the theater." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Springt im Video, das im Kino läuft, zum vorherigen Kapitel (zum Anfang des aktuellen Kapitels)."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2168,6 +2624,12 @@
     },
     "Next Chapter" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächstes Kapitel"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2196,6 +2658,12 @@
     },
     "Next Page" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste Seite"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2225,6 +2693,12 @@
     "Night" : {
       "comment" : "Dynamic range option: quiet scenes louder and loud scenes quieter, for watching at night.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nacht"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2253,6 +2727,12 @@
     },
     "No Recent Files" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine zuletzt geöffneten Dateien"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2282,6 +2762,12 @@
     "Normal" : {
       "comment" : "Playback speed of 1×.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2310,6 +2796,12 @@
     },
     "Nothing is playing in the theater." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Kino läuft gerade nichts."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2339,6 +2831,12 @@
     "Off" : {
       "comment" : "Subtitle choice: show no subtitles.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2367,6 +2865,12 @@
     },
     "Opens video and music files and decodes their video, audio, and subtitles. It is built in an LGPL configuration (without GPL or nonfree components) and statically linked into the app. It is patched to build for visionOS." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffnet Video- und Musikdateien und decodiert deren Video, Audio und Untertitel. Wird in einer LGPL-Konfiguration (ohne GPL- oder nonfree-Komponenten) erstellt und statisch in die App gelinkt. Enthält Patches für den Build unter visionOS."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2395,6 +2899,12 @@
     },
     "Original Source Code" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Original-Quellcode"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2423,6 +2933,12 @@
     },
     "PDF" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2451,6 +2967,12 @@
     },
     "Page %lld of %lld" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seite %1$lld von %2$lld"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2485,6 +3007,12 @@
     },
     "Pause" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2513,6 +3041,12 @@
     },
     "Paused." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausiert."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2541,6 +3075,12 @@
     },
     "Pauses the video or music playing in the theater." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausiert die Video- oder Musikwiedergabe im Kino."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2570,6 +3110,12 @@
     "Picture" : {
       "comment" : "The file on the screen is a still image.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bild"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2598,6 +3144,12 @@
     },
     "Play" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiedergeben"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2626,6 +3178,12 @@
     },
     "Playback Position" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiedergabeposition"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2654,6 +3212,12 @@
     },
     "Playback Speed" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiedergabetempo"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2682,6 +3246,12 @@
     },
     "Playing." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird wiedergegeben."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2710,6 +3280,12 @@
     },
     "Plays the paused video or music in the theater." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setzt die pausierte Video- oder Musikwiedergabe im Kino fort."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2738,6 +3314,12 @@
     },
     "Plays videos such as MKV, MP4, AVI, WMV, and TS, and music such as FLAC, MP3, AAC, and WAV. Also shows pictures such as PNG, JPEG, and HEIC, and PDFs." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gibt Videos wie MKV, MP4, AVI, WMV und TS sowie Musik wie FLAC, MP3, AAC und WAV wieder. Zeigt außerdem Bilder wie PNG, JPEG und HEIC sowie PDFs an."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2766,6 +3348,12 @@
     },
     "Previous Chapter" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorheriges Kapitel"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2794,6 +3382,12 @@
     },
     "Previous Page" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorherige Seite"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2823,6 +3417,12 @@
     "Rear" : {
       "comment" : "Seat shortcut: a seat near the back of the theater.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hinten"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2851,6 +3451,12 @@
     },
     "Recently Opened" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuletzt geöffnet"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2880,6 +3486,12 @@
     "Reset" : {
       "comment" : "Accessibility label of the button that resets the audio or subtitle delay to zero.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurücksetzen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2908,6 +3520,12 @@
     },
     "Reset Panel" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bedienfeld zurücksetzen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2936,6 +3554,12 @@
     },
     "Reset to Defaults" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf Standardwerte zurücksetzen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2964,6 +3588,12 @@
     },
     "Resume from %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortsetzen ab %@"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2993,6 +3623,12 @@
     "Rich" : {
       "comment" : "Room reverb option: a lot of reverb.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kräftig"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3021,6 +3657,12 @@
     },
     "Right Block, Rows %@–%@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechter Block, Reihen %1$@–%2$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3055,6 +3697,12 @@
     },
     "Room Lighting" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saalbeleuchtung"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3083,6 +3731,12 @@
     },
     "Room Reverb" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raumhall"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3111,6 +3765,12 @@
     },
     "Row %@, Seat %lld" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reihe %1$@, Platz %2$lld"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3146,6 +3806,12 @@
     "Screen" : {
       "comment" : "Label at the top of the seating chart that shows where the movie screen is.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leinwand"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3174,6 +3840,12 @@
     },
     "Search" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suchen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3202,6 +3874,12 @@
     },
     "Search YouTube" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube durchsuchen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3230,6 +3908,12 @@
     },
     "Search results and videos appear on the screen. Shorts don’t play. The sound doesn’t go through the theater’s sound system." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suchergebnisse und Videos erscheinen auf der Leinwand. Shorts werden nicht wiedergegeben. Der Ton wird nicht über das Soundsystem des Kinos ausgegeben."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3259,6 +3943,12 @@
     "Seats" : {
       "comment" : "Control panel button and page title for choosing a seat.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sitzplatz"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3287,6 +3977,12 @@
     },
     "Shorts don’t play." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shorts werden nicht wiedergegeben."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3315,6 +4011,12 @@
     },
     "Show Controls" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steuerung einblenden"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3344,6 +4046,12 @@
     "Showtime" : {
       "comment" : "Setting that plays a buzzer, dims the lights, and opens the curtain before a video starts.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorhang auf"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3372,6 +4080,12 @@
     },
     "Side-by-Side 3D" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D (nebeneinander)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3400,6 +4114,12 @@
     },
     "Skip Back" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurückspringen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3428,6 +4148,12 @@
     },
     "Skip Forward" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorspringen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3457,6 +4183,12 @@
     "Skip back ${amount}" : {
       "comment" : "Summary of the action in the Shortcuts app. ${amount} is a duration such as 10 seconds.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${amount} zurückspringen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3486,6 +4218,12 @@
     "Skip forward ${amount}" : {
       "comment" : "Summary of the action in the Shortcuts app. ${amount} is a duration such as 10 seconds.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${amount} vorspringen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3514,6 +4252,12 @@
     },
     "Skipped back." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurückgesprungen."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3542,6 +4286,12 @@
     },
     "Skipped forward." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorgesprungen."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3570,6 +4320,12 @@
     },
     "Skips the video or music playing in the theater back by the duration you choose." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Springt in der Video- oder Musikwiedergabe im Kino um die gewählte Dauer zurück."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3598,6 +4354,12 @@
     },
     "Skips the video or music playing in the theater forward by the duration you choose." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Springt in der Video- oder Musikwiedergabe im Kino um die gewählte Dauer vor."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3626,6 +4388,12 @@
     },
     "Software" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Software"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3655,6 +4423,12 @@
     "Sound" : {
       "comment" : "Control panel button and page title for the sound settings.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klang"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3683,6 +4457,12 @@
     },
     "Source Code of This Version (%@)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quellcode dieser Version (%@)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3711,6 +4491,12 @@
     },
     "Spatial Video (3D)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Räumliches Video (3D)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3740,6 +4526,12 @@
     "Speed" : {
       "comment" : "Control panel button that opens the playback speed settings.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tempo"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3768,6 +4560,12 @@
     },
     "Spread Like a Theater" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie im Kino verteilen"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3797,6 +4595,12 @@
     "Standard" : {
       "comment" : "Option between the strongest and the weakest setting.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3825,6 +4629,12 @@
     },
     "Start Now" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt starten"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3853,6 +4663,12 @@
     },
     "Stereo Sound" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stereoton"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3881,6 +4697,12 @@
     },
     "Subtitle Delay" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untertitelverzögerung"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3910,6 +4732,12 @@
     "Subtitles" : {
       "comment" : "Control panel button and page title for the subtitle tracks.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untertitel"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3939,6 +4767,12 @@
     "Subtitles %lld" : {
       "comment" : "Subtitle track without a name. The number is the stream index.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untertitel %lld"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3967,6 +4801,12 @@
     },
     "Subtitles from a file" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Untertitel aus Datei"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3996,6 +4836,12 @@
     "Subtle" : {
       "comment" : "Room reverb option: little reverb.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dezent"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4025,6 +4871,12 @@
     "Surround" : {
       "comment" : "Heading of the sound settings that spread the sound around you.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Surround"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4053,6 +4905,12 @@
     },
     "The source code of this app itself." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Quellcode dieser App selbst."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4082,6 +4940,12 @@
     "Theater" : {
       "comment" : "Option that matches a real movie theater (lighting preset or dynamic range).",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kino"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4111,6 +4975,12 @@
     "Theater Player" : {
       "comment" : "The app name.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theater Player"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4139,6 +5009,12 @@
     },
     "This PDF has no pages." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses PDF hat keine Seiten."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4167,6 +5043,12 @@
     },
     "This app uses the following open source software. FFmpeg is distributed under the GNU Lesser General Public License version 2.1 or later and is statically linked into this app. The source code of this version (the app, and the scripts and patches that build FFmpeg) and the source distributions of FFmpeg and dav1d are available from the GitHub release. You can replace FFmpeg and rebuild this app." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese App verwendet die folgende Open-Source-Software. FFmpeg wird unter der GNU Lesser General Public License Version 2.1 oder neuer vertrieben und ist statisch in diese App gelinkt. Der Quellcode dieser Version (die App sowie die Skripte und Patches, mit denen FFmpeg erstellt wird) und die Quelldistributionen von FFmpeg und dav1d sind im GitHub-Release erhältlich. Du kannst FFmpeg ersetzen und diese App neu erstellen."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4195,6 +5077,12 @@
     },
     "This file: %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Datei: %@"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4223,6 +5111,12 @@
     },
     "This isn’t a picture or a PDF." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dies ist weder ein Bild noch ein PDF."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4251,6 +5145,12 @@
     },
     "To play videos, music, pictures, and PDFs you put in this folder, use “Choose a File” in the Theater Player library and open this folder.\nYou can delete this file. When the folder is empty, it no longer appears in the Files app, so Theater Player puts this file back the next time you open it.\n" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um Videos, Musik, Bilder und PDFs wiederzugeben, die du in diesen Ordner legst, wähle in der Mediathek von Theater Player „Datei auswählen“ und öffne diesen Ordner.\nDu kannst diese Datei löschen. Ist der Ordner leer, wird er in der „Dateien“-App nicht mehr angezeigt. Deshalb legt Theater Player diese Datei wieder hier ab, wenn du die App das nächste Mal öffnest.\n"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4279,6 +5179,12 @@
     },
     "Top and bottom halves (TAB, OU)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obere und untere Hälfte (TAB, OU)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4307,6 +5213,12 @@
     },
     "Top-and-Bottom 3D" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D (übereinander)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4336,6 +5248,12 @@
     "Track %lld" : {
       "comment" : "Audio track without a name. The number is the stream index.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spur %lld"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4364,6 +5282,12 @@
     },
     "Use “Choose a File” to open videos, music, pictures, and PDFs in iCloud Drive or on external storage.\nYou can also open files you put in the Theater Player folder in the Files app." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit „Datei auswählen“ kannst du Videos, Musik, Bilder und PDFs aus iCloud Drive oder von externen Speichermedien öffnen.\nDu kannst auch Dateien öffnen, die du in der „Dateien“-App in den Ordner „Theater Player“ gelegt hast."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4392,6 +5316,12 @@
     },
     "Virtual Bass (Harmonics You Can Feel)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Virtueller Bass (spürbare Obertöne)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4420,6 +5350,12 @@
     },
     "Volume" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lautstärke"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4448,6 +5384,12 @@
     },
     "When a video plays from the beginning, a buzzer sounds, the lights go down, and the curtain opens before it starts. The lights come up a little during the end credits." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn ein Video von Anfang an startet, ertönt zuerst ein Signalton, das Licht wird gedimmt und der Vorhang öffnet sich. Während des Abspanns wird es wieder etwas heller."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4476,6 +5418,12 @@
     },
     "YouTube" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4504,6 +5452,12 @@
     },
     "YouTube (Debug)" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube (Debug)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4532,6 +5486,12 @@
     },
     "Your seat: %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Platz: %@"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4560,6 +5520,12 @@
     },
     "Your videos, music, and pictures on the big screen of a movie theater" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Videos, Musik und Bilder auf der großen Kinoleinwand"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4589,6 +5555,12 @@
     "five minutes" : {
       "comment" : "Another way to say the duration, so that Siri understands it.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "fünf Minuten"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4618,6 +5590,12 @@
     "list.separator" : {
       "comment" : "Separator between items on one line, such as AAC · stereo · 48 kHz.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · "
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4653,6 +5631,12 @@
     "one minute" : {
       "comment" : "Another way to say the duration, so that Siri understands it.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "eine Minute"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4682,6 +5666,12 @@
     "ten seconds" : {
       "comment" : "Another way to say the duration, so that Siri understands it.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "zehn Sekunden"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4711,6 +5701,12 @@
     "thirty seconds" : {
       "comment" : "Another way to say the duration, so that Siri understands it.",
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dreißig Sekunden"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",

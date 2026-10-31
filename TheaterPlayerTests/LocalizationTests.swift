@@ -12,7 +12,7 @@ import Testing
 
 nonisolated struct LocalizationTests {
     /// 訳す言語（元の言語の en を除く）。言語を足したら、ここにも足す
-    static let languages = ["ja", "zh-Hans", "zh-Hant", "ko"]
+    static let languages = ["ja", "zh-Hans", "zh-Hant", "ko", "de"]
 
     /// リポジトリの String Catalog と、その訳を引くアプリの中のバンドル
     static let catalogs: [CatalogFile] = [

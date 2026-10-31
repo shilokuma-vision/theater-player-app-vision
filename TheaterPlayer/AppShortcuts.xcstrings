@@ -4,6 +4,15 @@
     "Next chapter in ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Nächstes Kapitel in ${applicationName}",
+              "Spring zum nächsten Kapitel in ${applicationName}"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
@@ -52,6 +61,16 @@
     "Pause ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} pausieren",
+              "Pausiere ${applicationName}",
+              "Halte den Film in ${applicationName} an"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
@@ -104,6 +123,16 @@
     "Play ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} abspielen",
+              "${applicationName} fortsetzen",
+              "Setze die Wiedergabe in ${applicationName} fort"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
@@ -155,6 +184,15 @@
     "Previous chapter in ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Vorheriges Kapitel in ${applicationName}",
+              "Spring zum vorherigen Kapitel in ${applicationName}"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
@@ -203,6 +241,16 @@
     "Skip back ${amount} in ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Spring in ${applicationName} ${amount} zurück",
+              "${applicationName} zurückspulen",
+              "Spul ${applicationName} zurück"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
@@ -256,6 +304,16 @@
     "Skip forward ${amount} in ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Spring in ${applicationName} ${amount} vor",
+              "${applicationName} vorspulen",
+              "Spul ${applicationName} vor"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
