@@ -39,38 +39,43 @@ struct YouTubePage: View {
     var body: some View {
         let browser = appModel.youTube
         VStack(alignment: .leading, spacing: 14) {
-            PageHeader(title: "YouTube（デバッグ）", page: $page)
+            PageHeader(title: "YouTube (Debug)", page: $page)
             HStack {
-                TextField("YouTube を検索", text: $query)
+                TextField("Search YouTube", text: $query)
                     .textFieldStyle(.roundedBorder)
                     .submitLabel(.search)
                     .onSubmit(search)
                     .accessibilityIdentifier("youTubeQuery")
-                Button("検索", systemImage: "magnifyingglass", action: search)
+                Button("Search", systemImage: "magnifyingglass", action: search)
                     .disabled(YouTubeLinks.searchURL(for: query) == nil)
                     .accessibilityIdentifier("youTubeSearch")
             }
-            Text("検索結果と動画はスクリーンに出ます。ショートは再生しません。音は映画館の音響を通りません")
+            Text(
+                """
+                Search results and videos appear on the screen. Shorts don’t play. \
+                The sound doesn’t go through the theater’s sound system.
+                """
+            )
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             if let notice = browser.notice {
                 Text(notice).font(.footnote).foregroundStyle(.orange)
             }
             if let current = browser.page {
-                Text(current.title.nonEmpty ?? String(localized: "読み込み中…"))
+                Text(current.title.nonEmpty ?? String(localized: "Loading…"))
                     .lineLimit(1)
                 HStack {
                     Button {
                         browser.goBack()
                     } label: {
-                        Label("前のページ", systemImage: "chevron.backward")
+                        Label("Previous Page", systemImage: "chevron.backward")
                     }
                     .disabled(!browser.canGoBack)
                     Spacer()
                     Button {
                         browser.close()
                     } label: {
-                        Label("YouTube を閉じる", systemImage: "xmark.circle")
+                        Label("Close YouTube", systemImage: "xmark.circle")
                     }
                     .accessibilityIdentifier("youTubeClose")
                 }

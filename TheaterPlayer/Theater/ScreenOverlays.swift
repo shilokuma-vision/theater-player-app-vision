@@ -73,7 +73,7 @@ struct NowPlayingScreen: View {
                 ProgressView(value: min(player.currentTime, max(player.duration, 1)), total: max(player.duration, 1))
                     .tint(.white)
                     .frame(width: 700)
-                Text("\(TimeFormat.clock(player.currentTime)) / \(TimeFormat.clock(player.duration))")
+                Text(verbatim: "\(TimeFormat.clock(player.currentTime)) / \(TimeFormat.clock(player.duration))")
                     .font(.system(size: 28)).monospacedDigit().foregroundStyle(.white.opacity(0.7))
             }
             .foregroundStyle(.white)

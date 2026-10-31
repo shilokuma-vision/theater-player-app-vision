@@ -1,0 +1,322 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：%2$@"
+          }
+        }
+      }
+    },
+    "Can’t configure the filters" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "フィルターを準備できません"
+          }
+        }
+      }
+    },
+    "Can’t connect the filters" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "フィルターをつなげません"
+          }
+        }
+      }
+    },
+    "Can’t convert the audio" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音声を変換できません"
+          }
+        }
+      }
+    },
+    "Can’t copy the channel layout" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チャンネルの並びを写せません"
+          }
+        }
+      }
+    },
+    "Can’t create the audio input" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音の入口を作れません"
+          }
+        }
+      }
+    },
+    "Can’t create the audio output" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音の出口を作れません"
+          }
+        }
+      }
+    },
+    "Can’t create the deinterlacing filter" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インターレースを解除するフィルターを作れません"
+          }
+        }
+      }
+    },
+    "Can’t create the speed filter" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速さを変えるフィルターを作れません"
+          }
+        }
+      }
+    },
+    "Can’t create the video input" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映像の入口を作れません"
+          }
+        }
+      }
+    },
+    "Can’t create the video output" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映像の出口を作れません"
+          }
+        }
+      }
+    },
+    "Can’t get ready to change the speed." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速さを変える準備ができません"
+          }
+        }
+      }
+    },
+    "Can’t get ready to deinterlace." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インターレースの解除を準備できません"
+          }
+        }
+      }
+    },
+    "Can’t open the audio decoder" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音声のデコーダーを開けません"
+          }
+        }
+      }
+    },
+    "Can’t open the file." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルを開けません"
+          }
+        }
+      }
+    },
+    "Can’t open the file: %@" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルを開けません：%@"
+          }
+        }
+      }
+    },
+    "Can’t open the subtitle decoder" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕のデコーダーを開けません"
+          }
+        }
+      }
+    },
+    "Can’t open the video decoder" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映像のデコーダーを開けません"
+          }
+        }
+      }
+    },
+    "Can’t read the file" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込めません"
+          }
+        }
+      }
+    },
+    "Can’t read the file format" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "形式を調べられません"
+          }
+        }
+      }
+    },
+    "Can’t read the subtitles." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕を読めません"
+          }
+        }
+      }
+    },
+    "Can’t seek" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シークできません"
+          }
+        }
+      }
+    },
+    "Can’t set up audio conversion" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音声の変換を準備できません"
+          }
+        }
+      }
+    },
+    "Can’t set up the audio" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音声を設定できません"
+          }
+        }
+      }
+    },
+    "Can’t set up the subtitles" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕を設定できません"
+          }
+        }
+      }
+    },
+    "Can’t set up the video" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映像を設定できません"
+          }
+        }
+      }
+    },
+    "No subtitles found." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕が見つかりません"
+          }
+        }
+      }
+    },
+    "No video or audio found." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映像も音声も見つかりません"
+          }
+        }
+      }
+    },
+    "This audio format isn’t supported." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この音声の形式には対応していません"
+          }
+        }
+      }
+    },
+    "This subtitle format isn’t supported." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この字幕の形式には対応していません"
+          }
+        }
+      }
+    },
+    "This video format isn’t supported." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この映像の形式には対応していません"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

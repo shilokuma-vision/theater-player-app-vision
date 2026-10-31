@@ -98,7 +98,7 @@ final class AudioDecoder: @unchecked Sendable {
     ) throws {
         guard let decoder = avcodec_find_decoder(stream.pointee.codecpar.pointee.codec_id),
               let context = avcodec_alloc_context3(decoder), let frame = av_frame_alloc() else {
-            throw MediaError("この音声の形式には対応していません")
+            throw MediaError(localized: "This audio format isn’t supported.")
         }
         // 先にすべての値を決める（この後で失敗しても deinit が context・frame を解放する）
         codec = context
@@ -111,7 +111,7 @@ final class AudioDecoder: @unchecked Sendable {
         self.ring = ring
         self.timeline = timeline
         feeds = PlanarFeeds(count: processor.feeds.count, frames: 8_192)
-        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "音声の設定")
+        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "Can’t set up the audio")
         context.pointee.pkt_timebase = stream.pointee.time_base
         var options: OpaquePointer?
         if StreamCompression.applies(to: decoder.pointee.id) {
@@ -121,7 +121,7 @@ final class AudioDecoder: @unchecked Sendable {
         }
         let opened = avcodec_open2(context, decoder, &options)
         av_dict_free(&options)
-        try check(opened, "音声のデコーダーを開けません")
+        try check(opened, "Can’t open the audio decoder")
         if let compressionRange {
             logCompression(compressionRange)
         }

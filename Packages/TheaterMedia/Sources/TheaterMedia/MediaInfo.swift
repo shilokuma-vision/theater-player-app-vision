@@ -118,6 +118,11 @@ public struct MediaError: Error, LocalizedError, Sendable {
         self.message = message
     }
 
+    /// 文言を、パッケージの String Catalog（Localizable.xcstrings）で利用者の言語に訳して作る
+    init(localized message: String.LocalizationValue) {
+        self.message = String(localized: message, bundle: .module)
+    }
+
     public var errorDescription: String? {
         message
     }

@@ -97,7 +97,7 @@ final class SubtitleDecoder: @unchecked Sendable {
     ) throws {
         guard let decoder = avcodec_find_decoder(stream.pointee.codecpar.pointee.codec_id),
               let context = avcodec_alloc_context3(decoder) else {
-            throw MediaError("この字幕の形式には対応していません")
+            throw MediaError(localized: "This subtitle format isn’t supported.")
         }
         // 先にすべての値を決める（この後で失敗しても deinit が context を解放する）
         codec = context
@@ -105,7 +105,7 @@ final class SubtitleDecoder: @unchecked Sendable {
         timeBase = stream.pointee.time_base
         self.startTime = startTime
         self.store = store
-        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "字幕の設定")
+        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "Can’t set up the subtitles")
         context.pointee.pkt_timebase = stream.pointee.time_base
         var options: OpaquePointer?
         if let characterEncoding {
@@ -113,7 +113,7 @@ final class SubtitleDecoder: @unchecked Sendable {
         }
         let opened = avcodec_open2(context, decoder, &options)
         av_dict_free(&options)
-        try check(opened, "字幕のデコーダーを開けません")
+        try check(opened, "Can’t open the subtitle decoder")
         if context.pointee.width > 0, context.pointee.height > 0 {
             canvas = CGSize(width: Int(context.pointee.width), height: Int(context.pointee.height))
         }
@@ -256,7 +256,7 @@ enum ExternalSubtitles {
         let container = try MediaContainer(url: url)
         let streams = (0..<container.streamCount).compactMap { container.stream($0) }
         guard let index = streams.firstIndex(where: { $0.pointee.codecpar.pointee.codec_type == AVMEDIA_TYPE_SUBTITLE }) else {
-            throw MediaError("字幕が見つかりません")
+            throw MediaError(localized: "No subtitles found.")
         }
         let store = SubtitleStore()
         let decoder = try SubtitleDecoder(
@@ -267,7 +267,7 @@ enum ExternalSubtitles {
             characterEncoding: characterEncoding(of: url)
         )
         guard let packet = av_packet_alloc() else {
-            throw MediaError("字幕を読めません")
+            throw MediaError(localized: "Can’t read the subtitles.")
         }
         var pointer: UnsafeMutablePointer<AVPacket>? = packet
         defer { av_packet_free(&pointer) }

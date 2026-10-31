@@ -13,31 +13,33 @@ struct LicensesView: View {
             Section {
                 Text(
                     """
-                    このアプリは、次のオープンソースのソフトウェアを使っています。\
-                    FFmpeg は GNU Lesser General Public License 2.1 以降で配布されており、このアプリに静的にリンクしています。\
-                    この版のソース（アプリ・FFmpeg を作るスクリプトとパッチ）と、FFmpeg・dav1d のソースの配布物は、\
-                    GitHub の Release から入手できます。FFmpeg を差し替えて、このアプリを作り直すことができます。
+                    This app uses the following open source software. \
+                    FFmpeg is distributed under the GNU Lesser General Public License version 2.1 or later \
+                    and is statically linked into this app. \
+                    The source code of this version (the app, and the scripts and patches that build FFmpeg) \
+                    and the source distributions of FFmpeg and dav1d are available from the GitHub release. \
+                    You can replace FFmpeg and rebuild this app.
                     """
                 )
                 .font(.callout)
                 Link(destination: OpenSourceLicenses.release) {
-                    Label("この版（\(OpenSourceLicenses.appVersion)）のソース", systemImage: "arrow.down.doc")
+                    Label("Source Code of This Version (\(OpenSourceLicenses.appVersion))", systemImage: "arrow.down.doc")
                 }
             }
-            Section("ソフトウェア") {
+            Section("Software") {
                 ForEach(OpenSourceLicenses.components) { component in
                     NavigationLink {
                         LicenseDetail(component: component)
                     } label: {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("\(component.name) \(component.version)").font(.headline)
+                            Text(verbatim: "\(component.name) \(component.version)").font(.headline)
                             Text(component.license).font(.subheadline).foregroundStyle(.secondary)
                         }
                     }
                 }
             }
         }
-        .navigationTitle("ライセンス")
+        .navigationTitle("Licenses")
     }
 }
 
@@ -49,16 +51,16 @@ struct LicenseDetail: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("\(component.name) \(component.version)").font(.title2.weight(.semibold))
+                    Text(verbatim: "\(component.name) \(component.version)").font(.title2.weight(.semibold))
                     Text(component.license).font(.headline)
                     Text(component.copyright).font(.subheadline).foregroundStyle(.secondary)
                 }
                 Text(component.usage)
                 Link(destination: component.source) {
-                    Label("元のソース", systemImage: "link")
+                    Label("Original Source Code", systemImage: "link")
                 }
                 Divider()
-                Text(component.licenseText ?? String(localized: "ライセンスの全文を読み込めませんでした"))
+                Text(component.licenseText ?? String(localized: "Couldn’t load the full license text."))
                     .font(.system(.footnote, design: .monospaced))
                     .textSelection(.enabled)
             }

@@ -23,7 +23,7 @@ final class AudioTempo {
 
     init(like frame: UnsafeMutablePointer<AVFrame>, tempo: Double) throws {
         guard let output = av_frame_alloc(), let graph = avfilter_graph_alloc() else {
-            throw MediaError("速さを変える準備ができません")
+            throw MediaError(localized: "Can’t get ready to change the speed.")
         }
         self.output = output
         self.graph = graph
@@ -36,13 +36,22 @@ final class AudioTempo {
         let layout = String(bytes: name.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, encoding: .utf8) ?? ""
         let sampleFormat = av_get_sample_fmt_name(AVSampleFormat(rawValue: format)).map { String(cString: $0) } ?? "fltp"
         let arguments = "time_base=1/\(sampleRate):sample_rate=\(sampleRate):sample_fmt=\(sampleFormat):channel_layout=\(layout)"
-        try check(avfilter_graph_create_filter(&source, avfilter_get_by_name("abuffer"), "in", arguments, nil, graph), "音の入口")
-        try check(avfilter_graph_create_filter(&sink, avfilter_get_by_name("abuffersink"), "out", nil, nil, graph), "音の出口")
+        try check(
+            avfilter_graph_create_filter(&source, avfilter_get_by_name("abuffer"), "in", arguments, nil, graph),
+            "Can’t create the audio input"
+        )
+        try check(
+            avfilter_graph_create_filter(&sink, avfilter_get_by_name("abuffersink"), "out", nil, nil, graph),
+            "Can’t create the audio output"
+        )
         var filter: UnsafeMutablePointer<AVFilterContext>?
-        try check(avfilter_graph_create_filter(&filter, avfilter_get_by_name("atempo"), "tempo", "tempo=\(tempo)", nil, graph), "atempo")
-        try check(avfilter_link(source, 0, filter, 0), "つなぐ")
-        try check(avfilter_link(filter, 0, sink, 0), "つなぐ")
-        try check(avfilter_graph_config(graph, nil), "準備")
+        try check(
+            avfilter_graph_create_filter(&filter, avfilter_get_by_name("atempo"), "tempo", "tempo=\(tempo)", nil, graph),
+            "Can’t create the speed filter"
+        )
+        try check(avfilter_link(source, 0, filter, 0), "Can’t connect the filters")
+        try check(avfilter_link(filter, 0, sink, 0), "Can’t connect the filters")
+        try check(avfilter_graph_config(graph, nil), "Can’t configure the filters")
     }
 
     deinit {

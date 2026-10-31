@@ -57,7 +57,7 @@ final class VideoDecoder: @unchecked Sendable {
         let parameters = stream.pointee.codecpar.pointee
         guard let decoder = avcodec_find_decoder(parameters.codec_id), let context = avcodec_alloc_context3(decoder),
               let frame = av_frame_alloc() else {
-            throw MediaError("この映像の形式には対応していません")
+            throw MediaError(localized: "This video format isn’t supported.")
         }
         // 先にすべての値を決める（この後で失敗しても deinit が context・frame を解放する）
         codec = context
@@ -76,7 +76,7 @@ final class VideoDecoder: @unchecked Sendable {
         self.control = control
         self.output = output
         self.lights = lights
-        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "映像の設定")
+        try check(avcodec_parameters_to_context(context, stream.pointee.codecpar), "Can’t set up the video")
         context.pointee.pkt_timebase = stream.pointee.time_base
         context.pointee.thread_count = 0
         // 空間ビデオは、両方の層をデコードする（VideoToolbox の HEVC は基本の層だけなので、ソフトウェアで）
@@ -87,7 +87,7 @@ final class VideoDecoder: @unchecked Sendable {
             Self.attachVideoToolbox(context)
         }
         defer { av_dict_free(&options) }
-        try check(avcodec_open2(context, decoder, &options), "映像のデコーダーを開けません")
+        try check(avcodec_open2(context, decoder, &options), "Can’t open the video decoder")
     }
 
     deinit {

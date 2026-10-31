@@ -16,29 +16,29 @@ struct SoundPage: View {
     var body: some View {
         @Bindable var preferences = appModel.preferences
         VStack(alignment: .leading, spacing: 12) {
-            PageHeader(title: "音響", page: $page)
+            PageHeader(title: "Sound", page: $page)
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
-                    Picker("ステレオの音", selection: $preferences.audio.upmix) {
-                        Text("映画館のように広げる").tag(CinemaAudioSettings.Upmix.cinema)
-                        Text("そのまま").tag(CinemaAudioSettings.Upmix.off)
+                    Picker("Stereo Sound", selection: $preferences.audio.upmix) {
+                        Text("Spread Like a Theater").tag(CinemaAudioSettings.Upmix.cinema)
+                        Text("As Is").tag(CinemaAudioSettings.Upmix.off)
                     }
                     .pickerStyle(.segmented)
                     bassSection(preferences)
                     spaceSection(preferences)
-                    Picker("音量の幅", selection: $preferences.audio.dynamicRange) {
-                        Text("映画館").tag(CinemaAudioSettings.DynamicRange.cinema)
-                        Text("標準").tag(CinemaAudioSettings.DynamicRange.standard)
-                        Text("夜").tag(CinemaAudioSettings.DynamicRange.night)
+                    Picker("Dynamic Range", selection: $preferences.audio.dynamicRange) {
+                        Text("Theater").tag(CinemaAudioSettings.DynamicRange.cinema)
+                        Text("Standard").tag(CinemaAudioSettings.DynamicRange.standard)
+                        Text("Night").tag(CinemaAudioSettings.DynamicRange.night)
                     }
                     .pickerStyle(.segmented)
-                    Picker("部屋の響き", selection: $preferences.room) {
-                        Text("控えめ").tag(SpatialSpeakers.Room.dry)
-                        Text("標準").tag(SpatialSpeakers.Room.standard)
-                        Text("豊か").tag(SpatialSpeakers.Room.rich)
+                    Picker("Room Reverb", selection: $preferences.room) {
+                        Text("Subtle").tag(SpatialSpeakers.Room.dry)
+                        Text("Standard").tag(SpatialSpeakers.Room.standard)
+                        Text("Rich").tag(SpatialSpeakers.Room.rich)
                     }
                     .pickerStyle(.segmented)
-                    Button("初期値に戻す") {
+                    Button("Reset to Defaults") {
                         preferences.audio = CinemaAudioSettings()
                     }
                 }
@@ -55,18 +55,18 @@ struct SoundPage: View {
     private func bassSection(_ preferences: Preferences) -> some View {
         @Bindable var preferences = preferences
         return VStack(alignment: .leading, spacing: 10) {
-            Text("低音").font(.headline)
+            Text("Bass").font(.headline)
             LabeledSlider(
-                title: "低音の量",
+                title: "Bass Boost",
                 value: Binding(
                     get: { Double(preferences.audio.bassBoostDB) },
                     set: { preferences.audio.bassBoostDB = Float($0) }
                 ),
                 range: 0...18,
-                format: { String(format: "+%.0f dB", $0) }
+                format: { UnitFormat.decibels($0) }
             )
             LabeledSlider(
-                title: "低音の残響（大きな部屋の響き）",
+                title: "Bass Reverb (Large Room)",
                 value: Binding(
                     get: { Double(preferences.audio.rumble) },
                     set: { preferences.audio.rumble = Float($0) }
@@ -74,7 +74,7 @@ struct SoundPage: View {
                 range: 0...1
             )
             LabeledSlider(
-                title: "体感の低音（倍音で低音を感じやすく）",
+                title: "Virtual Bass (Harmonics You Can Feel)",
                 value: Binding(
                     get: { Double(preferences.audio.virtualBass) },
                     set: { preferences.audio.virtualBass = Float($0) }
@@ -87,9 +87,9 @@ struct SoundPage: View {
     private func spaceSection(_ preferences: Preferences) -> some View {
         @Bindable var preferences = preferences
         return VStack(alignment: .leading, spacing: 10) {
-            Text("広がり").font(.headline)
+            Text("Surround").font(.headline)
             LabeledSlider(
-                title: "台詞をセンターへ",
+                title: "Dialogue to Center",
                 value: Binding(
                     get: { Double(preferences.audio.centerAmount) },
                     set: { preferences.audio.centerAmount = Float($0) }
@@ -97,7 +97,7 @@ struct SoundPage: View {
                 range: 0...1
             )
             LabeledSlider(
-                title: "響きをサラウンドへ",
+                title: "Ambience to Surrounds",
                 value: Binding(
                     get: { Double(preferences.audio.ambienceAmount) },
                     set: { preferences.audio.ambienceAmount = Float($0) }
@@ -105,7 +105,7 @@ struct SoundPage: View {
                 range: 0...1
             )
             LabeledSlider(
-                title: "天井のスピーカー",
+                title: "Ceiling Speakers",
                 value: Binding(
                     get: { Double(preferences.audio.heightAmount) },
                     set: { preferences.audio.heightAmount = Float($0) }
@@ -113,13 +113,13 @@ struct SoundPage: View {
                 range: 0...0.5
             )
             LabeledSlider(
-                title: "台詞を聞きやすく",
+                title: "Dialogue Boost",
                 value: Binding(
                     get: { Double(preferences.audio.dialogueBoostDB) },
                     set: { preferences.audio.dialogueBoostDB = Float($0) }
                 ),
                 range: 0...9,
-                format: { String(format: "+%.0f dB", $0) }
+                format: { UnitFormat.decibels($0) }
             )
         }
     }

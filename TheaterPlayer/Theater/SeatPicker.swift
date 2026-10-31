@@ -18,11 +18,11 @@ struct SeatPicker: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            PageHeader(title: "座席", page: $page)
+            PageHeader(title: "Seats", page: $page)
             if let stage {
                 let current = currentSeat(on: stage)
                 quickPicks(stage)
-                Text("スクリーン")
+                Text("Screen")
                     .font(.caption)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 4)
@@ -33,7 +33,7 @@ struct SeatPicker: View {
                     // 席のボタンは choose を比べずに描き直しを省くので、舞台が替わったら作り直す（古い舞台の choose を持ち続けない）
                     .id(ObjectIdentifier(stage))
                 if let seat = current {
-                    Text("いまの席：\(seat.row) 列 \(seat.number) 番").font(.footnote).foregroundStyle(.secondary)
+                    Text("Your seat: \(seat.title)").font(.footnote).foregroundStyle(.secondary)
                 }
             } else {
                 ProgressView()
@@ -74,7 +74,7 @@ struct SeatPicker: View {
     }
 
     private static let picks: [(id: String, title: LocalizedStringKey)] = [
-        ("C-17", "前方"), ("G-17", "中央（おすすめ）"), ("K-17", "後方"), ("N-18", "最後列")
+        ("C-17", "Front"), ("G-17", "Center (Best)"), ("K-17", "Rear"), ("N-18", "Last Row")
     ]
 
     /// 選んでいる席。設定（Observable）から引く：移るのは暗転のあとで、映画館の側の席は View が見ていないため
@@ -140,7 +140,7 @@ struct SeatSectionDetail: View {
         VStack(spacing: 10) {
             HStack {
                 Button(action: close) {
-                    Label("全体の座席表", systemImage: "chevron.left")
+                    Label("All Seats", systemImage: "chevron.left")
                 }
                 Spacer()
                 Text(section.title).font(.headline)
@@ -187,7 +187,7 @@ struct SeatButton: View, Equatable {
                 .frame(width: side, height: side)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(Text("\(seat.row) 列 \(seat.number) 番"))
+        .accessibilityLabel(Text(seat.title))
     }
 
     /// choose は比べない（同じ座席表のあいだは変わらない。舞台が替わったら座席表ごと作り直す）
@@ -197,13 +197,21 @@ struct SeatButton: View, Equatable {
 }
 
 extension SeatSection {
-    /// 「中央ブロック・G〜J 列」
+    /// 「Center Block, Rows G–J」（語順が言語で違うので、ブロックごとに文全体を訳す）
     var title: String {
-        let name = switch block {
-        case "L": "左"
-        case "R": "右"
-        default: "中央"
+        let first = rows.first?.letter ?? ""
+        let last = rows.last?.letter ?? ""
+        return switch block {
+        case "L": String(localized: "Left Block, Rows \(first)–\(last)")
+        case "R": String(localized: "Right Block, Rows \(first)–\(last)")
+        default: String(localized: "Center Block, Rows \(first)–\(last)")
         }
-        return "\(name)ブロック・\(rows.first?.letter ?? "")〜\(rows.last?.letter ?? "") 列"
+    }
+}
+
+extension Seat {
+    /// 「Row G, Seat 17」
+    var title: String {
+        String(localized: "Row \(row), Seat \(number)")
     }
 }

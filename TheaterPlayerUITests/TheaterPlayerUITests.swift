@@ -20,8 +20,8 @@ final class TheaterPlayerUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        XCTAssertTrue(app.buttons["ファイルを選ぶ"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["映画館に入る"].exists)
+        XCTAssertTrue(app.buttons["chooseFile"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["enterTheater"].exists)
     }
 
     /// 映画館（Immersive Space）に入ると、ライブラリのウィンドウが閉じ、映画館を読み込んでも落ちない
@@ -38,10 +38,10 @@ final class TheaterPlayerUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        let enter = app.buttons["映画館に入る"]
+        let enter = app.buttons["enterTheater"]
         XCTAssertTrue(enter.waitForExistence(timeout: 10))
         enter.tap()
-        XCTAssertTrue(app.buttons["ファイルを選ぶ"].waitForNonExistence(timeout: 30))
+        XCTAssertTrue(app.buttons["chooseFile"].waitForNonExistence(timeout: 30))
 
         // 映画館のモデルの読み込みと座席の組み立て（Simulator では数十秒）を待ち、そのあいだに落ちないこと
         sleep(45)
