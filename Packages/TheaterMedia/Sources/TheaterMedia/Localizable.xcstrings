@@ -20,6 +20,12 @@
             "state" : "translated",
             "value" : "%1$@：%2$@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：%2$@"
+          }
         }
       }
     },
@@ -35,6 +41,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法配置滤镜"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法設定濾鏡"
           }
         }
       }
@@ -52,6 +64,12 @@
             "state" : "translated",
             "value" : "无法连接滤镜"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法連接濾鏡"
+          }
         }
       }
     },
@@ -67,6 +85,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法转换音频"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法轉換音訊"
           }
         }
       }
@@ -84,6 +108,12 @@
             "state" : "translated",
             "value" : "无法复制声道布局"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法複製聲道配置"
+          }
         }
       }
     },
@@ -99,6 +129,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法创建音频输入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法建立音訊輸入"
           }
         }
       }
@@ -116,6 +152,12 @@
             "state" : "translated",
             "value" : "无法创建音频输出"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法建立音訊輸出"
+          }
         }
       }
     },
@@ -131,6 +173,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法创建去隔行滤镜"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法建立去交錯濾鏡"
           }
         }
       }
@@ -148,6 +196,12 @@
             "state" : "translated",
             "value" : "无法创建变速滤镜"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法建立速度濾鏡"
+          }
         }
       }
     },
@@ -163,6 +217,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法创建视频输入"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法建立視訊輸入"
           }
         }
       }
@@ -180,6 +240,12 @@
             "state" : "translated",
             "value" : "无法创建视频输出"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法建立視訊輸出"
+          }
         }
       }
     },
@@ -195,6 +261,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法准备变速。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法準備變更速度。"
           }
         }
       }
@@ -212,6 +284,12 @@
             "state" : "translated",
             "value" : "无法准备去隔行。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法準備去交錯。"
+          }
         }
       }
     },
@@ -227,6 +305,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法打开音频解码器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開音訊解碼器"
           }
         }
       }
@@ -244,6 +328,12 @@
             "state" : "translated",
             "value" : "无法打开文件。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開檔案。"
+          }
         }
       }
     },
@@ -259,6 +349,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法打开文件：%@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開檔案：%@"
           }
         }
       }
@@ -276,6 +372,12 @@
             "state" : "translated",
             "value" : "无法打开字幕解码器"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開字幕解碼器"
+          }
         }
       }
     },
@@ -291,6 +393,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法打开视频解码器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開視訊解碼器"
           }
         }
       }
@@ -308,6 +416,12 @@
             "state" : "translated",
             "value" : "无法读取文件"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法讀取檔案"
+          }
         }
       }
     },
@@ -323,6 +437,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法识别文件格式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法辨識檔案格式"
           }
         }
       }
@@ -340,6 +460,12 @@
             "state" : "translated",
             "value" : "无法读取字幕。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法讀取字幕。"
+          }
         }
       }
     },
@@ -355,6 +481,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法跳转"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法跳轉播放位置"
           }
         }
       }
@@ -372,6 +504,12 @@
             "state" : "translated",
             "value" : "无法设置音频转换"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法設定音訊轉換"
+          }
         }
       }
     },
@@ -387,6 +525,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法设置音频"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法設定音訊"
           }
         }
       }
@@ -404,6 +548,12 @@
             "state" : "translated",
             "value" : "无法设置字幕"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法設定字幕"
+          }
         }
       }
     },
@@ -419,6 +569,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法设置视频"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法設定視訊"
           }
         }
       }
@@ -436,6 +592,12 @@
             "state" : "translated",
             "value" : "未找到字幕。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到字幕。"
+          }
         }
       }
     },
@@ -451,6 +613,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未找到视频或音频。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到視訊或音訊。"
           }
         }
       }
@@ -468,6 +636,12 @@
             "state" : "translated",
             "value" : "不支持此音频格式。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支援此音訊格式。"
+          }
         }
       }
     },
@@ -484,6 +658,12 @@
             "state" : "translated",
             "value" : "不支持此字幕格式。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支援此字幕格式。"
+          }
         }
       }
     },
@@ -499,6 +679,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不支持此视频格式。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支援此視訊格式。"
           }
         }
       }

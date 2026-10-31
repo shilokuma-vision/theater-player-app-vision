@@ -28,6 +28,15 @@
               "${applicationName} 下一章节"
             ]
           }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "在 ${applicationName} 跳到下一章節",
+              "${applicationName} 下一章節"
+            ]
+          }
         }
       }
     },
@@ -59,6 +68,15 @@
               "暂停 ${applicationName}",
               "暂停 ${applicationName} 中的电影",
               "${applicationName} 暂停播放"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "暫停 ${applicationName}",
+              "暫停 ${applicationName} 的影片"
             ]
           }
         }
@@ -93,6 +111,15 @@
               "继续播放 ${applicationName}"
             ]
           }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "播放 ${applicationName}",
+              "繼續播放 ${applicationName}"
+            ]
+          }
         }
       }
     },
@@ -121,6 +148,15 @@
             "values" : [
               "在 ${applicationName} 中跳到上一章节",
               "${applicationName} 上一章节"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "在 ${applicationName} 跳到上一章節",
+              "${applicationName} 上一章節"
             ]
           }
         }
@@ -156,6 +192,16 @@
               "${applicationName} 快退"
             ]
           }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "在 ${applicationName} 倒轉 ${amount}",
+              "${applicationName} 倒轉 ${amount}",
+              "${applicationName} 倒轉"
+            ]
+          }
         }
       }
     },
@@ -187,6 +233,16 @@
               "在 ${applicationName} 中快进 ${amount}",
               "${applicationName} 快进 ${amount}",
               "${applicationName} 快进"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "在 ${applicationName} 快轉 ${amount}",
+              "${applicationName} 快轉 ${amount}",
+              "${applicationName} 快轉"
             ]
           }
         }

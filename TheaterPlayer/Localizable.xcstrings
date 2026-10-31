@@ -15,6 +15,12 @@
             "state" : "translated",
             "value" : "%@ dB"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ dB"
+          }
         }
       }
     },
@@ -28,6 +34,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@倍"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@倍"
@@ -49,6 +61,12 @@
             "state" : "translated",
             "value" : "0"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0"
+          }
         }
       }
     },
@@ -66,6 +84,12 @@
             "state" : "translated",
             "value" : "1分钟"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1分鐘"
+          }
         }
       }
     },
@@ -81,6 +105,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 分钟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 分鐘"
           }
         }
       }
@@ -99,6 +129,12 @@
             "state" : "translated",
             "value" : "10秒"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10秒"
+          }
         }
       }
     },
@@ -111,6 +147,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 秒"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "10 秒"
@@ -132,6 +174,12 @@
             "state" : "translated",
             "value" : "2D"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D"
+          }
         }
       }
     },
@@ -147,6 +195,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "2D（关闭 3D）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D（不使用 3D）"
           }
         }
       }
@@ -165,6 +219,12 @@
             "state" : "translated",
             "value" : "30秒"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30秒"
+          }
         }
       }
     },
@@ -177,6 +237,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 秒"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "30 秒"
@@ -198,6 +264,12 @@
             "state" : "translated",
             "value" : "3D"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D"
+          }
         }
       }
     },
@@ -215,6 +287,12 @@
             "state" : "translated",
             "value" : "5分钟"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5分鐘"
+          }
         }
       }
     },
@@ -230,6 +308,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "5 分钟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 分鐘"
           }
         }
       }
@@ -247,6 +331,12 @@
             "state" : "translated",
             "value" : "过道灯与出口指示灯"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "走道燈與出口指示燈"
+          }
         }
       }
     },
@@ -259,6 +349,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有座位"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "所有座位"
@@ -279,6 +375,12 @@
             "state" : "translated",
             "value" : "环境声送至环绕声道"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "環境音送往環繞聲道"
+          }
         }
       }
     },
@@ -295,6 +397,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "保持原样"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "維持原樣"
           }
         }
       }
@@ -313,6 +421,12 @@
             "state" : "translated",
             "value" : "音频"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音訊"
+          }
         }
       }
     },
@@ -328,6 +442,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音频延迟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音訊延遲"
           }
         }
       }
@@ -345,6 +465,12 @@
             "state" : "translated",
             "value" : "自动"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動"
+          }
         }
       }
     },
@@ -358,6 +484,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "返回"
@@ -378,6 +510,12 @@
             "state" : "translated",
             "value" : "快退 10 秒"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "倒轉 10 秒"
+          }
         }
       }
     },
@@ -390,6 +528,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低音"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "低音"
@@ -410,6 +554,12 @@
             "state" : "translated",
             "value" : "低音增强"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低音增強"
+          }
         }
       }
     },
@@ -426,6 +576,12 @@
             "state" : "translated",
             "value" : "低音混响（大空间）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低音殘響（大空間）"
+          }
         }
       }
     },
@@ -439,6 +595,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "明亮"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "明亮"
@@ -459,6 +621,12 @@
             "state" : "translated",
             "value" : "无法显示此 PDF 页面。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法繪製此 PDF 頁面。"
+          }
         }
       }
     },
@@ -474,6 +642,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "找不到文件。请重新选取。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到檔案。請重新選擇。"
           }
         }
       }
@@ -491,6 +665,12 @@
             "state" : "translated",
             "value" : "无法打开受密码保护的 PDF。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開受密碼保護的 PDF。"
+          }
         }
       }
     },
@@ -506,6 +686,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法打开此 PDF。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開此 PDF。"
           }
         }
       }
@@ -523,6 +709,12 @@
             "state" : "translated",
             "value" : "无法打开此 PDF 页面。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開此 PDF 頁面。"
+          }
         }
       }
     },
@@ -538,6 +730,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法打开此图片。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法打開此圖片。"
           }
         }
       }
@@ -555,6 +753,12 @@
             "state" : "translated",
             "value" : "天花板扬声器"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "天花板揚聲器"
+          }
         }
       }
     },
@@ -568,6 +772,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中央（最佳）"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "中央（最佳）"
@@ -594,6 +804,12 @@
             "state" : "translated",
             "value" : "中区，%1$@–%2$@ 排"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中央區，%1$@–%2$@ 排"
+          }
         }
       }
     },
@@ -609,6 +825,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选取文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇檔案"
           }
         }
       }
@@ -626,6 +848,12 @@
             "state" : "translated",
             "value" : "选取字幕文件（资料库）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇字幕檔案（資料庫）"
+          }
         }
       }
     },
@@ -641,6 +869,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在资料库中选取文件，即可在此播放。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在資料庫中選擇檔案，即可在此播放。"
           }
         }
       }
@@ -658,6 +892,12 @@
             "state" : "translated",
             "value" : "从“照片”中选取"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從「照片」選擇"
+          }
         }
       }
     },
@@ -673,6 +913,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关闭 YouTube"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉 YouTube"
           }
         }
       }
@@ -690,6 +936,12 @@
             "state" : "translated",
             "value" : "无法准备播放。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法準備播放。"
+          }
         }
       }
     },
@@ -706,6 +958,12 @@
             "state" : "translated",
             "value" : "无法载入许可证全文。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法載入完整的許可證內容。"
+          }
         }
       }
     },
@@ -719,6 +977,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全暗"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "全暗"
@@ -739,6 +1003,12 @@
             "state" : "translated",
             "value" : "以软件方式解码 AV1 视频（由 FFmpeg 使用）。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以軟體解碼 AV1 視訊（供 FFmpeg 使用）。"
+          }
         }
       }
     },
@@ -754,6 +1024,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除"
           }
         }
       }
@@ -771,6 +1047,12 @@
             "state" : "translated",
             "value" : "对白增强"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加強對白"
+          }
         }
       }
     },
@@ -787,6 +1069,12 @@
             "state" : "translated",
             "value" : "对白送至中置声道"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "對白送往中置聲道"
+          }
         }
       }
     },
@@ -800,6 +1088,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "微暗"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "微暗"
@@ -820,6 +1114,12 @@
             "state" : "translated",
             "value" : "播放时调暗灯光"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放時調暗燈光"
+          }
         }
       }
     },
@@ -837,6 +1137,12 @@
             "state" : "translated",
             "value" : "时长"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "時間長度"
+          }
         }
       }
     },
@@ -853,6 +1159,12 @@
             "state" : "translated",
             "value" : "动态范围"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "動態範圍"
+          }
         }
       }
     },
@@ -866,6 +1178,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提前"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "提前"
@@ -886,6 +1204,12 @@
             "state" : "translated",
             "value" : "进入影院"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進入電影院"
+          }
         }
       }
     },
@@ -903,6 +1227,12 @@
             "state" : "translated",
             "value" : "强制"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "強制"
+          }
         }
       }
     },
@@ -918,6 +1248,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "快进 30 秒"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快轉 30 秒"
           }
         }
       }
@@ -935,6 +1271,12 @@
             "state" : "translated",
             "value" : "从第 %lld 页继续"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從第 %lld 頁"
+          }
         }
       }
     },
@@ -948,6 +1290,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前排"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "前排"
@@ -968,6 +1316,12 @@
             "state" : "translated",
             "value" : "GNU Lesser General Public License v2.1 或更高版本"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GNU Lesser General Public License v2.1 或更新版本"
+          }
         }
       }
     },
@@ -984,6 +1338,12 @@
             "state" : "translated",
             "value" : "观众席灯光（暂停时）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觀眾席燈光（暫停中）"
+          }
         }
       }
     },
@@ -999,6 +1359,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "观众席灯光（播放时）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觀眾席燈光（播放中）"
           }
         }
       }
@@ -1017,6 +1383,12 @@
             "state" : "translated",
             "value" : "使用说明.txt"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用說明.txt"
+          }
         }
       }
     },
@@ -1033,6 +1405,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最后一排"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後一排"
           }
         }
       }
@@ -1051,6 +1429,12 @@
             "state" : "translated",
             "value" : "延后"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "延後"
+          }
         }
       }
     },
@@ -1066,6 +1450,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "离开影院"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "離開電影院"
           }
         }
       }
@@ -1089,6 +1479,12 @@
             "state" : "translated",
             "value" : "左区，%1$@–%2$@ 排"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左側區，%1$@–%2$@ 排"
+          }
         }
       }
     },
@@ -1104,6 +1500,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "左右各半画面（SBS、HSBS）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右各半畫面（SBS、HSBS）"
           }
         }
       }
@@ -1122,6 +1524,12 @@
             "state" : "translated",
             "value" : "资料库"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "資料庫"
+          }
         }
       }
     },
@@ -1138,6 +1546,12 @@
             "state" : "translated",
             "value" : "许可证"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "許可證"
+          }
         }
       }
     },
@@ -1153,6 +1567,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "银幕反光"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "銀幕反光"
           }
         }
       }
@@ -1171,6 +1591,12 @@
             "state" : "translated",
             "value" : "灯光"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "燈光"
+          }
         }
       }
     },
@@ -1186,6 +1612,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在载入…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "載入中⋯"
           }
         }
       }
@@ -1203,6 +1635,12 @@
             "state" : "translated",
             "value" : "已跳至下一章节。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已移至下一章節。"
+          }
         }
       }
     },
@@ -1218,6 +1656,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已跳至上一章节。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已移至上一章節。"
           }
         }
       }
@@ -1235,6 +1679,12 @@
             "state" : "translated",
             "value" : "将影院中正在播放的视频跳至下一章节。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將電影院中正在播放的影片移至下一章節。"
+          }
         }
       }
     },
@@ -1250,6 +1700,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将影院中正在播放的视频跳至上一章节（当前章节的开头）。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將電影院中正在播放的影片移至上一章節（目前章節的開頭）。"
           }
         }
       }
@@ -1267,6 +1723,12 @@
             "state" : "translated",
             "value" : "下一章节"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一章節"
+          }
         }
       }
     },
@@ -1282,6 +1744,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下一页"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一頁"
           }
         }
       }
@@ -1300,6 +1768,12 @@
             "state" : "translated",
             "value" : "夜间"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "夜間"
+          }
         }
       }
     },
@@ -1316,6 +1790,12 @@
             "state" : "translated",
             "value" : "无最近文件"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有最近的檔案"
+          }
         }
       }
     },
@@ -1329,6 +1809,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正常"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "正常"
@@ -1349,6 +1835,12 @@
             "state" : "translated",
             "value" : "影院中没有正在播放的内容。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "電影院中沒有正在播放的內容。"
+          }
         }
       }
     },
@@ -1366,6 +1858,12 @@
             "state" : "translated",
             "value" : "关闭"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉"
+          }
         }
       }
     },
@@ -1381,6 +1879,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "用于打开视频和音乐文件，并解码其中的视频、音频和字幕。采用 LGPL 配置构建（不含 GPL 或 nonfree 组件），并静态链接到此 App 中。已打补丁以便为 visionOS 构建。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於打開影片和音樂檔案，並解碼其中的視訊、音訊和字幕。以 LGPL 組態建置（不含 GPL 或 nonfree 元件），並靜態連結至 App 中。已套用修補程式，以便為 visionOS 建置。"
           }
         }
       }
@@ -1398,6 +1902,12 @@
             "state" : "translated",
             "value" : "原始源代码"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原版原始碼"
+          }
         }
       }
     },
@@ -1410,6 +1920,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PDF"
@@ -1436,6 +1952,12 @@
             "state" : "translated",
             "value" : "第 %1$lld 页，共 %2$lld 页"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %1$lld 頁，共 %2$lld 頁"
+          }
         }
       }
     },
@@ -1451,6 +1973,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂停"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫停"
           }
         }
       }
@@ -1468,6 +1996,12 @@
             "state" : "translated",
             "value" : "已暂停。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暫停。"
+          }
         }
       }
     },
@@ -1483,6 +2017,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂停影院中正在播放的视频或音乐。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫停電影院中正在播放的影片或音樂。"
           }
         }
       }
@@ -1501,6 +2041,12 @@
             "state" : "translated",
             "value" : "图片"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "圖片"
+          }
         }
       }
     },
@@ -1513,6 +2059,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "播放"
@@ -1533,6 +2085,12 @@
             "state" : "translated",
             "value" : "播放位置"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放位置"
+          }
         }
       }
     },
@@ -1545,6 +2103,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放速度"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "播放速度"
@@ -1565,6 +2129,12 @@
             "state" : "translated",
             "value" : "正在播放。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在播放。"
+          }
         }
       }
     },
@@ -1580,6 +2150,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "播放影院中已暂停的视频或音乐。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放電影院中已暫停的影片或音樂。"
           }
         }
       }
@@ -1597,6 +2173,12 @@
             "state" : "translated",
             "value" : "可播放 MKV、MP4、AVI、WMV、TS 等视频，以及 FLAC、MP3、AAC、WAV 等音乐，还可显示 PNG、JPEG、HEIC 等图片和 PDF。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可播放 MKV、MP4、AVI、WMV 和 TS 等影片，以及 FLAC、MP3、AAC 和 WAV 等音樂。也可顯示 PNG、JPEG 和 HEIC 等圖片，以及 PDF。"
+          }
         }
       }
     },
@@ -1613,6 +2195,12 @@
             "state" : "translated",
             "value" : "上一章节"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一章節"
+          }
         }
       }
     },
@@ -1628,6 +2216,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上一页"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一頁"
           }
         }
       }
@@ -1646,6 +2240,12 @@
             "state" : "translated",
             "value" : "后排"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "後排"
+          }
         }
       }
     },
@@ -1661,6 +2261,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最近打开"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近打開的項目"
           }
         }
       }
@@ -1679,6 +2285,12 @@
             "state" : "translated",
             "value" : "归零"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置"
+          }
         }
       }
     },
@@ -1694,6 +2306,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "还原面板位置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置面板位置"
           }
         }
       }
@@ -1711,6 +2329,12 @@
             "state" : "translated",
             "value" : "恢复默认设置"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重置為預設值"
+          }
         }
       }
     },
@@ -1726,6 +2350,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从 %@ 继续播放"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從 %@ 繼續播放"
           }
         }
       }
@@ -1743,6 +2373,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "丰富"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "豐富"
           }
         }
       }
@@ -1766,6 +2402,12 @@
             "state" : "translated",
             "value" : "右区，%1$@–%2$@ 排"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右側區，%1$@–%2$@ 排"
+          }
         }
       }
     },
@@ -1782,6 +2424,12 @@
             "state" : "translated",
             "value" : "影厅灯光"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "室內燈光"
+          }
         }
       }
     },
@@ -1797,6 +2445,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "影厅混响"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空間殘響"
           }
         }
       }
@@ -1820,6 +2474,12 @@
             "state" : "translated",
             "value" : "%1$@ 排 %2$lld 座"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 排 %2$lld 號"
+          }
         }
       }
     },
@@ -1837,6 +2497,12 @@
             "state" : "translated",
             "value" : "银幕"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "銀幕"
+          }
         }
       }
     },
@@ -1852,6 +2518,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜索"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜尋"
           }
         }
       }
@@ -1869,6 +2541,12 @@
             "state" : "translated",
             "value" : "搜索 YouTube"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜尋 YouTube"
+          }
         }
       }
     },
@@ -1885,6 +2563,12 @@
             "state" : "translated",
             "value" : "搜索结果和视频会显示在银幕上。无法播放 Shorts。声音不会经过影院的音响系统。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜尋結果和影片會顯示在銀幕上。無法播放 Shorts。聲音不會經過電影院的音響系統。"
+          }
         }
       }
     },
@@ -1898,6 +2582,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "座位"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "座位"
@@ -1918,6 +2608,12 @@
             "state" : "translated",
             "value" : "无法播放 Shorts。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法播放 Shorts。"
+          }
         }
       }
     },
@@ -1933,6 +2629,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示控制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示控制項目"
           }
         }
       }
@@ -1951,6 +2653,12 @@
             "state" : "translated",
             "value" : "开场效果"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開演效果"
+          }
         }
       }
     },
@@ -1966,6 +2674,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "左右格式 3D"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左右並排 3D"
           }
         }
       }
@@ -1983,6 +2697,12 @@
             "state" : "translated",
             "value" : "快退"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "倒轉"
+          }
         }
       }
     },
@@ -1998,6 +2718,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "快进"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快轉"
           }
         }
       }
@@ -2016,6 +2742,12 @@
             "state" : "translated",
             "value" : "快退 ${amount}"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "倒轉 ${amount}"
+          }
         }
       }
     },
@@ -2033,6 +2765,12 @@
             "state" : "translated",
             "value" : "快进 ${amount}"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快轉 ${amount}"
+          }
         }
       }
     },
@@ -2048,6 +2786,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已快退。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已倒轉。"
           }
         }
       }
@@ -2065,6 +2809,12 @@
             "state" : "translated",
             "value" : "已快进。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已快轉。"
+          }
         }
       }
     },
@@ -2080,6 +2830,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "将影院中正在播放的视频或音乐快退所选的时长。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將電影院中正在播放的影片或音樂倒轉你選擇的時間長度。"
           }
         }
       }
@@ -2097,6 +2853,12 @@
             "state" : "translated",
             "value" : "将影院中正在播放的视频或音乐快进所选的时长。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將電影院中正在播放的影片或音樂快轉你選擇的時間長度。"
+          }
         }
       }
     },
@@ -2112,6 +2874,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "软件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "軟體"
           }
         }
       }
@@ -2130,6 +2898,12 @@
             "state" : "translated",
             "value" : "音效"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音響"
+          }
         }
       }
     },
@@ -2145,6 +2919,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此版本（%@）的源代码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此版本的原始碼（%@）"
           }
         }
       }
@@ -2162,6 +2942,12 @@
             "state" : "translated",
             "value" : "空间视频（3D）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "空間影片（3D）"
+          }
         }
       }
     },
@@ -2175,6 +2961,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "速度"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "速度"
@@ -2195,6 +2987,12 @@
             "state" : "translated",
             "value" : "影院式扩展"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "像電影院般擴展"
+          }
         }
       }
     },
@@ -2212,6 +3010,12 @@
             "state" : "translated",
             "value" : "标准"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準"
+          }
         }
       }
     },
@@ -2227,6 +3031,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "立即开始"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即開始"
           }
         }
       }
@@ -2244,6 +3054,12 @@
             "state" : "translated",
             "value" : "立体声"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立體聲"
+          }
         }
       }
     },
@@ -2260,6 +3076,12 @@
             "state" : "translated",
             "value" : "字幕延迟"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕延遲"
+          }
         }
       }
     },
@@ -2273,6 +3095,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "字幕"
@@ -2294,6 +3122,12 @@
             "state" : "translated",
             "value" : "字幕 %lld"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕 %lld"
+          }
         }
       }
     },
@@ -2309,6 +3143,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "来自文件的字幕"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "來自檔案的字幕"
           }
         }
       }
@@ -2327,6 +3167,12 @@
             "state" : "translated",
             "value" : "轻微"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輕微"
+          }
         }
       }
     },
@@ -2344,6 +3190,12 @@
             "state" : "translated",
             "value" : "环绕声"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "環繞聲"
+          }
         }
       }
     },
@@ -2359,6 +3211,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此 App 本身的源代码。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此 App 本身的原始碼。"
           }
         }
       }
@@ -2377,6 +3235,12 @@
             "state" : "translated",
             "value" : "影院"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "電影院"
+          }
         }
       }
     },
@@ -2390,6 +3254,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theater Player"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Theater Player"
@@ -2410,6 +3280,12 @@
             "state" : "translated",
             "value" : "此 PDF 没有页面。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此 PDF 沒有任何頁面。"
+          }
         }
       }
     },
@@ -2425,6 +3301,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此 App 使用了以下开源软件。FFmpeg 依据 GNU Lesser General Public License 2.1 版或更高版本分发，并静态链接到此 App 中。此版本的源代码（App 本身，以及用于构建 FFmpeg 的脚本和补丁）以及 FFmpeg 和 dav1d 的源代码分发包，均可从 GitHub 的 Release 页面获取。你可以替换 FFmpeg 并重新构建此 App。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此 App 使用下列開放原始碼軟體。FFmpeg 依據 GNU Lesser General Public License 2.1 版或更新版本發佈，並靜態連結至此 App。此版本的原始碼（App 本身，以及用來建置 FFmpeg 的腳本和修補程式），以及 FFmpeg 和 dav1d 的原始碼發行套件，都可以從 GitHub 的 Release 取得。你可以替換 FFmpeg 並重新建置此 App。"
           }
         }
       }
@@ -2442,6 +3324,12 @@
             "state" : "translated",
             "value" : "此文件：%@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此檔案：%@"
+          }
         }
       }
     },
@@ -2457,6 +3345,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此文件不是图片或 PDF。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這不是圖片或 PDF。"
           }
         }
       }
@@ -2474,6 +3368,12 @@
             "state" : "translated",
             "value" : "若要播放存放在此文件夹中的视频、音乐、图片和 PDF，请在 Theater Player 的资料库中使用“选取文件”，然后打开此文件夹。\n你可以删除此文件。文件夹为空时不会显示在“文件”App 中，因此下次打开 Theater Player 时，App 会重新放回此文件。\n"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "若要播放放在此資料夾中的影片、音樂、圖片和 PDF，請在 Theater Player 的資料庫中使用「選擇檔案」，然後打開此資料夾。\n你可以刪除此檔案。資料夾為空時就不會再出現在「檔案」App 中，因此 Theater Player 會在你下次打開它時將此檔案放回。\n"
+          }
         }
       }
     },
@@ -2490,6 +3390,12 @@
             "state" : "translated",
             "value" : "上下各半画面（TAB、OU）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上下各半畫面（TAB、OU）"
+          }
         }
       }
     },
@@ -2505,6 +3411,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上下格式 3D"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上下並排 3D"
           }
         }
       }
@@ -2523,6 +3435,12 @@
             "state" : "translated",
             "value" : "音轨 %lld"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音軌 %lld"
+          }
         }
       }
     },
@@ -2538,6 +3456,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用“选取文件”可打开 iCloud云盘 或外置储存设备中的视频、音乐、图片和 PDF。\n也可以打开存放在“文件”App 的 Theater Player 文件夹中的文件。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用「選擇檔案」來打開 iCloud雲碟 或外接儲存裝置中的影片、音樂、圖片和 PDF。\n你也可以打開放在「檔案」App 中 Theater Player 資料夾內的檔案。"
           }
         }
       }
@@ -2555,6 +3479,12 @@
             "state" : "translated",
             "value" : "虚拟低音（用谐波增强低音感）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "虛擬低音（以泛音營造低音感）"
+          }
         }
       }
     },
@@ -2567,6 +3497,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音量"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "音量"
@@ -2587,6 +3523,12 @@
             "state" : "translated",
             "value" : "从头播放视频时，会先响起开场铃声，灯光随即变暗，幕布拉开后才开始播放。片尾字幕期间，灯光会稍微亮起。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從頭播放影片時，會先響起開演鈴聲，接著燈光轉暗、布幕拉開，然後才開始播放。片尾字幕期間，燈光會稍微亮起。"
+          }
         }
       }
     },
@@ -2599,6 +3541,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "YouTube"
@@ -2619,6 +3567,12 @@
             "state" : "translated",
             "value" : "YouTube（调试）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube（除錯）"
+          }
         }
       }
     },
@@ -2634,6 +3588,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "当前座位：%@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的座位：%@"
           }
         }
       }
@@ -2651,6 +3611,12 @@
             "state" : "translated",
             "value" : "让你的视频、音乐和图片登上影院大银幕"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在電影院的大銀幕上欣賞你的影片、音樂和圖片"
+          }
         }
       }
     },
@@ -2667,6 +3633,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "五分钟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "五分鐘"
           }
         }
       }
@@ -2691,6 +3663,12 @@
             "state" : "translated",
             "value" : " · "
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · "
+          }
         }
       }
     },
@@ -2707,6 +3685,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一分钟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一分鐘"
           }
         }
       }
@@ -2725,6 +3709,12 @@
             "state" : "translated",
             "value" : "十秒"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十秒"
+          }
         }
       }
     },
@@ -2738,6 +3728,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "三十秒"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "三十秒"
