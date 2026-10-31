@@ -15,6 +15,12 @@
             "value" : "%1$@：%2$@"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -35,6 +41,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "フィルターを準備できません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "필터를 구성할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -59,6 +71,12 @@
             "value" : "フィルターをつなげません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "필터를 연결할 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -79,6 +97,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音声を変換できません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오를 변환할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -103,6 +127,12 @@
             "value" : "チャンネルの並びを写せません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채널 레이아웃을 복사할 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -123,6 +153,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音の入口を作れません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 입력을 생성할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -147,6 +183,12 @@
             "value" : "音の出口を作れません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 출력을 생성할 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -167,6 +209,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "インターレースを解除するフィルターを作れません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "디인터레이스 필터를 생성할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -191,6 +239,12 @@
             "value" : "速さを変えるフィルターを作れません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "속도 필터를 생성할 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -211,6 +265,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映像の入口を作れません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오 입력을 생성할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -235,6 +295,12 @@
             "value" : "映像の出口を作れません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오 출력을 생성할 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -255,6 +321,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "速さを変える準備ができません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "속도 변경을 준비할 수 없습니다."
           }
         },
         "zh-Hans" : {
@@ -279,6 +351,12 @@
             "value" : "インターレースの解除を準備できません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "디인터레이스를 준비할 수 없습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -299,6 +377,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音声のデコーダーを開けません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 디코더를 열 수 없음"
           }
         },
         "zh-Hans" : {
@@ -323,6 +407,12 @@
             "value" : "ファイルを開けません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 열 수 없습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -343,6 +433,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ファイルを開けません：%@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 열 수 없음: %@"
           }
         },
         "zh-Hans" : {
@@ -367,6 +463,12 @@
             "value" : "字幕のデコーダーを開けません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자막 디코더를 열 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -387,6 +489,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映像のデコーダーを開けません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오 디코더를 열 수 없음"
           }
         },
         "zh-Hans" : {
@@ -411,6 +519,12 @@
             "value" : "読み込めません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 읽을 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -431,6 +545,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "形式を調べられません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 포맷을 확인할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -455,6 +575,12 @@
             "value" : "字幕を読めません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자막을 읽을 수 없습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -475,6 +601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "シークできません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재생 위치를 이동할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -499,6 +631,12 @@
             "value" : "音声の変換を準備できません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 변환을 설정할 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -519,6 +657,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音声を設定できません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오를 설정할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -543,6 +687,12 @@
             "value" : "字幕を設定できません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자막을 설정할 수 없음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -563,6 +713,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映像を設定できません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오를 설정할 수 없음"
           }
         },
         "zh-Hans" : {
@@ -587,6 +743,12 @@
             "value" : "字幕が見つかりません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자막을 찾을 수 없습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -607,6 +769,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映像も音声も見つかりません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오 또는 오디오를 찾을 수 없습니다."
           }
         },
         "zh-Hans" : {
@@ -631,6 +799,12 @@
             "value" : "この音声の形式には対応していません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 오디오 포맷은 지원되지 않습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -653,6 +827,12 @@
             "value" : "この字幕の形式には対応していません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 자막 포맷은 지원되지 않습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -673,6 +853,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "この映像の形式には対応していません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 비디오 포맷은 지원되지 않습니다."
           }
         },
         "zh-Hans" : {

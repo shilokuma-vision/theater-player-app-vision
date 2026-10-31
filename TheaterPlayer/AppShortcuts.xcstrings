@@ -20,6 +20,15 @@
             ]
           }
         },
+        "ko" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}에서 다음 챕터",
+              "${applicationName}에서 다음 챕터로 넘어가줘"
+            ]
+          }
+        },
         "zh-Hans" : {
           "stringSet" : {
             "state" : "translated",
@@ -58,6 +67,16 @@
             "values" : [
               "${applicationName}を一時停止",
               "${applicationName}を止めて"
+            ]
+          }
+        },
+        "ko" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} 일시 정지",
+              "${applicationName} 멈춰줘",
+              "${applicationName}에서 영화 멈춰줘"
             ]
           }
         },
@@ -103,6 +122,16 @@
             ]
           }
         },
+        "ko" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} 재생",
+              "${applicationName} 재생해줘",
+              "${applicationName} 이어서 재생해줘"
+            ]
+          }
+        },
         "zh-Hans" : {
           "stringSet" : {
             "state" : "translated",
@@ -139,6 +168,15 @@
             "state" : "translated",
             "values" : [
               "${applicationName}で前のチャプター"
+            ]
+          }
+        },
+        "ko" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}에서 이전 챕터",
+              "${applicationName}에서 이전 챕터로 돌아가줘"
             ]
           }
         },
@@ -183,6 +221,16 @@
             ]
           }
         },
+        "ko" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}에서 ${amount} 뒤로 건너뛰어",
+              "${applicationName}에서 ${amount} 되감아줘",
+              "${applicationName} 되감아줘"
+            ]
+          }
+        },
         "zh-Hans" : {
           "stringSet" : {
             "state" : "translated",
@@ -223,6 +271,16 @@
             "values" : [
               "${applicationName}で${amount}進めて",
               "${applicationName}を進めて"
+            ]
+          }
+        },
+        "ko" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}에서 ${amount} 앞으로 건너뛰어",
+              "${applicationName}에서 ${amount} 빨리 감아줘",
+              "${applicationName} 빨리 감아줘"
             ]
           }
         },

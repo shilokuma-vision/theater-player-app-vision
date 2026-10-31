@@ -10,6 +10,12 @@
             "value" : "%@ dB"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@dB"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -33,6 +39,12 @@
             "value" : "%@ 倍"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@×"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -51,6 +63,12 @@
       "comment" : "Button that resets the audio or subtitle delay to zero.",
       "localizations" : {
         "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "0"
@@ -79,6 +97,12 @@
             "value" : "1分"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1분"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -99,6 +123,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 分"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1분"
           }
         },
         "zh-Hans" : {
@@ -124,6 +154,12 @@
             "value" : "10秒"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10초"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -146,6 +182,12 @@
             "value" : "10 秒"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10초"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -164,6 +206,12 @@
       "comment" : "The file is not 3D.",
       "localizations" : {
         "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "2D"
@@ -191,6 +239,12 @@
             "value" : "2D（立体にしない）"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D(3D 끔)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -212,6 +266,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "30秒"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30초"
           }
         },
         "zh-Hans" : {
@@ -236,6 +296,12 @@
             "value" : "30 秒"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30초"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -254,6 +320,12 @@
       "comment" : "Control panel button that opens the 3D (stereoscopic) settings.",
       "localizations" : {
         "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "3D"
@@ -282,6 +354,12 @@
             "value" : "5分"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5분"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -302,6 +380,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "5 分"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5분"
           }
         },
         "zh-Hans" : {
@@ -326,6 +410,12 @@
             "value" : "足元灯・誘導灯"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "통로 및 비상구 조명"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -348,6 +438,12 @@
             "value" : "全体の座席表"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전체 좌석"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -368,6 +464,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "響きをサラウンドへ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "주변음을 서라운드 스피커로"
           }
         },
         "zh-Hans" : {
@@ -393,6 +495,12 @@
             "value" : "そのまま"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "그대로"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -414,6 +522,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音声"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오"
           }
         },
         "zh-Hans" : {
@@ -438,6 +552,12 @@
             "value" : "音のずれ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 지연"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -458,6 +578,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自動"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자동"
           }
         },
         "zh-Hans" : {
@@ -483,6 +609,12 @@
             "value" : "戻る"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "뒤로"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -503,6 +635,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "10 秒戻す"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10초 뒤로"
           }
         },
         "zh-Hans" : {
@@ -527,6 +665,12 @@
             "value" : "低音"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저음"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -549,6 +693,12 @@
             "value" : "低音の量"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저음 강화"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -569,6 +719,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "低音の残響（大きな部屋の響き）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저음 잔향(넓은 공간)"
           }
         },
         "zh-Hans" : {
@@ -594,6 +750,12 @@
             "value" : "明るい"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "밝게"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -614,6 +776,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "この PDF のページを描けません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF의 이 페이지를 표시할 수 없습니다."
           }
         },
         "zh-Hans" : {
@@ -638,6 +806,12 @@
             "value" : "ファイルが見つかりません。もう一度選んでください。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 찾을 수 없습니다. 다시 선택하십시오."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -658,6 +832,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "パスワードのかかった PDF は開けません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "암호로 보호된 PDF는 열 수 없습니다."
           }
         },
         "zh-Hans" : {
@@ -682,6 +862,12 @@
             "value" : "この PDF は開けません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 PDF를 열 수 없습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -702,6 +888,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "この PDF のページを開けません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF의 이 페이지를 열 수 없습니다."
           }
         },
         "zh-Hans" : {
@@ -726,6 +918,12 @@
             "value" : "この画像は開けません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 이미지를 열 수 없습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -746,6 +944,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "天井のスピーカー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "천장 스피커"
           }
         },
         "zh-Hans" : {
@@ -769,6 +973,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "中央（おすすめ）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중앙(추천)"
           }
         },
         "zh-Hans" : {
@@ -799,6 +1009,12 @@
             "value" : "中央ブロック・%1$@〜%2$@ 列"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중앙 블록, %1$@~%2$@열"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -819,6 +1035,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ファイルを選ぶ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일 선택"
           }
         },
         "zh-Hans" : {
@@ -843,6 +1065,12 @@
             "value" : "字幕ファイルを選ぶ（ライブラリ）"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자막 파일 선택(보관함)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -863,6 +1091,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ライブラリでファイルを選ぶと、ここで再生します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보관함에서 파일을 선택하면 여기에서 재생됩니다."
           }
         },
         "zh-Hans" : {
@@ -887,6 +1121,12 @@
             "value" : "写真から選ぶ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진에서 선택"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -907,6 +1147,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "YouTube を閉じる"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube 닫기"
           }
         },
         "zh-Hans" : {
@@ -931,6 +1177,12 @@
             "value" : "再生の準備ができませんでした。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재생을 준비할 수 없습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -951,6 +1203,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ライセンスの全文を読み込めませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용권 전문을 로드할 수 없습니다."
           }
         },
         "zh-Hans" : {
@@ -976,6 +1234,12 @@
             "value" : "真っ暗"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "어둡게"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -996,6 +1260,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AV1 の映像をソフトウェアでデコードするのに使っています（FFmpeg から使う）。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AV1 비디오를 소프트웨어로 디코딩합니다(FFmpeg에서 사용)."
           }
         },
         "zh-Hans" : {
@@ -1020,6 +1290,12 @@
             "value" : "削除"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1042,6 +1318,12 @@
             "value" : "台詞を聞きやすく"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "대화 강조"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1062,6 +1344,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "台詞をセンターへ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "대화를 센터 스피커로"
           }
         },
         "zh-Hans" : {
@@ -1087,6 +1375,12 @@
             "value" : "ほの暗い"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "은은하게"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1107,6 +1401,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "再生すると暗くする"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재생 시 조명 어둡게 하기"
           }
         },
         "zh-Hans" : {
@@ -1132,6 +1432,12 @@
             "value" : "長さ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "길이"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1152,6 +1458,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音量の幅"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다이내믹 레인지"
           }
         },
         "zh-Hans" : {
@@ -1177,6 +1489,12 @@
             "value" : "早める"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앞당기기"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1197,6 +1515,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映画館に入る"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에 들어가기"
           }
         },
         "zh-Hans" : {
@@ -1222,6 +1546,12 @@
             "value" : "強制"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "강제"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1244,6 +1574,12 @@
             "value" : "30 秒進む"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30초 앞으로"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1264,6 +1600,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld ページ目から"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld페이지부터"
           }
         },
         "zh-Hans" : {
@@ -1289,6 +1631,12 @@
             "value" : "前方"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앞열"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1309,6 +1657,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "GNU Lesser General Public License 2.1 以降"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GNU Lesser General Public License v2.1 이상"
           }
         },
         "zh-Hans" : {
@@ -1333,6 +1687,12 @@
             "value" : "客電（止めているとき）"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "객석 조명(일시 정지 시)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1353,6 +1713,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "客電（上映中）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "객석 조명(재생 중)"
           }
         },
         "zh-Hans" : {
@@ -1378,6 +1744,12 @@
             "value" : "使い方.txt"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용 방법.txt"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1399,6 +1771,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最後列"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "맨 뒷열"
           }
         },
         "zh-Hans" : {
@@ -1424,6 +1802,12 @@
             "value" : "遅らせる"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "늦추기"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1444,6 +1828,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映画館を出る"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에서 나가기"
           }
         },
         "zh-Hans" : {
@@ -1474,6 +1864,12 @@
             "value" : "左ブロック・%1$@〜%2$@ 列"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "왼쪽 블록, %1$@~%2$@열"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1494,6 +1890,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "サイドバイサイド（SBS・HSBS）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "좌우 분할(SBS, HSBS)"
           }
         },
         "zh-Hans" : {
@@ -1519,6 +1921,12 @@
             "value" : "ライブラリ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보관함"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1541,6 +1949,12 @@
             "value" : "ライセンス"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용권"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1561,6 +1975,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "スクリーンの照り返し"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스크린 반사광"
           }
         },
         "zh-Hans" : {
@@ -1586,6 +2006,12 @@
             "value" : "明るさ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "조명"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1606,6 +2032,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "読み込み中…"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로드 중…"
           }
         },
         "zh-Hans" : {
@@ -1630,6 +2062,12 @@
             "value" : "次のチャプターへ移りました。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 챕터로 이동했습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1650,6 +2088,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "前のチャプターへ移りました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이전 챕터로 이동했습니다."
           }
         },
         "zh-Hans" : {
@@ -1674,6 +2118,12 @@
             "value" : "映画館で再生している動画の、次のチャプターへ移ります。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에서 재생 중인 비디오의 다음 챕터로 이동합니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1694,6 +2144,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映画館で再生している動画の、前のチャプター（今のチャプターの始まり）へ移ります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에서 재생 중인 비디오의 이전 챕터(현재 챕터의 시작 부분)로 이동합니다."
           }
         },
         "zh-Hans" : {
@@ -1718,6 +2174,12 @@
             "value" : "次のチャプター"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 챕터"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1738,6 +2200,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "次のページ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 페이지"
           }
         },
         "zh-Hans" : {
@@ -1763,6 +2231,12 @@
             "value" : "夜"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "야간"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1783,6 +2257,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "まだ再生したファイルはありません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최근 파일 없음"
           }
         },
         "zh-Hans" : {
@@ -1808,6 +2288,12 @@
             "value" : "ふつう"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보통"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1828,6 +2314,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映画館で動画・音楽を再生していません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에서 재생 중인 항목이 없습니다."
           }
         },
         "zh-Hans" : {
@@ -1853,6 +2345,12 @@
             "value" : "字幕なし"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끔"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1873,6 +2371,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "動画・音楽のファイルを開き、映像・音声・字幕をデコードするのに使っています。LGPL の構成（GPL・nonfree の部品は使わない）でビルドし、アプリに静的にリンクしています。visionOS でビルドするためのパッチを当てています。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오 및 음악 파일을 열고 비디오, 오디오, 자막을 디코딩합니다. LGPL 구성(GPL 및 nonfree 구성 요소 제외)으로 빌드되었으며 앱에 정적으로 링크되어 있습니다. visionOS용으로 빌드할 수 있도록 패치가 적용되어 있습니다."
           }
         },
         "zh-Hans" : {
@@ -1897,6 +2401,12 @@
             "value" : "元のソース"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "원본 소스 코드"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1914,6 +2424,12 @@
     "PDF" : {
       "localizations" : {
         "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PDF"
@@ -1947,6 +2463,12 @@
             "value" : "%1$lld / %2$lld ページ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld/%2$lld페이지"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1967,6 +2489,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一時停止"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일시 정지"
           }
         },
         "zh-Hans" : {
@@ -1991,6 +2519,12 @@
             "value" : "一時停止しました。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일시 정지했습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2011,6 +2545,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映画館で再生している動画・音楽を一時停止します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에서 재생 중인 비디오 또는 음악을 일시 정지합니다."
           }
         },
         "zh-Hans" : {
@@ -2036,6 +2576,12 @@
             "value" : "画像"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2056,6 +2602,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "再生"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재생"
           }
         },
         "zh-Hans" : {
@@ -2080,6 +2632,12 @@
             "value" : "再生位置"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재생 위치"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2100,6 +2658,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "再生の速さ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재생 속도"
           }
         },
         "zh-Hans" : {
@@ -2124,6 +2688,12 @@
             "value" : "再生します。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재생합니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2144,6 +2714,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映画館で止めている動画・音楽を再生します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에서 일시 정지된 비디오 또는 음악을 재생합니다."
           }
         },
         "zh-Hans" : {
@@ -2168,6 +2744,12 @@
             "value" : "MKV・MP4・AVI・WMV・TS などの動画と、FLAC・MP3・AAC・WAV などの音楽を再生できます。PNG・JPEG・HEIC などの画像と PDF も映せます"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MKV, MP4, AVI, WMV, TS 등의 비디오와 FLAC, MP3, AAC, WAV 등의 음악을 재생합니다. PNG, JPEG, HEIC 등의 이미지와 PDF도 표시합니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2190,6 +2772,12 @@
             "value" : "前のチャプター"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이전 챕터"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2210,6 +2798,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "前のページ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이전 페이지"
           }
         },
         "zh-Hans" : {
@@ -2235,6 +2829,12 @@
             "value" : "後方"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "뒷열"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2255,6 +2855,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最近開いたもの"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최근에 연 항목"
           }
         },
         "zh-Hans" : {
@@ -2280,6 +2886,12 @@
             "value" : "0 に戻す"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재설정"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2300,6 +2912,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "パネルを元の位置へ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "패널 위치 재설정"
           }
         },
         "zh-Hans" : {
@@ -2324,6 +2942,12 @@
             "value" : "初期値に戻す"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기본값으로 재설정"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2344,6 +2968,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "続きから %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@부터 재개"
           }
         },
         "zh-Hans" : {
@@ -2367,6 +2997,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "豊か"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "풍부하게"
           }
         },
         "zh-Hans" : {
@@ -2397,6 +3033,12 @@
             "value" : "右ブロック・%1$@〜%2$@ 列"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오른쪽 블록, %1$@~%2$@열"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2419,6 +3061,12 @@
             "value" : "部屋の明るさ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "실내 조명"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2439,6 +3087,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "部屋の響き"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "실내 잔향"
           }
         },
         "zh-Hans" : {
@@ -2469,6 +3123,12 @@
             "value" : "%1$@ 列 %2$lld 番"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@열 %2$lld번"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2490,6 +3150,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "スクリーン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스크린"
           }
         },
         "zh-Hans" : {
@@ -2514,6 +3180,12 @@
             "value" : "検索"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2536,6 +3208,12 @@
             "value" : "YouTube を検索"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube 검색"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2556,6 +3234,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "検索結果と動画はスクリーンに出ます。ショートは再生しません。音は映画館の音響を通りません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색 결과와 비디오가 스크린에 표시됩니다. Shorts는 재생되지 않습니다. 소리는 극장의 사운드 시스템을 거치지 않습니다."
           }
         },
         "zh-Hans" : {
@@ -2581,6 +3265,12 @@
             "value" : "座席"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "좌석"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2603,6 +3293,12 @@
             "value" : "ショートは再生しません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shorts는 재생되지 않습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2623,6 +3319,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "操作を表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제어기 보기"
           }
         },
         "zh-Hans" : {
@@ -2648,6 +3350,12 @@
             "value" : "上映の演出"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상영 연출"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2668,6 +3376,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "左右に並べた 3D"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "좌우 배열 3D"
           }
         },
         "zh-Hans" : {
@@ -2692,6 +3406,12 @@
             "value" : "戻す"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "뒤로 건너뛰기"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2712,6 +3432,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "進む"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앞으로 건너뛰기"
           }
         },
         "zh-Hans" : {
@@ -2737,6 +3463,12 @@
             "value" : "${amount}戻す"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${amount} 뒤로 건너뛰기"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2758,6 +3490,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "${amount}進む"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${amount} 앞으로 건너뛰기"
           }
         },
         "zh-Hans" : {
@@ -2782,6 +3520,12 @@
             "value" : "戻しました。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "뒤로 건너뛰었습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2802,6 +3546,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "進めました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앞으로 건너뛰었습니다."
           }
         },
         "zh-Hans" : {
@@ -2826,6 +3576,12 @@
             "value" : "映画館で再生している動画・音楽を、指定した長さだけ戻します。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에서 재생 중인 비디오 또는 음악을 선택한 길이만큼 뒤로 건너뜁니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2848,6 +3604,12 @@
             "value" : "映画館で再生している動画・音楽を、指定した長さだけ進めます。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장에서 재생 중인 비디오 또는 음악을 선택한 길이만큼 앞으로 건너뜁니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2868,6 +3630,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ソフトウェア"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "소프트웨어"
           }
         },
         "zh-Hans" : {
@@ -2893,6 +3661,12 @@
             "value" : "音響"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사운드"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2915,6 +3689,12 @@
             "value" : "この版（%@）のソース"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 버전(%@)의 소스 코드"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2935,6 +3715,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "空間ビデオ（3D）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공간 비디오(3D)"
           }
         },
         "zh-Hans" : {
@@ -2960,6 +3746,12 @@
             "value" : "速さ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "속도"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2980,6 +3772,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映画館のように広げる"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장처럼 넓게"
           }
         },
         "zh-Hans" : {
@@ -3005,6 +3803,12 @@
             "value" : "標準"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "표준"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3025,6 +3829,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "すぐに始める"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 시작"
           }
         },
         "zh-Hans" : {
@@ -3049,6 +3859,12 @@
             "value" : "ステレオの音"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스테레오 사운드"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3069,6 +3885,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "字幕のずれ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자막 지연"
           }
         },
         "zh-Hans" : {
@@ -3094,6 +3916,12 @@
             "value" : "字幕"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자막"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3117,6 +3945,12 @@
             "value" : "字幕 %lld"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자막 %lld"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3137,6 +3971,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ファイルから読んだ字幕"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일에서 불러온 자막"
           }
         },
         "zh-Hans" : {
@@ -3162,6 +4002,12 @@
             "value" : "控えめ"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "약하게"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3185,6 +4031,12 @@
             "value" : "広がり"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서라운드"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3205,6 +4057,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "このアプリ自身のソースです。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 앱 자체의 소스 코드입니다."
           }
         },
         "zh-Hans" : {
@@ -3230,6 +4088,12 @@
             "value" : "映画館"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "극장"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3248,6 +4112,12 @@
       "comment" : "The app name.",
       "localizations" : {
         "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theater Player"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Theater Player"
@@ -3275,6 +4145,12 @@
             "value" : "この PDF にはページがありません"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 PDF에는 페이지가 없습니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3295,6 +4171,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "このアプリは、次のオープンソースのソフトウェアを使っています。FFmpeg は GNU Lesser General Public License 2.1 以降で配布されており、このアプリに静的にリンクしています。この版のソース（アプリ・FFmpeg を作るスクリプトとパッチ）と、FFmpeg・dav1d のソースの配布物は、GitHub の Release から入手できます。FFmpeg を差し替えて、このアプリを作り直すことができます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 앱은 다음 오픈 소스 소프트웨어를 사용합니다. FFmpeg은 GNU Lesser General Public License 버전 2.1 이상에 따라 배포되며 이 앱에 정적으로 링크되어 있습니다. 이 버전의 소스 코드(앱, 그리고 FFmpeg을 빌드하는 스크립트 및 패치)와 FFmpeg 및 dav1d의 소스 배포본은 GitHub 릴리스에서 받을 수 있습니다. FFmpeg을 교체하여 이 앱을 다시 빌드할 수 있습니다."
           }
         },
         "zh-Hans" : {
@@ -3319,6 +4201,12 @@
             "value" : "このファイル：%@"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 파일: %@"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3339,6 +4227,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "画像・PDF ではありません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 또는 PDF가 아닙니다."
           }
         },
         "zh-Hans" : {
@@ -3363,6 +4257,12 @@
             "value" : "このフォルダに入れた動画・音楽・画像・PDF は、Theater Player のライブラリの「ファイルを選ぶ」で、このフォルダを開いて選べます。\nこのファイルは消してもかまいません。フォルダが空になると「ファイル」App に出なくなるので、次に Theater Player を開いたときにまた置きます。\n"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 폴더에 넣은 비디오, 음악, 이미지 및 PDF를 재생하려면 Theater Player 보관함에서 ‘파일 선택’을 사용하여 이 폴더를 여십시오.\n이 파일은 삭제해도 됩니다. 폴더가 비어 있으면 파일 앱에 더 이상 표시되지 않으므로, 다음에 Theater Player를 열 때 이 파일이 다시 추가됩니다.\n"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3385,6 +4285,12 @@
             "value" : "トップアンドボトム（TAB・OU）"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상하 분할(TAB, OU)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3405,6 +4311,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上下に並べた 3D"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상하 배열 3D"
           }
         },
         "zh-Hans" : {
@@ -3430,6 +4342,12 @@
             "value" : "トラック %lld"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "트랙 %lld"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3450,6 +4368,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の Theater Player のフォルダに入れたものも開けます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘파일 선택’을 사용하여 iCloud Drive 또는 외장 저장 장치에 있는 비디오, 음악, 이미지 및 PDF를 열 수 있습니다.\n파일 앱의 Theater Player 폴더에 넣은 파일도 열 수 있습니다."
           }
         },
         "zh-Hans" : {
@@ -3474,6 +4398,12 @@
             "value" : "体感の低音（倍音で低音を感じやすく）"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가상 저음(배음으로 느끼는 저음)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3494,6 +4424,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音量"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "음량"
           }
         },
         "zh-Hans" : {
@@ -3518,6 +4454,12 @@
             "value" : "動画を頭から再生すると、開演のブザーのあとに暗くなり、幕が開いてから始まります。エンドロールでは少し明るくします"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비디오를 처음부터 재생하면 시작하기 전에 버저가 울리고 조명이 어두워진 다음 막이 열립니다. 엔딩 크레딧 중에는 조명이 약간 밝아집니다."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3535,6 +4477,12 @@
     "YouTube" : {
       "localizations" : {
         "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "YouTube"
@@ -3562,6 +4510,12 @@
             "value" : "YouTube（デバッグ）"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube(디버그)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3582,6 +4536,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "いまの席：%@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 좌석: %@"
           }
         },
         "zh-Hans" : {
@@ -3606,6 +4566,12 @@
             "value" : "映画館の大きなスクリーンで、手元の動画・音楽・画像を"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나의 비디오, 음악, 이미지를 극장의 대형 스크린에서"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3627,6 +4593,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "五分"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오 분"
           }
         },
         "zh-Hans" : {
@@ -3658,6 +4630,12 @@
             "value" : "・"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · "
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3679,6 +4657,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一分"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일 분"
           }
         },
         "zh-Hans" : {
@@ -3704,6 +4688,12 @@
             "value" : "十秒"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "십 초"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3725,6 +4715,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "三十秒"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삼십 초"
           }
         },
         "zh-Hans" : {
