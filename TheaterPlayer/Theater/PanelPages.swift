@@ -148,9 +148,12 @@ struct DelayStepper: View {
             Text(title)
             Spacer()
             Button { value -= 0.05 } label: { Image(systemName: "minus") }
+                .accessibilityLabel("Earlier")
             Text(UnitFormat.signedSeconds(value)).monospacedDigit().frame(width: 100)
             Button { value += 0.05 } label: { Image(systemName: "plus") }
+                .accessibilityLabel("Later")
             Button("0") { value = 0 }
+                .accessibilityLabel("Reset")
         }
     }
 }
@@ -285,6 +288,8 @@ struct LabeledSlider: View {
                 Text(format(value)).monospacedDigit().foregroundStyle(.secondary)
             }
             Slider(value: $value, in: range)
+                .accessibilityLabel(Text(title))
+                .accessibilityValue(format(value))
         }
     }
 }

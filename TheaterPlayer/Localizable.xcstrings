@@ -149,6 +149,16 @@
         }
       }
     },
+    "Back 10 Seconds" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 秒戻す"
+          }
+        }
+      }
+    },
     "Bass" : {
       "localizations" : {
         "ja" : {
@@ -439,6 +449,17 @@
         }
       }
     },
+    "Earlier" : {
+      "comment" : "Accessibility label of the minus button that moves the audio or subtitles earlier.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "早める"
+          }
+        }
+      }
+    },
     "Enter the Theater" : {
       "localizations" : {
         "ja" : {
@@ -456,6 +477,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "強制"
+          }
+        }
+      }
+    },
+    "Forward 30 Seconds" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 秒進む"
           }
         }
       }
@@ -529,6 +560,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最後列"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "comment" : "Accessibility label of the plus button that moves the audio or subtitles later.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "遅らせる"
           }
         }
       }
@@ -720,6 +762,16 @@
         }
       }
     },
+    "Pause" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一時停止"
+          }
+        }
+      }
+    },
     "Picture" : {
       "comment" : "The file on the screen is a still image.",
       "localizations" : {
@@ -727,6 +779,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "画像"
+          }
+        }
+      }
+    },
+    "Play" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再生"
+          }
+        }
+      }
+    },
+    "Playback Position" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再生位置"
           }
         }
       }
@@ -778,6 +850,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最近開いたもの"
+          }
+        }
+      }
+    },
+    "Reset" : {
+      "comment" : "Accessibility label of the button that resets the audio or subtitle delay to zero.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0 に戻す"
           }
         }
       }
@@ -1254,6 +1337,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "体感の低音（倍音で低音を感じやすく）"
+          }
+        }
+      }
+    },
+    "Volume" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音量"
           }
         }
       }

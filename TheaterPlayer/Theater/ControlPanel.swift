@@ -278,6 +278,8 @@ struct TransportControls: View {
                     scrubbing = nil
                 }
             }
+            .accessibilityLabel("Playback Position")
+            .accessibilityValue(TimeFormat.clock(scrubbing ?? player.currentTime))
             HStack {
                 Text(TimeFormat.clock(scrubbing ?? player.currentTime)).monospacedDigit()
                 Spacer()
@@ -297,11 +299,14 @@ struct TransportControls: View {
             .foregroundStyle(.secondary)
             HStack(spacing: 28) {
                 Button { appModel.perform(.skip(by: -10)) } label: { Image(systemName: "gobackward.10").font(.title) }
+                    .accessibilityLabel("Back 10 Seconds")
                 Button { appModel.perform(.togglePlay) } label: {
                     Image(systemName: player.isPlaying ? "pause.fill" : "play.fill").font(.largeTitle)
                         .frame(width: 64, height: 64)
                 }
+                .accessibilityLabel(player.isPlaying ? Text("Pause") : Text("Play"))
                 Button { appModel.perform(.skip(by: 30)) } label: { Image(systemName: "goforward.30").font(.title) }
+                    .accessibilityLabel("Forward 30 Seconds")
             }
             .buttonStyle(.borderless)
             VolumeSlider()
@@ -316,9 +321,12 @@ struct VolumeSlider: View {
         @Bindable var preferences = appModel.preferences
         HStack {
             Image(systemName: "speaker.fill")
+                .accessibilityHidden(true)
             Slider(value: $preferences.volume, in: 0...Preferences.maxVolume)
                 .onChange(of: preferences.volume) { appModel.player.applyAudioPreferences() }
+                .accessibilityLabel("Volume")
             Image(systemName: "speaker.wave.3.fill")
+                .accessibilityHidden(true)
             // 等倍より上げたぶん（リミッターの前で上げる）
             Text(preferences.volume > 1 ? UnitFormat.decibels(20 * log10(preferences.volume)) : "")
                 .font(.caption.monospacedDigit())
