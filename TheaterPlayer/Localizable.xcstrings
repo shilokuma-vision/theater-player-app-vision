@@ -1586,12 +1586,12 @@
         }
       }
     },
-    "Use “Choose a File” to open videos, music, pictures, and PDFs in iCloud Drive or on external storage.\nYou can also open files you put in the TheaterPlayer folder in the Files app." : {
+    "Use “Choose a File” to open videos, music, pictures, and PDFs in iCloud Drive or on external storage.\nYou can also open files you put in the Theater Player folder in the Files app." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の TheaterPlayer のフォルダに入れたものも開けます"
+            "value" : "「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の Theater Player のフォルダに入れたものも開けます"
           }
         }
       }
