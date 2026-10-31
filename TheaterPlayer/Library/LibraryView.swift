@@ -101,6 +101,7 @@ struct LibraryView: View {
                     .frame(minWidth: 180)
             }
             .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("chooseFile")
             PhotosPicker(selection: $photoItem, matching: .any(of: [.videos, .images])) {
                 Label(photoTitle, systemImage: "photo.on.rectangle")
                     .frame(minWidth: 180)
@@ -113,6 +114,7 @@ struct LibraryView: View {
                     .frame(minWidth: 180)
             }
             .disabled(appModel.immersiveSpaceState == .inTransition)
+            .accessibilityIdentifier("enterTheater")
         }
         .controlSize(.large)
     }
