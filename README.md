@@ -23,17 +23,17 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
   畳んだ操作パネルは、スクリーンを見てつまむと出ます
   - Bluetooth のキーボード：スペース＝再生・一時停止、← →＝10 秒戻る・進む、↑ ↓＝音量、N・P＝次・前のチャプター、Return＝操作パネルを出す
   - ゲームコントローラー：A＝再生・一時停止、B＝操作パネルを出す、十字キーの左右＝10 秒戻る・進む、上下＝音量、L1・R1＝前・次のチャプター
-  - Siri・ショートカットの App：「Theater Player を一時停止」「Theater Player で 30 秒戻して」など（一時停止・再生・戻す・進む・次／前のチャプター）
+  - Siri・ショートカットの App：「Theater Player を一時停止」「Theater Player で 30 秒戻して」、英語では「Pause Theater Player」「Skip back 30 seconds in Theater Player」など（一時停止・再生・戻す・進む・次／前のチャプター）
 
 ## ファイルの入れ方
 
-- **「ファイル」App の TheaterPlayer のフォルダ**：「ファイル」App の「この Apple Vision Pro内」（On My Apple Vision Pro）に「TheaterPlayer」のフォルダがあります（アプリのフォルダを共有しています。`UIFileSharingEnabled`）。
+- **「ファイル」App の Theater Player のフォルダ**：「ファイル」App の「この Apple Vision Pro内」（On My Apple Vision Pro）に「Theater Player」のフォルダがあります（アプリのフォルダを共有しています。`UIFileSharingEnabled`）。
   ここに入れた動画・音楽・画像・PDF は、ライブラリの「ファイルを選ぶ」でこのフォルダを開いて選べます。
   フォルダは空だと「ファイル」App に出ないので、空なら起動したときに案内（`使い方.txt`。英語のときは `How to Use.txt`）を置きます（消してもかまいません。ほかのファイルがあれば置き直しません）
-- **Mac から送る**：iCloud Drive に入れる・AirDrop で送る・「ファイル」App の「サーバへ接続」で Mac の共有フォルダを開く、のどれかで Vision Pro に届け、「ファイル」App で TheaterPlayer のフォルダへ移します。
+- **Mac から送る**：iCloud Drive に入れる・AirDrop で送る・「ファイル」App の「サーバへ接続」で Mac の共有フォルダを開く、のどれかで Vision Pro に届け、「ファイル」App で Theater Player のフォルダへ移します。
   Finder のファイル共有（ケーブルでつないだ端末の「ファイル」タブ）は、Apple の案内では iPhone・iPad が対象で、Vision Pro は載っていません
 - **コピーせずに開く**：iCloud Drive・外部ストレージ・ファイルサーバのファイルも、「ファイルを選ぶ」でその場所のまま開けます（`LSSupportsOpeningDocumentsInPlace`）。最近の一覧から開き直せます
-- TheaterPlayer のフォルダの中身は、ほかのアプリの書類と同じく端末のバックアップに含まれます。大きな動画を入れたままにすると、iCloud バックアップの容量を使います
+- Theater Player のフォルダの中身は、ほかのアプリの書類と同じく端末のバックアップに含まれます。大きな動画を入れたままにすると、iCloud バックアップの容量を使います
 
 ## Environment
 
@@ -377,6 +377,8 @@ nm -u /tmp/TheaterPlayer-Release/Build/Products/Release-xros/TheaterPlayer.app/T
 | String Catalog | 中身 |
 |---|---|
 | [TheaterPlayer/Localizable.xcstrings](TheaterPlayer/Localizable.xcstrings) | 画面の文字・エラーの文言・「ファイル」App に置く案内 |
+| [TheaterPlayer/InfoPlist.xcstrings](TheaterPlayer/InfoPlist.xcstrings) | Info.plist の文言（表示名 `CFBundleDisplayName`・書類の種類の名前 `CFBundleTypeName`）。コマンドラインのビルドでは抽出されないので、手で書いています（`manual`） |
+| [TheaterPlayer/AppShortcuts.xcstrings](TheaterPlayer/AppShortcuts.xcstrings) | Siri のフレーズ。キーはコードの最初の英語のフレーズで、言語ごとに複数のフレーズ（`stringSet`）を持ちます。どのフレーズにも `${applicationName}` を 1 回入れます |
 | [Packages/TheaterMedia/Sources/TheaterMedia/Localizable.xcstrings](Packages/TheaterMedia/Sources/TheaterMedia/Localizable.xcstrings) | 再生のエラーの文言（`MediaError(localized:)`・`check(_:_:)`。パッケージのバンドル `.module` から引く） |
 
 - キーは英語の文言そのものです（`Text("Choose a File")`）。同じ英語で訳を変えたいときだけ、`String(localized: "key", defaultValue: "…")` で別のキーにします。意味の取りにくい短い語には、catalog か `comment:` で訳す人への説明を付けます
@@ -385,6 +387,7 @@ nm -u /tmp/TheaterPlayer-Release/Build/Products/Release-xros/TheaterPlayer.app/T
   訳の漏れ・`%@` などの数の食い違いは [TheaterPlayerTests/LocalizationTests.swift](TheaterPlayerTests/LocalizationTests.swift) が見つけます
 - コマンドラインのビルド（`xcodebuild`）では catalog は書き換わりません。ビルドの抽出結果（DerivedData の `*.stringsdata`）から `xcrun xcstringstool sync <catalog> --stringsdata <ファイル>...` で入れられます
 - 言語を足すときは、catalog に言語を足して訳し、`LocalizationTests.languages`・`TheaterPlayer.xcodeproj` の `knownRegions`・`AppStore/languages.json`・`AppStore/metadata/<言語>.json` にも足します
+- App Intents の名前・説明・Siri の返事は `Localizable.xcstrings` に入ります。日本語の Siri で「シアタープレイヤー」と呼べるよう、Info.plist の `INAlternativeAppNames` に別名を入れています
 - 見え方は、Simulator の起動引数（Scheme の Run → Arguments）で確かめます。`-AppleLanguages (en)` で言語を、`-NSDoubleLocalizedStrings YES` で文字を倍の長さにした擬似ローカライズを出せます
 
 ## ライセンス
