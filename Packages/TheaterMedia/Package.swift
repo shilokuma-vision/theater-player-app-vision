@@ -6,6 +6,8 @@ import PackageDescription
 
 let package = Package(
     name: "TheaterMedia",
+    // エラーの文言の元の言語（アプリの開発の言語と揃える）。訳は Sources/TheaterMedia/Localizable.xcstrings
+    defaultLocalization: "en",
     platforms: [
         // アプリの Deployment Target（Configs/Project.xcconfig の XROS_DEPLOYMENT_TARGET）と揃える
         .visionOS(.v26)
@@ -38,6 +40,9 @@ let package = Package(
             dependencies: [
                 "CFFmpeg",
                 .product(name: "CinemaAudio", package: "TheaterCore")
+            ],
+            resources: [
+                .process("Localizable.xcstrings")
             ],
             swiftSettings: [
                 .enableUpcomingFeature("MemberImportVisibility")

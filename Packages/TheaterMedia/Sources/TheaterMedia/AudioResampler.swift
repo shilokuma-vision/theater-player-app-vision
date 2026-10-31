@@ -57,7 +57,7 @@ final class AudioResampler {
                 }
             }
         }
-        try check(converted, "音声を変換できません")
+        try check(converted, "Can’t convert the audio")
         body(buffers.map { UnsafePointer($0) }, Int(converted), changed)
     }
 
@@ -78,11 +78,11 @@ final class AudioResampler {
         if frame.pointee.ch_layout.order == AV_CHANNEL_ORDER_UNSPEC {
             av_channel_layout_default(&input, frame.pointee.ch_layout.nb_channels)
         } else {
-            try check(av_channel_layout_copy(&input, &frame.pointee.ch_layout), "チャンネルの並び")
+            try check(av_channel_layout_copy(&input, &frame.pointee.ch_layout), "Can’t copy the channel layout")
         }
         defer { av_channel_layout_uninit(&input) }
         var output = AVChannelLayout()
-        try check(av_channel_layout_copy(&output, &input), "チャンネルの並び")
+        try check(av_channel_layout_copy(&output, &input), "Can’t copy the channel layout")
         defer { av_channel_layout_uninit(&output) }
         try check(
             swr_alloc_set_opts2(
@@ -96,9 +96,9 @@ final class AudioResampler {
                 0,
                 nil
             ),
-            "音声の変換の準備"
+            "Can’t set up audio conversion"
         )
-        try check(swr_init(context), "音声の変換の準備")
+        try check(swr_init(context), "Can’t set up audio conversion")
         layout = (0..<Int(output.nb_channels)).map { index in
             AudioChannels.role(av_channel_layout_channel_from_index(&output, UInt32(index)))
         }

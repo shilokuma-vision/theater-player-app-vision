@@ -136,7 +136,7 @@ public final class MediaPlayer: @unchecked Sendable {
             artwork: container.artwork
         )
         guard !info.videoTracks.isEmpty || !info.audioTracks.isEmpty else {
-            throw MediaError("映像も音声も見つかりません")
+            throw MediaError(localized: "No video or audio found.")
         }
         return PlaybackSession(container: container, info: info)
     }

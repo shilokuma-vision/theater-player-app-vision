@@ -25,19 +25,25 @@ final class Deinterlacer {
         self.height = height
         self.format = format
         guard let frame = av_frame_alloc() else {
-            throw MediaError("インターレースの解除を準備できません")
+            throw MediaError(localized: "Can’t get ready to deinterlace.")
         }
         output = frame
         guard let graph = avfilter_graph_alloc() else {
-            throw MediaError("インターレースの解除を準備できません")
+            throw MediaError(localized: "Can’t get ready to deinterlace.")
         }
         self.graph = graph
         let aspectNum = max(aspect.num, 1)
         let aspectDen = max(aspect.den, 1)
         let arguments = "video_size=\(width)x\(height):pix_fmt=\(format):time_base=\(timeBase.num)/\(timeBase.den):"
             + "pixel_aspect=\(aspectNum)/\(aspectDen)"
-        try check(avfilter_graph_create_filter(&source, avfilter_get_by_name("buffer"), "in", arguments, nil, graph), "映像の入口")
-        try check(avfilter_graph_create_filter(&sink, avfilter_get_by_name("buffersink"), "out", nil, nil, graph), "映像の出口")
+        try check(
+            avfilter_graph_create_filter(&source, avfilter_get_by_name("buffer"), "in", arguments, nil, graph),
+            "Can’t create the video input"
+        )
+        try check(
+            avfilter_graph_create_filter(&sink, avfilter_get_by_name("buffersink"), "out", nil, nil, graph),
+            "Can’t create the video output"
+        )
         var deinterlace: UnsafeMutablePointer<AVFilterContext>?
         try check(
             avfilter_graph_create_filter(
@@ -48,11 +54,11 @@ final class Deinterlacer {
                 nil,
                 graph
             ),
-            "bwdif"
+            "Can’t create the deinterlacing filter"
         )
-        try check(avfilter_link(source, 0, deinterlace, 0), "つなぐ")
-        try check(avfilter_link(deinterlace, 0, sink, 0), "つなぐ")
-        try check(avfilter_graph_config(graph, nil), "準備")
+        try check(avfilter_link(source, 0, deinterlace, 0), "Can’t connect the filters")
+        try check(avfilter_link(deinterlace, 0, sink, 0), "Can’t connect the filters")
+        try check(avfilter_graph_config(graph, nil), "Can’t configure the filters")
         self.timeBase = av_buffersink_get_time_base(sink)
     }
 

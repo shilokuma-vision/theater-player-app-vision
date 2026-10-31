@@ -18,11 +18,12 @@ func ffmpegErrorString(_ code: Int32) -> String {
     return String(bytes: bytes, encoding: .utf8) ?? ""
 }
 
-/// 0 未満なら MediaError を投げる
+/// 0 未満なら MediaError を投げる。what（できなかったこと）の訳のあとに、FFmpeg のエラーの説明（英語）を付ける
 @discardableResult
-func check(_ code: Int32, _ what: String) throws -> Int32 {
+func check(_ code: Int32, _ what: String.LocalizationValue) throws -> Int32 {
     if code < 0 {
-        throw MediaError("\(what)：\(ffmpegErrorString(code))")
+        let failure = String(localized: what, bundle: .module)
+        throw MediaError(localized: "\(failure): \(ffmpegErrorString(code))")
     }
     return code
 }
@@ -34,13 +35,13 @@ final class MediaContainer: @unchecked Sendable {
     init(url: URL) throws {
         tp_quiet_logs()
         guard let interrupt = tp_interrupt_create() else {
-            throw MediaError("ファイルを開けません")
+            throw MediaError(localized: "Can’t open the file.")
         }
         self.interrupt = interrupt
         var pointer = avformat_alloc_context()
         guard let allocated = pointer else {
             tp_interrupt_destroy(interrupt)
-            throw MediaError("ファイルを開けません")
+            throw MediaError(localized: "Can’t open the file.")
         }
         tp_set_interrupt(allocated, interrupt)
         var options: OpaquePointer?
@@ -51,11 +52,11 @@ final class MediaContainer: @unchecked Sendable {
         av_dict_free(&options)
         guard opened >= 0, let context = pointer else {
             tp_interrupt_destroy(interrupt)
-            throw MediaError("ファイルを開けません：\(ffmpegErrorString(opened))")
+            throw MediaError(localized: "Can’t open the file: \(ffmpegErrorString(opened))")
         }
         self.context = context
         do {
-            try check(avformat_find_stream_info(context, nil), "形式を調べられません")
+            try check(avformat_find_stream_info(context, nil), "Can’t read the file format")
         } catch {
             var closing: UnsafeMutablePointer<AVFormatContext>? = context
             avformat_close_input(&closing)
@@ -92,7 +93,7 @@ final class MediaContainer: @unchecked Sendable {
         if result == tp_error_eof() {
             return false
         }
-        try check(result, "読み込めません")
+        try check(result, "Can’t read the file")
         return true
     }
 
@@ -107,7 +108,7 @@ final class MediaContainer: @unchecked Sendable {
     /// seconds の手前のキーフレームへ移る
     func seek(to seconds: Double) throws {
         let target = Int64(max(0, seconds) * Double(tp_time_base()))
-        try check(avformat_seek_file(context, -1, Int64.min, target, target, 0), "シークできません")
+        try check(avformat_seek_file(context, -1, Int64.min, target, target, 0), "Can’t seek")
     }
 
     // MARK: - 情報
