@@ -14,6 +14,12 @@
             "state" : "translated",
             "value" : "%1$@：%2$@"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：%2$@"
+          }
         }
       }
     },
@@ -23,6 +29,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "フィルターを準備できません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法配置滤镜"
           }
         }
       }
@@ -34,6 +46,12 @@
             "state" : "translated",
             "value" : "フィルターをつなげません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法连接滤镜"
+          }
         }
       }
     },
@@ -43,6 +61,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音声を変換できません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法转换音频"
           }
         }
       }
@@ -54,6 +78,12 @@
             "state" : "translated",
             "value" : "チャンネルの並びを写せません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法复制声道布局"
+          }
         }
       }
     },
@@ -63,6 +93,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音の入口を作れません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法创建音频输入"
           }
         }
       }
@@ -74,6 +110,12 @@
             "state" : "translated",
             "value" : "音の出口を作れません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法创建音频输出"
+          }
         }
       }
     },
@@ -83,6 +125,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "インターレースを解除するフィルターを作れません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法创建去隔行滤镜"
           }
         }
       }
@@ -94,6 +142,12 @@
             "state" : "translated",
             "value" : "速さを変えるフィルターを作れません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法创建变速滤镜"
+          }
         }
       }
     },
@@ -103,6 +157,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映像の入口を作れません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法创建视频输入"
           }
         }
       }
@@ -114,6 +174,12 @@
             "state" : "translated",
             "value" : "映像の出口を作れません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法创建视频输出"
+          }
         }
       }
     },
@@ -123,6 +189,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "速さを変える準備ができません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法准备变速。"
           }
         }
       }
@@ -134,6 +206,12 @@
             "state" : "translated",
             "value" : "インターレースの解除を準備できません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法准备去隔行。"
+          }
         }
       }
     },
@@ -143,6 +221,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音声のデコーダーを開けません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法打开音频解码器"
           }
         }
       }
@@ -154,6 +238,12 @@
             "state" : "translated",
             "value" : "ファイルを開けません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法打开文件。"
+          }
         }
       }
     },
@@ -163,6 +253,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ファイルを開けません：%@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法打开文件：%@"
           }
         }
       }
@@ -174,6 +270,12 @@
             "state" : "translated",
             "value" : "字幕のデコーダーを開けません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法打开字幕解码器"
+          }
         }
       }
     },
@@ -183,6 +285,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映像のデコーダーを開けません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法打开视频解码器"
           }
         }
       }
@@ -194,6 +302,12 @@
             "state" : "translated",
             "value" : "読み込めません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取文件"
+          }
         }
       }
     },
@@ -203,6 +317,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "形式を調べられません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法识别文件格式"
           }
         }
       }
@@ -214,6 +334,12 @@
             "state" : "translated",
             "value" : "字幕を読めません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取字幕。"
+          }
         }
       }
     },
@@ -223,6 +349,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "シークできません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法跳转"
           }
         }
       }
@@ -234,6 +366,12 @@
             "state" : "translated",
             "value" : "音声の変換を準備できません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法设置音频转换"
+          }
         }
       }
     },
@@ -243,6 +381,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "音声を設定できません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法设置音频"
           }
         }
       }
@@ -254,6 +398,12 @@
             "state" : "translated",
             "value" : "字幕を設定できません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法设置字幕"
+          }
         }
       }
     },
@@ -263,6 +413,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映像を設定できません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法设置视频"
           }
         }
       }
@@ -274,6 +430,12 @@
             "state" : "translated",
             "value" : "字幕が見つかりません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到字幕。"
+          }
         }
       }
     },
@@ -283,6 +445,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "映像も音声も見つかりません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到视频或音频。"
           }
         }
       }
@@ -294,6 +462,12 @@
             "state" : "translated",
             "value" : "この音声の形式には対応していません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持此音频格式。"
+          }
         }
       }
     },
@@ -304,6 +478,12 @@
             "state" : "translated",
             "value" : "この字幕の形式には対応していません"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持此字幕格式。"
+          }
         }
       }
     },
@@ -313,6 +493,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "この映像の形式には対応していません"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持此视频格式。"
           }
         }
       }

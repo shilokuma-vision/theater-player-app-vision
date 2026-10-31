@@ -19,6 +19,15 @@
               "${applicationName}で次のチャプター"
             ]
           }
+        },
+        "zh-Hans" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "在 ${applicationName} 中跳到下一章节",
+              "${applicationName} 下一章节"
+            ]
+          }
         }
       }
     },
@@ -40,6 +49,16 @@
             "values" : [
               "${applicationName}を一時停止",
               "${applicationName}を止めて"
+            ]
+          }
+        },
+        "zh-Hans" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "暂停 ${applicationName}",
+              "暂停 ${applicationName} 中的电影",
+              "${applicationName} 暂停播放"
             ]
           }
         }
@@ -65,6 +84,15 @@
               "${applicationName}を再開"
             ]
           }
+        },
+        "zh-Hans" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "播放 ${applicationName}",
+              "继续播放 ${applicationName}"
+            ]
+          }
         }
       }
     },
@@ -84,6 +112,15 @@
             "state" : "translated",
             "values" : [
               "${applicationName}で前のチャプター"
+            ]
+          }
+        },
+        "zh-Hans" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "在 ${applicationName} 中跳到上一章节",
+              "${applicationName} 上一章节"
             ]
           }
         }
@@ -109,6 +146,16 @@
               "${applicationName}を戻して"
             ]
           }
+        },
+        "zh-Hans" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "在 ${applicationName} 中快退 ${amount}",
+              "${applicationName} 快退 ${amount}",
+              "${applicationName} 快退"
+            ]
+          }
         }
       }
     },
@@ -130,6 +177,16 @@
             "values" : [
               "${applicationName}で${amount}進めて",
               "${applicationName}を進めて"
+            ]
+          }
+        },
+        "zh-Hans" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "在 ${applicationName} 中快进 ${amount}",
+              "${applicationName} 快进 ${amount}",
+              "${applicationName} 快进"
             ]
           }
         }
