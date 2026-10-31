@@ -122,43 +122,44 @@ struct PreviousChapterIntent: AudioPlaybackIntent {
     }
 }
 
-/// Siri のフレーズ（どれもアプリの名前を含める。システムの決まり）。ショートカットの App・Spotlight にも出る
+/// Siri のフレーズ（どれもアプリの名前を含める。システムの決まり）。ショートカットの App・Spotlight にも出る。
+/// ここには開発の言語（英語）で書き、日本語のフレーズは AppShortcuts.xcstrings に置く
 struct TheaterShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: PausePlaybackIntent(),
-            phrases: ["\(.applicationName)を一時停止", "\(.applicationName)を止めて"],
-            shortTitle: "一時停止",
+            phrases: ["Pause \(.applicationName)", "Pause the movie in \(.applicationName)"],
+            shortTitle: "Pause",
             systemImageName: "pause.fill"
         )
         AppShortcut(
             intent: ResumePlaybackIntent(),
-            phrases: ["\(.applicationName)を再生", "\(.applicationName)を再開"],
-            shortTitle: "再生",
+            phrases: ["Play \(.applicationName)", "Resume \(.applicationName)"],
+            shortTitle: "Play",
             systemImageName: "play.fill"
         )
         AppShortcut(
             intent: SkipBackwardIntent(),
-            phrases: ["\(.applicationName)で\(\.$amount)戻して", "\(.applicationName)を戻して"],
-            shortTitle: "戻す",
+            phrases: ["Skip back \(\.$amount) in \(.applicationName)", "Rewind \(.applicationName)"],
+            shortTitle: "Skip Back",
             systemImageName: "gobackward"
         )
         AppShortcut(
             intent: SkipForwardIntent(),
-            phrases: ["\(.applicationName)で\(\.$amount)進めて", "\(.applicationName)を進めて"],
-            shortTitle: "進む",
+            phrases: ["Skip forward \(\.$amount) in \(.applicationName)", "Fast forward \(.applicationName)"],
+            shortTitle: "Skip Forward",
             systemImageName: "goforward"
         )
         AppShortcut(
             intent: NextChapterIntent(),
-            phrases: ["\(.applicationName)で次のチャプター"],
-            shortTitle: "次のチャプター",
+            phrases: ["Next chapter in \(.applicationName)"],
+            shortTitle: "Next Chapter",
             systemImageName: "forward.end"
         )
         AppShortcut(
             intent: PreviousChapterIntent(),
-            phrases: ["\(.applicationName)で前のチャプター"],
-            shortTitle: "前のチャプター",
+            phrases: ["Previous chapter in \(.applicationName)"],
+            shortTitle: "Previous Chapter",
             systemImageName: "backward.end"
         )
     }
