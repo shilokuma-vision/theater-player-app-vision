@@ -66,7 +66,7 @@ struct AudioTrackPage: View {
                     ForEach(player.info?.audioTracks ?? []) { track in
                         ChoiceRow(
                             title: Self.name(track),
-                            detail: [track.codec.uppercased(), track.layoutName, "\(track.sampleRate / 1_000) kHz"]
+                            detail: [track.codec.uppercased(), track.layoutName, UnitFormat.sampleRate(track.sampleRate)]
                                 .joined(separator: ListSeparator.text),
                             selected: player.selectedAudioTrack == track.id
                         ) {
@@ -148,7 +148,7 @@ struct DelayStepper: View {
             Text(title)
             Spacer()
             Button { value -= 0.05 } label: { Image(systemName: "minus") }
-            Text(String(format: "%+.2f 秒", value)).monospacedDigit().frame(width: 100)
+            Text(UnitFormat.signedSeconds(value)).monospacedDigit().frame(width: 100)
             Button { value += 0.05 } label: { Image(systemName: "plus") }
             Button("0") { value = 0 }
         }
@@ -166,7 +166,7 @@ struct SpeedPage: View {
             PageHeader(title: "Playback Speed", page: $page)
             ForEach(Self.speeds, id: \.self) { speed in
                 ChoiceRow(
-                    title: String(format: "%.2g 倍", speed),
+                    title: UnitFormat.rate(speed),
                     detail: speed == 1 ? String(localized: "Normal", comment: "Playback speed of 1×.") : nil,
                     selected: abs(player.rate - speed) < 0.01
                 ) {
@@ -275,7 +275,7 @@ struct LabeledSlider: View {
     let title: LocalizedStringKey
     @Binding var value: Double
     let range: ClosedRange<Double>
-    var format: (Double) -> String = { "\(Int(($0 * 100).rounded()))%" }
+    var format: (Double) -> String = { UnitFormat.percent($0) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {

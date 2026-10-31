@@ -1,6 +1,28 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ dB" : {
+      "comment" : "Loudness in decibels. The number has a sign, such as +6.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ dB"
+          }
+        }
+      }
+    },
+    "%@×" : {
+      "comment" : "Playback speed, such as 1.5×.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 倍"
+          }
+        }
+      }
+    },
     "0" : {
       "comment" : "Button that resets the audio or subtitle delay to zero.",
       "localizations" : {

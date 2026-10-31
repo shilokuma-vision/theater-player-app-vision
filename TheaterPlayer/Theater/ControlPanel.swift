@@ -320,7 +320,7 @@ struct VolumeSlider: View {
                 .onChange(of: preferences.volume) { appModel.player.applyAudioPreferences() }
             Image(systemName: "speaker.wave.3.fill")
             // 等倍より上げたぶん（リミッターの前で上げる）
-            Text(preferences.volume > 1 ? String(format: "+%.0f dB", 20 * log10(preferences.volume)) : "")
+            Text(preferences.volume > 1 ? UnitFormat.decibels(20 * log10(preferences.volume)) : "")
                 .font(.caption.monospacedDigit())
                 .frame(width: 52, alignment: .leading)
         }

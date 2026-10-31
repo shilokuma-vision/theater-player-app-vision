@@ -63,7 +63,7 @@ struct SoundPage: View {
                     set: { preferences.audio.bassBoostDB = Float($0) }
                 ),
                 range: 0...18,
-                format: { String(format: "+%.0f dB", $0) }
+                format: { UnitFormat.decibels($0) }
             )
             LabeledSlider(
                 title: "Bass Reverb (Large Room)",
@@ -119,7 +119,7 @@ struct SoundPage: View {
                     set: { preferences.audio.dialogueBoostDB = Float($0) }
                 ),
                 range: 0...9,
-                format: { String(format: "+%.0f dB", $0) }
+                format: { UnitFormat.decibels($0) }
             )
         }
     }
