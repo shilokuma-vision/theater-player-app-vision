@@ -10,6 +10,12 @@
             "value" : "%@ dB"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ dB"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -45,6 +51,12 @@
             "value" : "%@ ×"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@×"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -75,6 +87,12 @@
       "comment" : "Button that resets the audio or subtitle delay to zero.",
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "0"
@@ -115,6 +133,12 @@
             "value" : "1 Min."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 min"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -147,6 +171,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 Minute"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 minute"
           }
         },
         "ja" : {
@@ -184,6 +214,12 @@
             "value" : "10 Sek."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 s"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -218,6 +254,12 @@
             "value" : "10 Sekunden"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 secondes"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -248,6 +290,12 @@
       "comment" : "The file is not 3D.",
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "2D"
@@ -287,6 +335,12 @@
             "value" : "2D (kein 3D)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2D (sans 3D)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -320,6 +374,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "30 Sek."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 s"
           }
         },
         "ja" : {
@@ -356,6 +416,12 @@
             "value" : "30 Sekunden"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 secondes"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -386,6 +452,12 @@
       "comment" : "Control panel button that opens the 3D (stereoscopic) settings.",
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "3D"
@@ -426,6 +498,12 @@
             "value" : "5 Min."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 min"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -458,6 +536,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "5 Minuten"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 minutes"
           }
         },
         "ja" : {
@@ -494,6 +578,12 @@
             "value" : "Gang- und Notbeleuchtung"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lumières des allées et sorties"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -528,6 +618,12 @@
             "value" : "Alle Plätze"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan de salle"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -560,6 +656,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Umgebungsklang zu Surround"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ambiance vers le surround"
           }
         },
         "ja" : {
@@ -597,6 +699,12 @@
             "value" : "Unverändert"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tel quel"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -627,6 +735,12 @@
       "comment" : "Control panel button and page title for the audio tracks.",
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Audio"
@@ -666,6 +780,12 @@
             "value" : "Audioverzögerung"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Décalage audio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -698,6 +818,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Automatisch"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatique"
           }
         },
         "ja" : {
@@ -735,6 +861,12 @@
             "value" : "Zurück"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retour"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -767,6 +899,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "10 Sekunden zurückspringen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reculer de 10 secondes"
           }
         },
         "ja" : {
@@ -803,6 +941,12 @@
             "value" : "Bass"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graves"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -837,6 +981,12 @@
             "value" : "Bassanhebung"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renforcement des graves"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -869,6 +1019,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bassnachhall (großer Raum)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réverbération des graves (grande salle)"
           }
         },
         "ja" : {
@@ -906,6 +1062,12 @@
             "value" : "Hell"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lumineux"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -938,6 +1100,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Diese PDF-Seite kann nicht dargestellt werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’afficher cette page du PDF."
           }
         },
         "ja" : {
@@ -974,6 +1142,12 @@
             "value" : "Die Datei wurde nicht gefunden. Wähle sie erneut aus."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier introuvable. Choisissez-le à nouveau."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1006,6 +1180,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Passwortgeschützte PDFs können nicht geöffnet werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir un PDF protégé par mot de passe."
           }
         },
         "ja" : {
@@ -1042,6 +1222,12 @@
             "value" : "Dieses PDF kann nicht geöffnet werden."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir ce PDF."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1074,6 +1260,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Diese PDF-Seite kann nicht geöffnet werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir cette page du PDF."
           }
         },
         "ja" : {
@@ -1110,6 +1302,12 @@
             "value" : "Dieses Bild kann nicht geöffnet werden."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir cette image."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1142,6 +1340,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deckenlautsprecher"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haut-parleurs au plafond"
           }
         },
         "ja" : {
@@ -1177,6 +1381,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mitte (ideal)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Centre (idéal)"
           }
         },
         "ja" : {
@@ -1219,6 +1429,12 @@
             "value" : "Center Block, Rows %1$@–%2$@"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloc central, rangs %1$@ à %2$@"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1251,6 +1467,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Datei auswählen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir un fichier"
           }
         },
         "ja" : {
@@ -1287,6 +1509,12 @@
             "value" : "Untertiteldatei auswählen (Mediathek)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir un fichier de sous-titres (bibliothèque)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1319,6 +1547,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wähle in der Mediathek eine Datei aus, um sie hier wiederzugeben."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez un fichier dans la bibliothèque pour le lire ici."
           }
         },
         "ja" : {
@@ -1355,6 +1589,12 @@
             "value" : "Aus Fotos auswählen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir dans Photos"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1387,6 +1627,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "YouTube schließen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermer YouTube"
           }
         },
         "ja" : {
@@ -1423,6 +1669,12 @@
             "value" : "Die Wiedergabe konnte nicht vorbereitet werden."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de préparer la lecture."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1455,6 +1707,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Der vollständige Lizenztext konnte nicht geladen werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de charger le texte complet de la licence."
           }
         },
         "ja" : {
@@ -1492,6 +1750,12 @@
             "value" : "Dunkel"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sombre"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1524,6 +1788,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Decodiert AV1-Videos per Software (wird von FFmpeg verwendet)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Décode la vidéo AV1 de façon logicielle (utilisé par FFmpeg)."
           }
         },
         "ja" : {
@@ -1560,6 +1830,12 @@
             "value" : "Löschen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1594,6 +1870,12 @@
             "value" : "Dialoganhebung"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renforcement des dialogues"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1626,6 +1908,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dialog zum Center"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dialogues vers le centre"
           }
         },
         "ja" : {
@@ -1663,6 +1951,12 @@
             "value" : "Gedämpft"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tamisé"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1695,6 +1989,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Licht bei Wiedergabe dimmen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baisser les lumières pendant la lecture"
           }
         },
         "ja" : {
@@ -1732,6 +2032,12 @@
             "value" : "Dauer"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durée"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1764,6 +2070,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dynamikumfang"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plage dynamique"
           }
         },
         "ja" : {
@@ -1801,6 +2113,12 @@
             "value" : "Früher"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus tôt"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1833,6 +2151,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kino betreten"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrer dans la salle"
           }
         },
         "ja" : {
@@ -1870,6 +2194,12 @@
             "value" : "Erzwungen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forcés"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1904,6 +2234,12 @@
             "value" : "30 Sekunden vorspringen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avancer de 30 secondes"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1936,6 +2272,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ab Seite %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "À partir de la page %lld"
           }
         },
         "ja" : {
@@ -1973,6 +2315,12 @@
             "value" : "Vorne"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avant"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2005,6 +2353,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "GNU Lesser General Public License v2.1 oder neuer"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GNU Lesser General Public License v2.1 ou ultérieure"
           }
         },
         "ja" : {
@@ -2041,6 +2395,12 @@
             "value" : "Saallicht (bei Pause)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lumières de salle (en pause)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2073,6 +2433,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Saallicht (bei Wiedergabe)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lumières de salle (en lecture)"
           }
         },
         "ja" : {
@@ -2110,6 +2476,12 @@
             "value" : "Anleitung.txt"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode d’emploi.txt"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2143,6 +2515,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Letzte Reihe"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dernier rang"
           }
         },
         "ja" : {
@@ -2180,6 +2558,12 @@
             "value" : "Später"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus tard"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2212,6 +2596,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kino verlassen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitter la salle"
           }
         },
         "ja" : {
@@ -2254,6 +2644,12 @@
             "value" : "Left Block, Rows %1$@–%2$@"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloc de gauche, rangs %1$@ à %2$@"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2286,6 +2682,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Linke und rechte Hälfte (SBS, HSBS)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moitiés gauche et droite (SBS, HSBS)"
           }
         },
         "ja" : {
@@ -2323,6 +2725,12 @@
             "value" : "Mediathek"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliothèque"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2357,6 +2765,12 @@
             "value" : "Lizenzen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licences"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2389,6 +2803,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Licht von der Leinwand"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lumière de l’écran"
           }
         },
         "ja" : {
@@ -2426,6 +2846,12 @@
             "value" : "Licht"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Éclairage"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2458,6 +2884,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Laden …"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chargement…"
           }
         },
         "ja" : {
@@ -2494,6 +2926,12 @@
             "value" : "Zum nächsten Kapitel gesprungen."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passage au chapitre suivant."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2526,6 +2964,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zum vorherigen Kapitel gesprungen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retour au chapitre précédent."
           }
         },
         "ja" : {
@@ -2562,6 +3006,12 @@
             "value" : "Springt im Video, das im Kino läuft, zum nächsten Kapitel."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passe au chapitre suivant de la vidéo en cours de lecture dans la salle de cinéma."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2594,6 +3044,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Springt im Video, das im Kino läuft, zum vorherigen Kapitel (zum Anfang des aktuellen Kapitels)."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revient au chapitre précédent (au début du chapitre actuel) de la vidéo en cours de lecture dans la salle de cinéma."
           }
         },
         "ja" : {
@@ -2630,6 +3086,12 @@
             "value" : "Nächstes Kapitel"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chapitre suivant"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2662,6 +3124,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nächste Seite"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Page suivante"
           }
         },
         "ja" : {
@@ -2699,6 +3167,12 @@
             "value" : "Nacht"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuit"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2731,6 +3205,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keine zuletzt geöffneten Dateien"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun fichier récent"
           }
         },
         "ja" : {
@@ -2768,6 +3248,12 @@
             "value" : "Normal"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normale"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2800,6 +3286,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Im Kino läuft gerade nichts."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune lecture en cours dans la salle de cinéma."
           }
         },
         "ja" : {
@@ -2837,6 +3329,12 @@
             "value" : "Aus"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Désactivés"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2869,6 +3367,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Öffnet Video- und Musikdateien und decodiert deren Video, Audio und Untertitel. Wird in einer LGPL-Konfiguration (ohne GPL- oder nonfree-Komponenten) erstellt und statisch in die App gelinkt. Enthält Patches für den Build unter visionOS."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvre les fichiers vidéo et musicaux, et en décode l’image, le son et les sous-titres. Il est compilé dans une configuration LGPL (sans composants GPL ni nonfree) et lié statiquement à l’app. Des correctifs lui sont appliqués pour qu’il puisse être compilé pour visionOS."
           }
         },
         "ja" : {
@@ -2905,6 +3409,12 @@
             "value" : "Original-Quellcode"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code source d’origine"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2934,6 +3444,12 @@
     "PDF" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "PDF"
@@ -2979,6 +3495,12 @@
             "value" : "Page %1$lld of %2$lld"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Page %1$lld sur %2$lld"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3011,6 +3533,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pause"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mettre en pause"
           }
         },
         "ja" : {
@@ -3047,6 +3575,12 @@
             "value" : "Pausiert."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lecture mise en pause."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3079,6 +3613,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pausiert die Video- oder Musikwiedergabe im Kino."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Met en pause la vidéo ou la musique en cours de lecture dans la salle de cinéma."
           }
         },
         "ja" : {
@@ -3116,6 +3656,12 @@
             "value" : "Bild"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3148,6 +3694,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wiedergeben"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lire"
           }
         },
         "ja" : {
@@ -3184,6 +3736,12 @@
             "value" : "Wiedergabeposition"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Position de lecture"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3216,6 +3774,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wiedergabetempo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vitesse de lecture"
           }
         },
         "ja" : {
@@ -3252,6 +3816,12 @@
             "value" : "Wird wiedergegeben."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lecture en cours."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3284,6 +3854,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Setzt die pausierte Video- oder Musikwiedergabe im Kino fort."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reprend la lecture de la vidéo ou de la musique en pause dans la salle de cinéma."
           }
         },
         "ja" : {
@@ -3320,6 +3896,12 @@
             "value" : "Gibt Videos wie MKV, MP4, AVI, WMV und TS sowie Musik wie FLAC, MP3, AAC und WAV wieder. Zeigt außerdem Bilder wie PNG, JPEG und HEIC sowie PDFs an."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lit des vidéos (MKV, MP4, AVI, WMV, TS, etc.) et de la musique (FLAC, MP3, AAC, WAV, etc.). Affiche aussi des images (PNG, JPEG, HEIC, etc.) et des PDF."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3354,6 +3936,12 @@
             "value" : "Vorheriges Kapitel"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chapitre précédent"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3386,6 +3974,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vorherige Seite"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Page précédente"
           }
         },
         "ja" : {
@@ -3423,6 +4017,12 @@
             "value" : "Hinten"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrière"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3455,6 +4055,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zuletzt geöffnet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouverts récemment"
           }
         },
         "ja" : {
@@ -3492,6 +4098,12 @@
             "value" : "Zurücksetzen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réinitialiser"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3524,6 +4136,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bedienfeld zurücksetzen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replacer le panneau"
           }
         },
         "ja" : {
@@ -3560,6 +4178,12 @@
             "value" : "Auf Standardwerte zurücksetzen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rétablir les valeurs par défaut"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3592,6 +4216,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fortsetzen ab %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reprendre à %@"
           }
         },
         "ja" : {
@@ -3627,6 +4257,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kräftig"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Riche"
           }
         },
         "ja" : {
@@ -3669,6 +4305,12 @@
             "value" : "Right Block, Rows %1$@–%2$@"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bloc de droite, rangs %1$@ à %2$@"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3703,6 +4345,12 @@
             "value" : "Saalbeleuchtung"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Éclairage de la salle"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3735,6 +4383,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Raumhall"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réverbération de la salle"
           }
         },
         "ja" : {
@@ -3777,6 +4431,12 @@
             "value" : "Row %1$@, Seat %2$lld"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rang %1$@, place %2$lld"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3810,6 +4470,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Leinwand"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Écran"
           }
         },
         "ja" : {
@@ -3846,6 +4512,12 @@
             "value" : "Suchen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechercher"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3880,6 +4552,12 @@
             "value" : "YouTube durchsuchen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rechercher sur YouTube"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3912,6 +4590,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Suchergebnisse und Videos erscheinen auf der Leinwand. Shorts werden nicht wiedergegeben. Der Ton wird nicht über das Soundsystem des Kinos ausgegeben."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les résultats de recherche et les vidéos s’affichent sur l’écran. Les Shorts ne sont pas lus. Le son ne passe pas par le système audio de la salle."
           }
         },
         "ja" : {
@@ -3949,6 +4633,12 @@
             "value" : "Sitzplatz"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Places"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3983,6 +4673,12 @@
             "value" : "Shorts werden nicht wiedergegeben."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les Shorts ne sont pas lus."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4015,6 +4711,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Steuerung einblenden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher les contrôles"
           }
         },
         "ja" : {
@@ -4052,6 +4754,12 @@
             "value" : "Vorhang auf"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effets de séance"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4084,6 +4792,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3D (nebeneinander)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D côte à côte"
           }
         },
         "ja" : {
@@ -4120,6 +4834,12 @@
             "value" : "Zurückspringen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reculer"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4152,6 +4872,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vorspringen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avancer"
           }
         },
         "ja" : {
@@ -4189,6 +4915,12 @@
             "value" : "${amount} zurückspringen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reculer de ${amount}"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4222,6 +4954,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "${amount} vorspringen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avancer de ${amount}"
           }
         },
         "ja" : {
@@ -4258,6 +4996,12 @@
             "value" : "Zurückgesprungen."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recul effectué."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4290,6 +5034,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vorgesprungen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avance effectuée."
           }
         },
         "ja" : {
@@ -4326,6 +5076,12 @@
             "value" : "Springt in der Video- oder Musikwiedergabe im Kino um die gewählte Dauer zurück."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fait reculer de la durée choisie la vidéo ou la musique en cours de lecture dans la salle de cinéma."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4360,6 +5116,12 @@
             "value" : "Springt in der Video- oder Musikwiedergabe im Kino um die gewählte Dauer vor."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fait avancer de la durée choisie la vidéo ou la musique en cours de lecture dans la salle de cinéma."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4392,6 +5154,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Software"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logiciels"
           }
         },
         "ja" : {
@@ -4429,6 +5197,12 @@
             "value" : "Klang"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4463,6 +5237,12 @@
             "value" : "Quellcode dieser Version (%@)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code source de cette version (%@)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4495,6 +5275,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Räumliches Video (3D)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vidéo spatiale (3D)"
           }
         },
         "ja" : {
@@ -4532,6 +5318,12 @@
             "value" : "Tempo"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vitesse"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4566,6 +5358,12 @@
             "value" : "Wie im Kino verteilen"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Élargir comme au cinéma"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4596,6 +5394,12 @@
       "comment" : "Option between the strongest and the weakest setting.",
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Standard"
@@ -4635,6 +5439,12 @@
             "value" : "Jetzt starten"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Démarrer maintenant"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4669,6 +5479,12 @@
             "value" : "Stereoton"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son stéréo"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4701,6 +5517,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untertitelverzögerung"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Décalage des sous-titres"
           }
         },
         "ja" : {
@@ -4738,6 +5560,12 @@
             "value" : "Untertitel"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sous-titres"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4773,6 +5601,12 @@
             "value" : "Untertitel %lld"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sous-titres %lld"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4805,6 +5639,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untertitel aus Datei"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sous-titres chargés depuis un fichier"
           }
         },
         "ja" : {
@@ -4842,6 +5682,12 @@
             "value" : "Dezent"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Légère"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4877,6 +5723,12 @@
             "value" : "Surround"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spatialisation"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4909,6 +5761,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Der Quellcode dieser App selbst."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le code source de cette app."
           }
         },
         "ja" : {
@@ -4946,6 +5804,12 @@
             "value" : "Kino"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinéma"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4976,6 +5840,12 @@
       "comment" : "The app name.",
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Theater Player"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Theater Player"
@@ -5015,6 +5885,12 @@
             "value" : "Dieses PDF hat keine Seiten."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce PDF ne contient aucune page."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5047,6 +5923,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Diese App verwendet die folgende Open-Source-Software. FFmpeg wird unter der GNU Lesser General Public License Version 2.1 oder neuer vertrieben und ist statisch in diese App gelinkt. Der Quellcode dieser Version (die App sowie die Skripte und Patches, mit denen FFmpeg erstellt wird) und die Quelldistributionen von FFmpeg und dav1d sind im GitHub-Release erhältlich. Du kannst FFmpeg ersetzen und diese App neu erstellen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cette app utilise les logiciels open source suivants. FFmpeg est distribué sous la GNU Lesser General Public License version 2.1 ou ultérieure et est lié statiquement à cette app. Le code source de cette version (l’app, ainsi que les scripts et les correctifs qui servent à compiler FFmpeg) et les distributions source de FFmpeg et de dav1d sont disponibles dans la release publiée sur GitHub. Vous pouvez remplacer FFmpeg et recompiler cette app."
           }
         },
         "ja" : {
@@ -5083,6 +5965,12 @@
             "value" : "Diese Datei: %@"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce fichier : %@"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5115,6 +6003,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dies ist weder ein Bild noch ein PDF."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce n’est ni une image ni un PDF."
           }
         },
         "ja" : {
@@ -5151,6 +6045,12 @@
             "value" : "Um Videos, Musik, Bilder und PDFs wiederzugeben, die du in diesen Ordner legst, wähle in der Mediathek von Theater Player „Datei auswählen“ und öffne diesen Ordner.\nDu kannst diese Datei löschen. Ist der Ordner leer, wird er in der „Dateien“-App nicht mehr angezeigt. Deshalb legt Theater Player diese Datei wieder hier ab, wenn du die App das nächste Mal öffnest.\n"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour lire les vidéos et la musique, ou afficher les images et les PDF placés dans ce dossier, utilisez « Choisir un fichier » dans la bibliothèque de Theater Player, puis ouvrez ce dossier.\nVous pouvez supprimer ce fichier. Lorsque le dossier est vide, il n’apparaît plus dans l’app Fichiers. Theater Player remet donc ce fichier en place à sa prochaine ouverture.\n"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5185,6 +6085,12 @@
             "value" : "Obere und untere Hälfte (TAB, OU)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moitiés haute et basse (TAB, OU)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5217,6 +6123,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3D (übereinander)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3D haut et bas"
           }
         },
         "ja" : {
@@ -5254,6 +6166,12 @@
             "value" : "Spur %lld"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piste %lld"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5286,6 +6204,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mit „Datei auswählen“ kannst du Videos, Musik, Bilder und PDFs aus iCloud Drive oder von externen Speichermedien öffnen.\nDu kannst auch Dateien öffnen, die du in der „Dateien“-App in den Ordner „Theater Player“ gelegt hast."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisez « Choisir un fichier » pour ouvrir des vidéos, de la musique, des images et des PDF stockés sur iCloud Drive ou sur un stockage externe.\nVous pouvez aussi ouvrir les fichiers placés dans le dossier Theater Player de l’app Fichiers."
           }
         },
         "ja" : {
@@ -5322,6 +6246,12 @@
             "value" : "Virtueller Bass (spürbare Obertöne)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Graves virtuels (harmoniques perceptibles)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5354,6 +6284,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lautstärke"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volume"
           }
         },
         "ja" : {
@@ -5390,6 +6326,12 @@
             "value" : "Wenn ein Video von Anfang an startet, ertönt zuerst ein Signalton, das Licht wird gedimmt und der Vorhang öffnet sich. Während des Abspanns wird es wieder etwas heller."
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lorsqu’une vidéo est lue depuis le début, une sonnerie retentit, les lumières baissent et le rideau s’ouvre avant qu’elle ne commence. Les lumières remontent un peu pendant le générique de fin."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5419,6 +6361,12 @@
     "YouTube" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube"
+          }
+        },
+        "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "YouTube"
@@ -5458,6 +6406,12 @@
             "value" : "YouTube (Debug)"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "YouTube (débogage)"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5490,6 +6444,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dein Platz: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre place : %@"
           }
         },
         "ja" : {
@@ -5526,6 +6486,12 @@
             "value" : "Deine Videos, Musik und Bilder auf der großen Kinoleinwand"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos vidéos, votre musique et vos images sur le grand écran d’une salle de cinéma"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5559,6 +6525,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "fünf Minuten"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cinq minutes"
           }
         },
         "ja" : {
@@ -5602,6 +6574,12 @@
             "value" : " · "
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · "
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5635,6 +6613,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "eine Minute"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "une minute"
           }
         },
         "ja" : {
@@ -5672,6 +6656,12 @@
             "value" : "zehn Sekunden"
           }
         },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dix secondes"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5705,6 +6695,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "dreißig Sekunden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "trente secondes"
           }
         },
         "ja" : {

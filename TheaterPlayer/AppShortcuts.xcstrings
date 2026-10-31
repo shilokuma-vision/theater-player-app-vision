@@ -21,6 +21,15 @@
             ]
           }
         },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Chapitre suivant dans ${applicationName}",
+              "Passe au chapitre suivant dans ${applicationName}"
+            ]
+          }
+        },
         "ja" : {
           "stringSet" : {
             "state" : "translated",
@@ -77,6 +86,15 @@
             "values" : [
               "Pause ${applicationName}",
               "Pause the movie in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Mets ${applicationName} en pause",
+              "Mets le film en pause dans ${applicationName}"
             ]
           }
         },
@@ -142,6 +160,15 @@
             ]
           }
         },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Lecture dans ${applicationName}",
+              "Reprends la lecture dans ${applicationName}"
+            ]
+          }
+        },
         "ja" : {
           "stringSet" : {
             "state" : "translated",
@@ -201,6 +228,15 @@
             ]
           }
         },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Chapitre précédent dans ${applicationName}",
+              "Reviens au chapitre précédent dans ${applicationName}"
+            ]
+          }
+        },
         "ja" : {
           "stringSet" : {
             "state" : "translated",
@@ -257,6 +293,15 @@
             "values" : [
               "Skip back ${amount} in ${applicationName}",
               "Rewind ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Recule de ${amount} dans ${applicationName}",
+              "Retour en arrière dans ${applicationName}"
             ]
           }
         },
@@ -320,6 +365,15 @@
             "values" : [
               "Skip forward ${amount} in ${applicationName}",
               "Fast forward ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Avance de ${amount} dans ${applicationName}",
+              "Avance rapide dans ${applicationName}"
             ]
           }
         },
