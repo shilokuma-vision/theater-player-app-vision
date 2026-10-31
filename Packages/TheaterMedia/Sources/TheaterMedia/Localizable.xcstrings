@@ -3,10 +3,22 @@
   "strings" : {
     "%@: %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@: %2$@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ : %2$@"
           }
         },
         "ja" : {
@@ -37,6 +49,18 @@
     },
     "Can’t configure the filters" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Filter können nicht konfiguriert werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de configurer les filtres"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -65,6 +89,18 @@
     },
     "Can’t connect the filters" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Filter können nicht verbunden werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de connecter les filtres"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -93,6 +129,18 @@
     },
     "Can’t convert the audio" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Audio kann nicht konvertiert werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de convertir l’audio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -121,6 +169,18 @@
     },
     "Can’t copy the channel layout" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Kanallayout kann nicht kopiert werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de copier la disposition des canaux"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -149,6 +209,18 @@
     },
     "Can’t create the audio input" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Audioeingang kann nicht erstellt werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de créer l’entrée audio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -177,6 +249,18 @@
     },
     "Can’t create the audio output" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Audioausgang kann nicht erstellt werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de créer la sortie audio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -205,6 +289,18 @@
     },
     "Can’t create the deinterlacing filter" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Deinterlacing-Filter kann nicht erstellt werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de créer le filtre de désentrelacement"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -233,6 +329,18 @@
     },
     "Can’t create the speed filter" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Tempofilter kann nicht erstellt werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de créer le filtre de vitesse"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -261,6 +369,18 @@
     },
     "Can’t create the video input" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Videoeingang kann nicht erstellt werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de créer l’entrée vidéo"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -289,6 +409,18 @@
     },
     "Can’t create the video output" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Videoausgang kann nicht erstellt werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de créer la sortie vidéo"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -317,6 +449,18 @@
     },
     "Can’t get ready to change the speed." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Tempoänderung kann nicht vorbereitet werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de préparer le changement de vitesse."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -345,6 +489,18 @@
     },
     "Can’t get ready to deinterlace." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Deinterlacing kann nicht vorbereitet werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de préparer le désentrelacement."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -373,6 +529,18 @@
     },
     "Can’t open the audio decoder" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Audiodecoder kann nicht geöffnet werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir le décodeur audio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -401,6 +569,18 @@
     },
     "Can’t open the file." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Datei kann nicht geöffnet werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir le fichier."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -429,6 +609,18 @@
     },
     "Can’t open the file: %@" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Datei kann nicht geöffnet werden: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir le fichier : %@"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -457,6 +649,18 @@
     },
     "Can’t open the subtitle decoder" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Untertiteldecoder kann nicht geöffnet werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir le décodeur de sous-titres"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -485,6 +689,18 @@
     },
     "Can’t open the video decoder" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Videodecoder kann nicht geöffnet werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’ouvrir le décodeur vidéo"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -513,6 +729,18 @@
     },
     "Can’t read the file" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Datei kann nicht gelesen werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de lire le fichier"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -541,6 +769,18 @@
     },
     "Can’t read the file format" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Dateiformat kann nicht ermittelt werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de déterminer le format du fichier"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -569,6 +809,18 @@
     },
     "Can’t read the subtitles." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Untertitel können nicht gelesen werden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de lire les sous-titres."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -597,6 +849,18 @@
     },
     "Can’t seek" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Position kann nicht angesprungen werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible d’atteindre cette position"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -625,6 +889,18 @@
     },
     "Can’t set up audio conversion" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Audiokonvertierung kann nicht eingerichtet werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de configurer la conversion audio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -653,6 +929,18 @@
     },
     "Can’t set up the audio" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Audio kann nicht eingerichtet werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de configurer l’audio"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -681,6 +969,18 @@
     },
     "Can’t set up the subtitles" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Untertitel können nicht eingerichtet werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de configurer les sous-titres"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -709,6 +1009,18 @@
     },
     "Can’t set up the video" : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Video kann nicht eingerichtet werden"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de configurer la vidéo"
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -737,6 +1049,18 @@
     },
     "No subtitles found." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Untertitel gefunden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun sous-titre trouvé."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -765,6 +1089,18 @@
     },
     "No video or audio found." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weder Video noch Audio gefunden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune piste vidéo ou audio trouvée."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -793,6 +1129,18 @@
     },
     "This audio format isn’t supported." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Audioformat wird nicht unterstützt."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce format audio n’est pas pris en charge."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -821,6 +1169,18 @@
     },
     "This subtitle format isn’t supported." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Untertitelformat wird nicht unterstützt."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce format de sous-titres n’est pas pris en charge."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
@@ -849,6 +1209,18 @@
     },
     "This video format isn’t supported." : {
       "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Videoformat wird nicht unterstützt."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce format vidéo n’est pas pris en charge."
+          }
+        },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",

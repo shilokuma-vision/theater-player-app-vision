@@ -4,11 +4,29 @@
     "Next chapter in ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Nächstes Kapitel in ${applicationName}",
+              "Spring zum nächsten Kapitel in ${applicationName}"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
             "values" : [
               "Next chapter in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Chapitre suivant dans ${applicationName}",
+              "Passe au chapitre suivant dans ${applicationName}"
             ]
           }
         },
@@ -52,12 +70,31 @@
     "Pause ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} pausieren",
+              "Pausiere ${applicationName}",
+              "Halte den Film in ${applicationName} an"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
             "values" : [
               "Pause ${applicationName}",
               "Pause the movie in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Mets ${applicationName} en pause",
+              "Mets le film en pause dans ${applicationName}"
             ]
           }
         },
@@ -104,12 +141,31 @@
     "Play ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} abspielen",
+              "${applicationName} fortsetzen",
+              "Setze die Wiedergabe in ${applicationName} fort"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
             "values" : [
               "Play ${applicationName}",
               "Resume ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Lecture dans ${applicationName}",
+              "Reprends la lecture dans ${applicationName}"
             ]
           }
         },
@@ -155,11 +211,29 @@
     "Previous chapter in ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Vorheriges Kapitel in ${applicationName}",
+              "Spring zum vorherigen Kapitel in ${applicationName}"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
             "values" : [
               "Previous chapter in ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Chapitre précédent dans ${applicationName}",
+              "Reviens au chapitre précédent dans ${applicationName}"
             ]
           }
         },
@@ -203,12 +277,31 @@
     "Skip back ${amount} in ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Spring in ${applicationName} ${amount} zurück",
+              "${applicationName} zurückspulen",
+              "Spul ${applicationName} zurück"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
             "values" : [
               "Skip back ${amount} in ${applicationName}",
               "Rewind ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Recule de ${amount} dans ${applicationName}",
+              "Retour en arrière dans ${applicationName}"
             ]
           }
         },
@@ -256,12 +349,31 @@
     "Skip forward ${amount} in ${applicationName}" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Spring in ${applicationName} ${amount} vor",
+              "${applicationName} vorspulen",
+              "Spul ${applicationName} vor"
+            ]
+          }
+        },
         "en" : {
           "stringSet" : {
             "state" : "translated",
             "values" : [
               "Skip forward ${amount} in ${applicationName}",
               "Fast forward ${applicationName}"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Avance de ${amount} dans ${applicationName}",
+              "Avance rapide dans ${applicationName}"
             ]
           }
         },

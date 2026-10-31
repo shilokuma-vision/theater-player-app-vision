@@ -162,8 +162,9 @@ struct ControlPanel: View {
                 }
                 .accessibilityIdentifier("leaveTheater")
             }
-            // 長い言語で折り返すと、パネルの高さが変わる
+            // 長い言語で折り返すと、パネルの高さが変わる。収まらないときは少し縮めてから切る（ドイツ語・フランス語）
             .lineLimit(1)
+            .minimumScaleFactor(0.8)
         }
     }
 
