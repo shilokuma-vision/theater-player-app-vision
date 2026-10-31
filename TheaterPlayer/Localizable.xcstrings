@@ -1276,6 +1276,28 @@
         }
       }
     },
+    "Skip back ${amount}" : {
+      "comment" : "Summary of the action in the Shortcuts app. ${amount} is a duration such as 10 seconds.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${amount}戻す"
+          }
+        }
+      }
+    },
+    "Skip forward ${amount}" : {
+      "comment" : "Summary of the action in the Shortcuts app. ${amount} is a duration such as 10 seconds.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${amount}進む"
+          }
+        }
+      }
+    },
     "Skipped back." : {
       "localizations" : {
         "ja" : {
