@@ -3,7 +3,7 @@
 //  TheaterPlayerTests
 //
 //  String Catalog（*.xcstrings）の訳し漏れ。どのキーにも元の言語（en）の文言と、訳す言語の訳があり、
-//  %@・%lld などの数と種類が元の文言と合うか。アプリに入った訳（ビルドで書き出した .strings）が catalog と同じかも確かめる。
+//  %@・%lld・${amount} などの数と種類が元の文言と合うか。アプリに入った訳（ビルドで書き出した .strings）が catalog と同じかも確かめる。
 //  catalog そのものはアプリに入らないので、リポジトリのファイルを読む（Simulator のテストはホストのファイルを読める）。
 //
 
@@ -17,6 +17,10 @@ nonisolated struct LocalizationTests {
     /// リポジトリの String Catalog と、その訳を引くアプリの中のバンドル
     static let catalogs: [CatalogFile] = [
         CatalogFile(path: "TheaterPlayer/Localizable.xcstrings", bundleName: nil),
+        // Info.plist の文言（表示名・書類の種類の名前）
+        CatalogFile(path: "TheaterPlayer/InfoPlist.xcstrings", bundleName: nil),
+        // Siri のフレーズ（キーは最初のフレーズで、言語ごとに複数のフレーズを stringSet に持つ）
+        CatalogFile(path: "TheaterPlayer/AppShortcuts.xcstrings", bundleName: nil),
         CatalogFile(path: "Packages/TheaterMedia/Sources/TheaterMedia/Localizable.xcstrings", bundleName: "TheaterMedia_TheaterMedia")
     ]
 
@@ -29,17 +33,27 @@ nonisolated struct LocalizationTests {
         #expect(catalog.sourceLanguage == "en")
         #expect(!catalog.strings.isEmpty)
         for (key, entry) in catalog.translatableStrings {
-            let source = try #require(entry.sourceValue(for: key), "\(file.path)：「\(key)」に元の言語（en）の文言が無い")
+            let sources = try #require(entry.sourceValues(for: key), "\(file.path)：「\(key)」に元の言語（en）の文言が無い")
             for language in Self.languages {
-                let units = entry.localizations?[language]?.units ?? []
+                let localization = entry.localizations?[language]
+                let units = localization?.units ?? []
                 #expect(!units.isEmpty, "\(file.path)：「\(key)」に \(language) の訳が無い")
                 for unit in units {
                     #expect(unit.state == "translated", "\(file.path)：「\(key)」の \(language) の訳が \(unit.state)")
                     #expect(!unit.value.isEmpty, "\(file.path)：「\(key)」の \(language) の訳が空")
-                    #expect(
-                        FormatSpecifier.list(in: unit.value) == FormatSpecifier.list(in: source),
-                        "\(file.path)：「\(key)」の \(language) の訳「\(unit.value)」の %@ などが、元の文言と合わない"
-                    )
+                    if localization?.stringSet != nil {
+                        // Siri のフレーズ：どのフレーズもアプリの名前を 1 回だけ含み、元のフレーズに無い引数を使わない
+                        let allowed = Set(sources.flatMap(Placeholder.list(in:)))
+                        let used = Placeholder.list(in: unit.value)
+                        #expect(used.filter { $0 == "applicationName" }.count == 1, "\(file.path)：「\(unit.value)」にアプリの名前が 1 回ではない")
+                        #expect(Set(used).isSubset(of: allowed), "\(file.path)：「\(unit.value)」に元のフレーズに無い引数がある")
+                    } else {
+                        #expect(
+                            FormatSpecifier.list(in: unit.value) == FormatSpecifier.list(in: sources[0])
+                                && Placeholder.list(in: unit.value).sorted() == Placeholder.list(in: sources[0]).sorted(),
+                            "\(file.path)：「\(key)」の \(language) の訳「\(unit.value)」の %@ などが、元の文言と合わない"
+                        )
+                    }
                 }
             }
         }
@@ -54,12 +68,17 @@ nonisolated struct LocalizationTests {
             let path = try #require(bundle.path(forResource: language, ofType: "lproj"), "\(file.path)：\(language).lproj が無い")
             let localized = try #require(Bundle(path: path))
             for (key, entry) in catalog.translatableStrings {
-                let expected = language == "en" ? entry.sourceValue(for: key) : entry.localizations?[language]?.stringUnit?.value
-                // 数で文言を変える（variations）ものは .stringsdict に入り、ここでは比べられない
-                guard let expected, entry.localizations?[language]?.variations == nil else {
+                let localization = entry.localizations?[language]
+                // 数で文言を変える（variations）ものは .stringsdict に、Siri のフレーズ（stringSet）は App Intents のメタデータに入り、
+                // ここでは比べられない
+                guard localization?.variations == nil, localization?.stringSet == nil else {
                     continue
                 }
-                let value = localized.localizedString(forKey: key, value: key, table: "Localizable")
+                let expected = language == "en" ? entry.sourceValues(for: key)?.first : localization?.stringUnit?.value
+                guard let expected else {
+                    continue
+                }
+                let value = localized.localizedString(forKey: key, value: key, table: file.table)
                 #expect(value == expected, "\(file.path)：\(language) の「\(key)」")
             }
         }
@@ -70,6 +89,7 @@ nonisolated struct LocalizationTests {
         #expect(FormatSpecifier.list(in: "%2$lld 番 %1$@ 列") == ["@", "lld"])
         #expect(FormatSpecifier.list(in: "100%% %.2f") == ["f"])
         #expect(FormatSpecifier.list(in: "なし").isEmpty)
+        #expect(Placeholder.list(in: "${applicationName}で${amount}戻して") == ["applicationName", "amount"])
     }
 }
 
@@ -81,6 +101,11 @@ nonisolated struct CatalogFile: Sendable, CustomTestStringConvertible {
     let bundleName: String?
 
     var testDescription: String { path }
+
+    /// 訳を引くときの表の名前（catalog のファイルの名前）
+    var table: String {
+        URL(filePath: path).deletingPathExtension().lastPathComponent
+    }
 
     func load() throws -> StringCatalog {
         try JSONDecoder().decode(StringCatalog.self, from: Data(contentsOf: LocalizationTests.root.appending(path: path)))
@@ -111,12 +136,16 @@ nonisolated struct StringCatalog: Decodable {
         let shouldTranslate: Bool?
         let localizations: [String: Localization]?
 
-        /// 元の言語（en）の文言。キーと違う文言を持つもの（String(localized:defaultValue:) など）は en の訳にある
-        func sourceValue(for key: String) -> String? {
+        /// 元の言語（en）の文言（Siri のフレーズは複数）。キーと違う文言を持つもの（String(localized:defaultValue:)・Info.plist など）は
+        /// en の訳にある
+        func sourceValues(for key: String) -> [String]? {
             if let value = localizations?["en"]?.stringUnit?.value {
-                return value
+                return [value]
             }
-            return extractionState == "extracted_with_value" || extractionState == "manual" ? nil : key
+            if let values = localizations?["en"]?.stringSet?.values, !values.isEmpty {
+                return values
+            }
+            return extractionState == "extracted_with_value" || extractionState == "manual" ? nil : [key]
         }
     }
 
@@ -124,16 +153,32 @@ nonisolated struct StringCatalog: Decodable {
         let stringUnit: StringUnit?
         /// 数・端末で文言を変えるとき（plural の one・other など）
         let variations: [String: [String: Self]]?
+        /// Siri のフレーズ（AppShortcuts.xcstrings）
+        let stringSet: StringSet?
 
         /// この言語の文言のすべて
         var units: [StringUnit] {
-            (stringUnit.map { [$0] } ?? []) + (variations ?? [:]).values.flatMap { $0.values.flatMap(\.units) }
+            (stringUnit.map { [$0] } ?? [])
+                + (variations ?? [:]).values.flatMap { $0.values.flatMap(\.units) }
+                + (stringSet.map { set in set.values.map { StringUnit(state: set.state, value: $0) } } ?? [])
         }
+    }
+
+    struct StringSet: Decodable {
+        let state: String
+        let values: [String]
     }
 
     struct StringUnit: Decodable {
         let state: String
         let value: String
+    }
+}
+
+/// App Intents の文言の中の ${applicationName}・${amount} などの名前（出てくる順）
+nonisolated enum Placeholder {
+    static func list(in text: String) -> [String] {
+        text.matches(of: #/\$\{(\w+)\}/#).map { String($0.output.1) }
     }
 }
 

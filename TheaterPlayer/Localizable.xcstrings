@@ -34,6 +34,48 @@
         }
       }
     },
+    "1 min" : {
+      "comment" : "Another way to say the duration, so that Siri understands it.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1分"
+          }
+        }
+      }
+    },
+    "1 minute" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 分"
+          }
+        }
+      }
+    },
+    "10 sec" : {
+      "comment" : "Another way to say the duration, so that Siri understands it.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10秒"
+          }
+        }
+      }
+    },
+    "10 seconds" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 秒"
+          }
+        }
+      }
+    },
     "2D" : {
       "comment" : "The file is not 3D.",
       "localizations" : {
@@ -55,6 +97,27 @@
         }
       }
     },
+    "30 sec" : {
+      "comment" : "Another way to say the duration, so that Siri understands it.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30秒"
+          }
+        }
+      }
+    },
+    "30 seconds" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 秒"
+          }
+        }
+      }
+    },
     "3D" : {
       "comment" : "Control panel button that opens the 3D (stereoscopic) settings.",
       "localizations" : {
@@ -62,6 +125,27 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3D"
+          }
+        }
+      }
+    },
+    "5 min" : {
+      "comment" : "Another way to say the duration, so that Siri understands it.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5分"
+          }
+        }
+      }
+    },
+    "5 minutes" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 分"
           }
         }
       }
@@ -439,6 +523,17 @@
         }
       }
     },
+    "Duration" : {
+      "comment" : "How far to skip back or forward (10 seconds, 1 minute, and so on).",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長さ"
+          }
+        }
+      }
+    },
     "Dynamic Range" : {
       "localizations" : {
         "ja" : {
@@ -663,6 +758,56 @@
         }
       }
     },
+    "Moved to the next chapter." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次のチャプターへ移りました。"
+          }
+        }
+      }
+    },
+    "Moved to the previous chapter." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前のチャプターへ移りました。"
+          }
+        }
+      }
+    },
+    "Moves to the next chapter of the video playing in the theater." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館で再生している動画の、次のチャプターへ移ります。"
+          }
+        }
+      }
+    },
+    "Moves to the previous chapter (the start of the current chapter) of the video playing in the theater." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館で再生している動画の、前のチャプター（今のチャプターの始まり）へ移ります。"
+          }
+        }
+      }
+    },
+    "Next Chapter" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次のチャプター"
+          }
+        }
+      }
+    },
     "Next Page" : {
       "localizations" : {
         "ja" : {
@@ -701,6 +846,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ふつう"
+          }
+        }
+      }
+    },
+    "Nothing is playing in the theater." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館で動画・音楽を再生していません。"
           }
         }
       }
@@ -772,6 +927,26 @@
         }
       }
     },
+    "Paused." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一時停止しました。"
+          }
+        }
+      }
+    },
+    "Pauses the video or music playing in the theater." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館で再生している動画・音楽を一時停止します。"
+          }
+        }
+      }
+    },
     "Picture" : {
       "comment" : "The file on the screen is a still image.",
       "localizations" : {
@@ -813,12 +988,42 @@
         }
       }
     },
+    "Playing." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再生します。"
+          }
+        }
+      }
+    },
+    "Plays the paused video or music in the theater." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館で止めている動画・音楽を再生します。"
+          }
+        }
+      }
+    },
     "Plays videos such as MKV, MP4, AVI, WMV, and TS, and music such as FLAC, MP3, AAC, and WAV. Also shows pictures such as PNG, JPEG, and HEIC, and PDFs." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "MKV・MP4・AVI・WMV・TS などの動画と、FLAC・MP3・AAC・WAV などの音楽を再生できます。PNG・JPEG・HEIC などの画像と PDF も映せます"
+          }
+        }
+      }
+    },
+    "Previous Chapter" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前のチャプター"
           }
         }
       }
@@ -1047,6 +1252,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "左右に並べた 3D"
+          }
+        }
+      }
+    },
+    "Skip Back" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "戻す"
+          }
+        }
+      }
+    },
+    "Skip Forward" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進む"
+          }
+        }
+      }
+    },
+    "Skipped back." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "戻しました。"
+          }
+        }
+      }
+    },
+    "Skipped forward." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進めました。"
+          }
+        }
+      }
+    },
+    "Skips the video or music playing in the theater back by the duration you choose." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館で再生している動画・音楽を、指定した長さだけ戻します。"
+          }
+        }
+      }
+    },
+    "Skips the video or music playing in the theater forward by the duration you choose." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "映画館で再生している動画・音楽を、指定した長さだけ進めます。"
           }
         }
       }
@@ -1321,12 +1586,12 @@
         }
       }
     },
-    "Use “Choose a File” to open videos, music, pictures, and PDFs in iCloud Drive or on external storage.\nYou can also open files you put in the TheaterPlayer folder in the Files app." : {
+    "Use “Choose a File” to open videos, music, pictures, and PDFs in iCloud Drive or on external storage.\nYou can also open files you put in the Theater Player folder in the Files app." : {
       "localizations" : {
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の TheaterPlayer のフォルダに入れたものも開けます"
+            "value" : "「ファイルを選ぶ」から、iCloud Drive や外部ストレージの動画・音楽・画像・PDF を開けます\n「ファイル」App の Theater Player のフォルダに入れたものも開けます"
           }
         }
       }
@@ -1401,6 +1666,17 @@
         }
       }
     },
+    "five minutes" : {
+      "comment" : "Another way to say the duration, so that Siri understands it.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "五分"
+          }
+        }
+      }
+    },
     "list.separator" : {
       "comment" : "Separator between items on one line, such as AAC · stereo · 48 kHz.",
       "localizations" : {
@@ -1414,6 +1690,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "・"
+          }
+        }
+      }
+    },
+    "one minute" : {
+      "comment" : "Another way to say the duration, so that Siri understands it.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一分"
+          }
+        }
+      }
+    },
+    "ten seconds" : {
+      "comment" : "Another way to say the duration, so that Siri understands it.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十秒"
+          }
+        }
+      }
+    },
+    "thirty seconds" : {
+      "comment" : "Another way to say the duration, so that Siri understands it.",
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "三十秒"
           }
         }
       }

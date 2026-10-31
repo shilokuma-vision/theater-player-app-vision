@@ -220,7 +220,7 @@ struct RecentList: View {
                 description: Text(
                     """
                     Use “Choose a File” to open videos, music, pictures, and PDFs in iCloud Drive or on external storage.
-                    You can also open files you put in the TheaterPlayer folder in the Files app.
+                    You can also open files you put in the Theater Player folder in the Files app.
                     """
                 )
             )
