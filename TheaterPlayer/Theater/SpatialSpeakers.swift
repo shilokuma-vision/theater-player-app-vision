@@ -43,9 +43,15 @@ final class SpatialSpeakers {
             parent.addChild(entity)
             entity.look(at: emitter.position + emitter.forward, from: emitter.position, relativeTo: parent)
             entity.components.set([Self.audioComponent(for: emitter.bus)])
+            #if DEBUG
+            // デバッグの YouTube の音を映画館の音響に通しているあいだは、そちらを鳴らす
+            let renderBlock = SpeakerRoute.shared.renderBlock(feed: index, main: ring)
+            #else
+            let renderBlock = ring.renderBlock(feed: index)
+            #endif
             do {
                 let controller = try entity.prepareAudio(configuration: AudioGeneratorConfiguration(layoutTag: kAudioChannelLayoutTag_Mono),
-                                                         ring.renderBlock(feed: index))
+                                                         renderBlock)
                 controllers.append(controller)
             } catch {
                 continue
