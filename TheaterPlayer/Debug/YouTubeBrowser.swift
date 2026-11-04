@@ -4,13 +4,17 @@
 //
 //  デバッグ用：YouTube の動画を検索して、スクリーンの前で再生する（デバッグのビルドだけ。リリースには入れない）。
 //  youtube.com のページを、そのまま WebView で開く（検索結果も再生も YouTube のページ）。
-//  YouTube の利用規約に沿うよう、動画の URL を抜き出したり、ダウンロードしたりはしない。API の鍵も使わない。
-//  音は WebView から鳴り、映画館の音響の処理（空間オーディオ）は通らない。
+//  動画の URL を抜き出したり、別にダウンロードしたりはしない。API の鍵も使わない。
+//  音は、ふだんは WebView から鳴る（映画館の音響の処理を通らない）。「映画館の音響に通す」を入れると、ページが再生のために読み込んだ
+//  音声を写して、映画館の音響の処理（31 本の空間オーディオ）から鳴らす（YouTubeBrowser+Sound・YouTubeSoundScript・YouTubeSound）。
+//  YouTube の利用規約は、音や映像を切り離したり手を加えたりすることを禁じている。これは確認用で、利用者の判断で作った。配らない。
 //
 
 #if DEBUG
+import CinemaAudio
 import Foundation
 import Observation
+import TheaterMedia
 import WebKit
 
 @Observable
@@ -19,6 +23,30 @@ final class YouTubeBrowser {
     private(set) var page: WebPage?
     /// ショートを開こうとして戻した、などの知らせ
     private(set) var notice: String?
+    /// 音を映画館の音響に通す（初めは切。アプリを終えるまで覚えておく）
+    var routesSoundThroughTheater = false {
+        didSet {
+            if routesSoundThroughTheater != oldValue {
+                applySoundRoute()
+            }
+        }
+    }
+    /// ページのスクリプトの様子（映画館の音響に通しているあいだ）
+    var soundPage: YouTubeSoundPageState?
+    /// 音の様子（映画館の音響に通しているあいだ、1 秒ごと）
+    var soundReport: YouTubeSound.Report?
+    /// 音のずれの調整（ミリ秒。正なら音を遅らせる）
+    var soundDelay = 0 {
+        didSet { sound?.audioDelay = Double(soundDelay) / 1_000 }
+    }
+    /// ページから写した音を、映画館の音響の処理に通す（作れなければ nil）
+    @ObservationIgnored let sound: YouTubeSound?
+    @ObservationIgnored var reportTask: Task<Void, Never>?
+
+    /// engine・speakers：手元のファイルの再生のエンジン（音響の設定・音量を写す）と、空間オーディオの音源の系統の並び
+    init(engine: MediaPlayer?, speakers: [CinemaBus]) {
+        sound = try? YouTubeSound(engine: engine, speakers: speakers)
+    }
 
     var isOpen: Bool {
         page != nil
@@ -54,6 +82,8 @@ final class YouTubeBrowser {
         }
         self.page = nil
         notice = nil
+        // 空間オーディオの音源を、手元のファイルの音に戻す
+        applySoundRoute()
         page.stopLoading()
         Task {
             await page.pauseAllMediaPlayback()
@@ -83,6 +113,13 @@ final class YouTubeBrowser {
         configuration.websiteDataStore = .nonPersistent()
         // 全画面にせず、スクリーンの前のページの中で再生する
         configuration.mediaPlaybackBehavior = .allowsInlinePlayback
+        // 映画館の音響に通すスクリプト（スイッチを入れるまでは、アプリへ何も送らない）
+        configuration.userContentController.addUserScript(YouTubeSoundScript.userScript)
+        configuration.userContentController.add(
+            YouTubeSoundReceiver(browser: self),
+            contentWorld: YouTubeSoundScript.world,
+            name: YouTubeSoundScript.handlerName
+        )
         let decider = YouTubeNavigationDecider { [weak self] in
             self?.blockedShorts()
         }
