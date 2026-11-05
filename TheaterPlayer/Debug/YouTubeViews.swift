@@ -131,8 +131,13 @@ private struct YouTubeSoundControls: View {
                     "合わせ直し \(report.resyncs) 回"
             )
             let level = report.peak > 0 ? "\(Int((20 * log10(report.peak)).rounded())) dBFS" : "無音"
-            lines.append("音のピーク：\(level)・鳴らしている音源 \(report.readers) 本・音の無かった所 \(Int(report.missing.rounded())) ms")
+            lines.append("音のピーク：\(level)・音の無かった所 \(Int(report.missing.rounded())) ms")
         }
+        // 空間オーディオが止まっていないか（実機で、止まって鳴らないことがあった）
+        lines.append("空間オーディオ：描画 \(Int(report.renders.rounded())) 回/秒・鳴らしている音源 \(report.readers) 本")
+        let event = browser.soundSession.lastEvent
+        lines.append("音声のセッション：\(browser.soundSession.summary)\(event.isEmpty ? "" : "（最後の知らせ：\(event)）")")
+        lines.append(contentsOf: browser.soundNotes.suffix(4))
         return lines
     }
 
@@ -142,6 +147,13 @@ private struct YouTubeSoundControls: View {
         }
         if page.active.isEmpty {
             return "再生している動画の音声（MSE）が見つかりません。動画を再生すると鳴ります（見つかるまではページの音のまま）。"
+        }
+        let guardState = browser.soundGuard
+        if guardState.gaveUp {
+            return "映画館の空間オーディオが止まったまま鳴らせないので、ページの音に戻しました（スイッチを入れ直すと、もう一度試します）。"
+        }
+        if guardState.silentSeconds > 0 || (guardState.heals > 0 && !guardState.mutesOriginal) {
+            return "映画館の空間オーディオが止まっています。鳴らし直しています（ページの音はそのまま）。"
         }
         if let report = browser.soundReport {
             if abs(report.rate - 1) >= 0.01 {
