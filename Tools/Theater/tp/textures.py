@@ -248,41 +248,111 @@ def seat_atlas(n=1024, labels=()):
     return img
 
 
-# ---------------------------------------------------------------- 誘導灯（避難口：緑の地に白の人と扉）
-def _capsule(img, mask_val, p0, p1, r):
-    h, w = img.shape
-    yy, xx = np.mgrid[0:h, 0:w] + 0.5
-    ax, ay = p0
-    bx, by = p1
-    dx, dy = bx - ax, by - ay
-    t = np.clip(((xx - ax) * dx + (yy - ay) * dy) / (dx * dx + dy * dy + 1e-9), 0, 1)
-    d = np.hypot(xx - (ax + t * dx), yy - (ay + t * dy))
-    np.maximum(img, np.clip((r - d) + 0.5, 0, 1) * mask_val, out=img)
+# ---------------------------------------------------------------- 誘導灯（避難口誘導灯・通路誘導灯）
+# 図記号は、消防庁告示「誘導灯及び誘導標識の基準」・JIS Z 8210 の「非常口」・ISO 7010 の E001 の構図に合わせて描く：
+# 人が左へ走り、左の扉（下の開いた枠）へ入ろうとしている。頭は扉の中、後ろの腕と脚は枠の外。人と枠が重なる所は、枠を細く空ける。
+# 形は距離場（SDF）で作り、縁は 1 画素でなめらかにする。座標は 100 × 100（y は下向き）。文字（「非常口」「EXIT」）は入れない
+SIGN_GREEN = (0.0, 158 / 255, 100 / 255)   # 安全色の緑（JIS Z 9103）に近い緑。マンセル 5G 5.5/10 のおよその sRGB（#009E64）
+SIGN_WHITE = (1.0, 1.0, 1.0)
 
 
-def exit_sign(w=512, h=256):
-    """避難口誘導灯の表示（緑の地に、扉へ走る白い人）。値は表示の色（発光の色に使う）。"""
-    white = np.zeros((h, w))
-    s = h / 256.0
-    # 扉（白い枠の中に緑の開口。右側）
-    x0, x1, y0, y1 = int(300 * s), int(450 * s), int(40 * s), int(220 * s)
-    white[y0:y1, x0:x1] = 1.0
-    white[int(60 * s):y1, int(320 * s):int(430 * s)] = 0.0
-    # 走る人（頭・胴・腕・脚）
-    _capsule(white, 1.0, (170 * s, 62 * s), (170 * s, 62 * s), 20 * s)
-    _capsule(white, 1.0, (160 * s, 95 * s), (130 * s, 150 * s), 15 * s)
-    _capsule(white, 1.0, (155 * s, 100 * s), (205 * s, 120 * s), 9 * s)
-    _capsule(white, 1.0, (205 * s, 120 * s), (240 * s, 100 * s), 8 * s)
-    _capsule(white, 1.0, (150 * s, 105 * s), (105 * s, 125 * s), 9 * s)
-    _capsule(white, 1.0, (105 * s, 125 * s), (85 * s, 105 * s), 8 * s)
-    _capsule(white, 1.0, (130 * s, 150 * s), (185 * s, 175 * s), 11 * s)
-    _capsule(white, 1.0, (185 * s, 175 * s), (175 * s, 222 * s), 10 * s)
-    _capsule(white, 1.0, (130 * s, 150 * s), (95 * s, 190 * s), 11 * s)
-    _capsule(white, 1.0, (95 * s, 190 * s), (55 * s, 200 * s), 10 * s)
-    green = np.array([0.0, 0.62, 0.30])
-    img = green[None, None, :] * (1 - white[..., None]) + white[..., None] * np.array([0.95, 1.0, 0.95])
-    # 縁（白っぽい枠）
-    yy, xx = np.mgrid[0:h, 0:w]
-    edge = (np.minimum.reduce([xx, yy, w - 1 - xx, h - 1 - yy]) < 6 * s)
-    img[edge] = np.array([0.85, 0.9, 0.86])
-    return img
+def _sd_segment(px, py, a, b, w):
+    """a → b の、太さ w の帯（端は切りっぱなし）。"""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length = math.hypot(dx, dy)
+    ux, uy = dx / length, dy / length
+    rx, ry = px - (a[0] + b[0]) / 2, py - (a[1] + b[1]) / 2
+    qx = np.abs(rx * ux + ry * uy) - length / 2
+    qy = np.abs(-rx * uy + ry * ux) - w / 2
+    return np.hypot(np.maximum(qx, 0), np.maximum(qy, 0)) + np.minimum(np.maximum(qx, qy), 0)
+
+
+def _sd_circle(px, py, c, r):
+    return np.hypot(px - c[0], py - c[1]) - r
+
+
+def _sd_rect(px, py, x0, y0, x1, y1):
+    return _sd_segment(px, py, (x0, (y0 + y1) / 2), (x1, (y0 + y1) / 2), y1 - y0)
+
+
+def _sd_convex(px, py, pts):
+    """凸多角形（外側の距離は近似。縁の 1 画素には十分）。"""
+    n = len(pts)
+    area = sum(pts[i][0] * pts[(i + 1) % n][1] - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))
+    sign = 1.0 if area > 0 else -1.0
+    d = None
+    for (ax, ay), (bx, by) in zip(pts, pts[1:] + pts[:1]):
+        length = math.hypot(bx - ax, by - ay)
+        nx, ny = -(by - ay) / length * sign, (bx - ax) / length * sign
+        di = (px - ax) * nx + (py - ay) * ny
+        d = -di if d is None else np.maximum(d, -di)
+    return d
+
+
+def _sd_limb(px, py, pts, w):
+    """手足：太い折れ線。関節と根もと（胴の側）は丸め、先（手・足）は切りっぱなし。"""
+    d = np.minimum.reduce([_sd_segment(px, py, a, b, w) for a, b in zip(pts, pts[1:])])
+    for c in pts[:-1]:
+        d = np.minimum(d, _sd_circle(px, py, c, w / 2))
+    return d
+
+
+def _sd_runner(px, py):
+    """左へ走る人：前へ大きく傾け、前の脚は床に着き、後ろの脚は後ろへ蹴り上げる。"""
+    head = _sd_circle(px, py, (41.0, 23.0), 8.5)
+    torso = np.minimum.reduce([_sd_limb(px, py, [(51.5, 38.5), (62.0, 58.0)], 15.0),
+                               _sd_convex(px, py, [(54.0, 37.0), (64.0, 41.5), (58.0, 47.0)])])  # わきの下を埋める
+    arm_front = _sd_limb(px, py, [(52.0, 40.0), (37.0, 49.0), (27.0, 40.0)], 8.5)
+    arm_back = _sd_limb(px, py, [(53.0, 39.0), (69.0, 44.0), (81.0, 53.0)], 8.5)
+    leg_front = _sd_limb(px, py, [(61.0, 55.0), (45.0, 68.0), (41.0, 86.0), (30.0, 88.5)], 11.0)
+    leg_back = _sd_limb(px, py, [(62.0, 55.0), (75.0, 75.0), (92.0, 71.0)], 11.0)
+    return np.minimum.reduce([head, torso, arm_front, arm_back, leg_front, leg_back])
+
+
+def _sd_door(px, py):
+    """扉の枠（左寄り。床の側は開いている）。"""
+    t, x0, x1, y0, y1 = 7.5, 8.0, 60.0, 4.0, 94.0
+    return np.minimum.reduce([_sd_rect(px, py, x0, y0, x0 + t, y1), _sd_rect(px, py, x0, y0, x1, y0 + t),
+                              _sd_rect(px, py, x1 - t, y0, x1, y1)])
+
+
+def _sd_arrow(px, py):
+    """左向きの矢印（先は直角）。"""
+    return np.minimum(_sd_convex(px, py, [(0.0, 50.0), (40.0, 10.0), (40.0, 90.0)]), _sd_rect(px, py, 39.0, 32.0, 100.0, 68.0))
+
+
+def _cover(d, pixel):
+    return np.clip(0.5 - d / pixel, 0.0, 1.0)
+
+
+def _exit_symbol(px, py, pixel, gap=3.0):
+    """避難口のシンボル（人と扉）の覆い（0〜1）。"""
+    man = _sd_runner(px, py)
+    frame = np.maximum(_sd_door(px, py), gap - man)
+    return np.maximum(_cover(man, pixel), _cover(frame, pixel))
+
+
+def _sign_grid(n, x0, y0, x1, y1):
+    """n × n 画素の画素の中心を、図記号の座標（x0〜x1、y0〜y1）に置いたもの。"""
+    yy, xx = np.mgrid[0:n, 0:n] + 0.5
+    return x0 + (x1 - x0) * xx / n, y0 + (y1 - y0) * yy / n, (x1 - x0) / n
+
+
+def _paint(cover, ground, ink):
+    return np.asarray(ground)[None, None, :] * (1 - cover[..., None]) + np.asarray(ink)[None, None, :] * cover[..., None]
+
+
+def exit_sign(n=512):
+    """避難口誘導灯の表示面（正方形）：緑の地に、白の避難口のシンボル。値は表示の色（発光の色に使う）。"""
+    px, py, pixel = _sign_grid(n, -9.5, -13.0, 114.5, 111.0)  # シンボルの外形（x 8〜97、y 4〜94）を中央に
+    return _paint(_exit_symbol(px, py, pixel), SIGN_GREEN, SIGN_WHITE)
+
+
+def aisle_sign(n=512):
+    """通路誘導灯の表示面（正方形）：白の地に、緑の矢印（上の左寄り）と避難口のシンボル（矢印と反対の側の下）。
+    矢印は左向き。右向きは、画像を左右に反転して貼る（人も矢印の向きへ走る）。"""
+    px, py, pixel = _sign_grid(n, 0.0, 0.0, 100.0, 100.0)
+    arrow_scale, symbol_scale = 0.64, 0.47
+    arrow = _cover(_sd_arrow((px - 6.0) / arrow_scale, (py - 5.0) / arrow_scale) * arrow_scale, pixel)
+    symbol = _exit_symbol((px - 49.5) / symbol_scale, (py - 49.0) / symbol_scale, pixel / symbol_scale)
+    return _paint(np.maximum(arrow, symbol), SIGN_WHITE, SIGN_GREEN)

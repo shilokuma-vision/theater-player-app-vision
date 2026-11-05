@@ -6,6 +6,7 @@
 - emit：発光（リニアの色、強さ、どの照明の状態で明るさが変わるか）
     house = 客電（明るさの調整で変わる）、ambient = 常時点いている灯（足元灯・誘導灯）、screen = スクリーンの明るさ（映写窓のレンズ）
 - bake_emit：焼くときに周りを照らすか（スクリーンの面だけ。ほかの灯はライトで照らす）
+- aniso：色の画像に異方性フィルターをかける（最大の倍率）。斜めから見ることの多い、細かい絵（誘導灯の図記号）だけに使う
 """
 import os
 
@@ -42,7 +43,8 @@ LIB = {
     "downlight_lens": dict(color=(0.9, 0.9, 0.9), emit=((1.0, 0.80, 0.58), 1.6, "house")),
     "led_warm": dict(color=(0.9, 0.9, 0.9), emit=((1.0, 0.72, 0.42), 0.85, "house")),
     "led_step": dict(color=(0.9, 0.9, 0.9), emit=((1.0, 0.55, 0.20), 1.8, "ambient")),
-    "exit_sign": dict(tex="exit_sign.png", uv="mesh", emit=("texture", 1.4, "ambient")),
+    "exit_sign": dict(tex="exit_sign.png", uv="mesh", emit=("texture", 1.4, "ambient"), aniso=16),
+    "aisle_sign": dict(tex="aisle_sign.png", uv="mesh", emit=("texture", 0.9, "ambient"), aniso=16),
     "booth_glow": dict(color=(0.03, 0.03, 0.035), emit=((0.30, 0.34, 0.45), 0.05, "ambient")),
     "projector_lens": dict(color=(0.1, 0.1, 0.1), emit=((1.0, 1.0, 1.0), 2.0, "screen")),
     # 座席
@@ -71,7 +73,9 @@ def make_textures(out_dir, seat_labels):
         "grille.png": lambda: tx.grille(256, 8),
         "seat_fabric.png": lambda: tx.velvet(1024, (0.47, 0.06, 0.085), 20, 0.3),
         "seat_atlas.png": lambda: tx.seat_atlas(1024, seat_labels),
-        "exit_sign.png": lambda: tx.exit_sign(512, 256),
+        # 誘導灯：壁の近くで見ても粗くないよう 1024 画素（0.4 m 角で 0.4 mm、0.2 m 角で 0.2 mm）
+        "exit_sign.png": lambda: tx.exit_sign(1024),
+        "aisle_sign.png": lambda: tx.aisle_sign(1024),
     }
     avg = {}
     for name, fn in gens.items():

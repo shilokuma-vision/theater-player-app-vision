@@ -1,5 +1,5 @@
 """建築：床（スタジアムの段・通路の段）、壁（腰板・吸音パネル・木のフィン・手すり）、天井（浮き天井とダウンライト）、
-スクリーン（曲面・マスキング・袖幕）、舞台、前方の非常口、映写窓。
+スクリーン（曲面・マスキング・袖幕）、舞台、前方の非常口と誘導灯（避難口誘導灯・通路誘導灯）、映写窓。
 
 RealityKit は面の裏を描かないので、開いた面（quad・grid）には toward で表の向きを渡す（客席から見える側）。
 オブジェクトには書き出し用のカスタムプロパティを付ける。
@@ -146,6 +146,7 @@ def _side_wall(col, mats, side, lights_house, lights_amb):
     for part in (wall, panels, wood, leds):
         part.build(col, mats, {"tp_group": f"Room/Wall{tag}"})
     _exit_door(col, mats, side, lights_amb)
+    _aisle_signs(col, mats, side, lights_amb)
 
 
 def _exit_door(col, mats, side, lights_amb):
@@ -170,20 +171,50 @@ def _exit_door(col, mats, side, lights_amb):
         p.box_between((da, ya, 0.01), (db, yb, C.DOOR_H - 0.01), "door", bevel=0.004, segments=1)
         p.box_between((ba, ya + 0.08, 0.98), (bb, yb - 0.08, 1.04), "aluminum", bevel=0.01, segments=2)
     p.build(col, mats, {"tp_group": f"Room/Wall{tag}"})
+    # 避難口誘導灯：扉の枠のすぐ上。人は左向き（図記号の基本の向き。扉の真上なので向きは変えない）
     s = Part(f"ExitSign{tag}")
-    zc = C.DOOR_H + 0.5
-    w, h, d = 0.62, 0.30, 0.07
-    ea, eb = xr(0.0, d)
-    s.box_between((ea, ym - w / 2 - 0.02, zc - h / 2 - 0.02), (eb, ym + w / 2 + 0.02, zc + h / 2 + 0.02), "trim_white",
-                  bevel=0.006, segments=1)
-    xf = sx + inward * (d + 0.002)
-    # 部屋の内側から見て、左がスクリーンと反対の側（扉へ走る人が左を向く表示にはしない。左から右へ読む）
-    left, right = (ym - w / 2, ym + w / 2) if side < 0 else (ym + w / 2, ym - w / 2)
-    s.quad([(xf, left, zc - h / 2), (xf, right, zc - h / 2), (xf, right, zc + h / 2), (xf, left, zc + h / 2)], "exit_sign",
-           uv=[(0, 0), (1, 0), (1, 1), (0, 1)], toward=(inward, 0, 0))
+    a, border, d = C.EXIT_SIGN_SIZE, 0.02, 0.07
+    zc = C.DOOR_H + 0.12 + 0.06 + border + a / 2
+    _sign(s, sx, inward, d, ym, zc, a, border, "exit_sign", flip=False)
     s.build(col, mats, {"tp_group": f"Room/Wall{tag}"})
-    lights_amb.append(dict(kind="AREA", name=f"exit_{tag}", size=(w, h), power=3.0, color=(0.3, 1.0, 0.55),
+    # 光の色は表示面の平均の色（緑の地に白の図記号）
+    lights_amb.append(dict(kind="AREA", name=f"exit_{tag}", size=(a, a), power=3.0, color=(0.43, 1.0, 0.65),
                            location=(sx + inward * (d + 0.03), ym, zc), aim=(0.0, ym, zc - 1.5)))
+
+
+def _aisle_signs(col, mats, side, lights_amb):
+    """壁ぞいの通路の通路誘導灯（腰板の低い位置）。矢印と人は、前方の非常口（スクリーンの側）へ向ける。"""
+    sx = side * C.ROOM_X
+    inward = -side
+    tag = "L" if side < 0 else "R"
+    p = Part(f"AisleSigns{tag}")
+    a, border, d = C.AISLE_SIGN_SIZE, 0.012, 0.035
+    x_dado = sx + inward * 0.045
+    for letter in C.AISLE_SIGN_ROWS:
+        y = C.row_y(C.ROW_LETTERS.index(letter)) + C.ROW_PITCH / 4
+        fz = C.aisle_floor_z(y)
+        zc = fz + C.AISLE_SIGN_HEIGHT
+        # 画像の矢印は左向き。部屋の内側から見てスクリーンが右に来る左の壁は、左右を反転して右向きにする
+        _sign(p, x_dado, inward, d, y, zc, a, border, "aisle_sign", flip=side < 0)
+        lights_amb.append(dict(kind="AREA", name=f"aisle_sign_{tag}_{letter}", size=(a, a), power=0.8,
+                               color=(0.91, 1.0, 0.94), location=(x_dado + inward * (d + 0.03), y, zc),
+                               aim=(sx + inward * 2.0, y, fz)))
+    p.build(col, mats, {"tp_group": f"Room/Wall{tag}"})
+
+
+def _sign(part, x_wall, inward, depth, y, zc, a, border, mat, flip):
+    """壁（x = x_wall）に付けた誘導灯：白い枠の箱と、正方形の表示面（大きさ a）。
+    表示面の画像は、部屋の内側から見て画像の左が左に来るように貼る（flip なら左右を反転する）。"""
+    xa, xb = sorted((x_wall, x_wall + inward * depth))
+    r = a / 2 + border
+    part.box_between((xa, y - r, zc - r), (xb, y + r, zc + r), "trim_white", bevel=0.004, segments=1)
+    xf = x_wall + inward * (depth + 0.002)
+    # 内側から見た左：左の壁（-x を見る）は -y、右の壁（+x を見る）は +y
+    left, right = (y - a / 2, y + a / 2) if inward > 0 else (y + a / 2, y - a / 2)
+    if flip:
+        left, right = right, left
+    part.quad([(xf, left, zc - a / 2), (xf, right, zc - a / 2), (xf, right, zc + a / 2), (xf, left, zc + a / 2)], mat,
+              uv=[(0, 0), (1, 0), (1, 1), (0, 1)], toward=(inward, 0, 0))
 
 
 def _rear_wall(col, mats, lights_house, lights_amb):
