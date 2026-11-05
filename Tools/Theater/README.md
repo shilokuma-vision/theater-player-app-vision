@@ -59,6 +59,7 @@ swift run -c release --package-path Tools/Theater/RKPreview RKPreview TheaterPla
 
 - 緑は安全色の緑（JIS Z 9103）に近い #009E64（マンセル 5G 5.5/10 のおよその sRGB）。文字（「非常口」「EXIT」）は入れない（図記号だけのコンパクトスクエア型）
 - 表示面は常時灯（ambient）の層で光ります（`tp/materials.py` の `exit_sign`・`aisle_sign`）。白の地の通路誘導灯は、上映中にまぶしくないよう発光を弱めています
+- 表示面の画像は 1024 画素です（0.4 m 角で 1 画素 0.4 mm、0.2 m 角で 0.2 mm。近づいても粗く見えないように）。壁の誘導灯は斜めから見ることが多いので、RealityKit の画像ノード（`ND_RealityKitTexture2D_color3`）で異方性フィルター（16 倍）をかけて読みます（`tp/materials.py` の `aniso`。ほかの素材は今までどおり `ND_image_color3`）
 
 ## 照明の焼き付けと、アプリでの調整
 
