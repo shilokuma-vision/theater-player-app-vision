@@ -49,7 +49,14 @@ let views: [View] = [
     View(name: "G17_open_before", seat: "G-17", target: [0, 4.6, -27], preset: .openHouseBefore),
     View(name: "G17_open", seat: "G-17", target: [0, 4.6, -27], preset: .openHouse),
     View(name: "M30_open_before", seat: "M-30", target: [-1, 6, -27], preset: .openHouseBefore),
-    View(name: "M30_open", seat: "M-30", target: [-1, 6, -27], preset: .openHouse)
+    View(name: "M30_open", seat: "M-30", target: [-1, 6, -27], preset: .openHouse),
+    // 誘導灯（左前の非常口の避難口誘導灯・壁ぞいの通路の通路誘導灯）
+    View(name: "A1_exit_open", seat: "A-1", target: [-13, 2.8, -22.5], preset: .openHouse, horizontalFOV: 50),
+    View(name: "A1_exit_feature", seat: "A-1", target: [-13, 2.8, -22.5], preset: .feature, horizontalFOV: 50),
+    View(name: "F1_aisle_open", seat: "F-1", target: [-13, 0.95, -15.1], preset: .openHouse, horizontalFOV: 60),
+    View(name: "F1_aisle_feature", seat: "F-1", target: [-13, 0.95, -15.1], preset: .feature, horizontalFOV: 60),
+    View(name: "K34_aisle_feature", seat: "K-34", target: [13, 3.1, -9.1], preset: .feature, horizontalFOV: 60),
+    View(name: "M30_exit_feature", seat: "M-30", target: [13, 2.8, -22.5], preset: .feature, horizontalFOV: 60)
 ]
 
 /// アプリ（LightingDirector）と同じ式の客電：暗くするほど暖かく、1 を超えたら白のまま
