@@ -303,7 +303,7 @@ def material_spec(name, atlas, lm):
         albedo = ("tex", p["tex"])
     else:
         albedo = ("color", tuple(float(c) for c in T.srgb_to_lin(np.array(p.get("color", (0.5, 0.5, 0.5))))))
-    spec = dict(albedo=albedo, lightmaps=lm[atlas])
+    spec = dict(albedo=albedo, lightmaps=lm[atlas], aniso=p.get("aniso"))
     if p.get("emit"):
         col, strength, level = p["emit"]
         spec["emit"] = (("tex", p["tex"]) if col == "texture" else ("color", col), strength, level)

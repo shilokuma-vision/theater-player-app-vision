@@ -102,7 +102,7 @@ class Writer:
     # ---------------------------------------------------------------- マテリアル
     def material(self, key, spec):
         """spec：albedo（("tex", ファイル) か ("color", リニアの rgb)）・lightmaps（house・ambient・screen のファイルと倍率）・
-        emit（(("tex", ファイル) か ("color", rgb)), 強さ, 層）。"""
+        emit（(("tex", ファイル) か ("color", rgb)), 強さ, 層）・aniso（色の画像の異方性フィルターの最大。無ければかけない）。"""
         if key in self.materials:
             return key
         mp = f"{self.root}/Materials/{prim_name(key)}"
@@ -118,11 +118,21 @@ class Writer:
             return g.node(f"state_{name}", "ND_image_color3", C3, file=(A, (mat, "lightState")), texcoord=(F2, Gf.Vec2f(u, 0.5)),
                           filtertype=(S, "closest"), uaddressmode=(S, "clamp"), vaddressmode=(S, "clamp"))
 
+        def image(name, file, wrap):
+            """色の画像（UV0）。aniso があれば RealityKit の画像ノードで異方性フィルターをかける
+            （誘導灯の図記号のような細かい絵を、斜めから見てもにじませない）。
+            RealityKit の画像ノードは既定で v を反転するので、ND_image と同じ向きになるよう no_flip_v にする。"""
+            if spec.get("aniso"):
+                mode = {"periodic": "repeat", "clamp": "clamp_to_edge"}[wrap]
+                return g.node(name, "ND_RealityKitTexture2D_color3", C3, file=(A, Sdf.AssetPath(f"textures/{file}")),
+                              texcoord=(F2, (uv0, "out")), u_wrap_mode=(S, mode), v_wrap_mode=(S, mode),
+                              max_anisotropy=(I, int(spec["aniso"])), no_flip_v=(B, True))
+            return g.node(name, "ND_image_color3", C3, file=(A, Sdf.AssetPath(f"textures/{file}")),
+                          texcoord=(F2, (uv0, "out")), uaddressmode=(S, wrap), vaddressmode=(S, wrap))
+
         kind, val = spec["albedo"]
         if kind == "tex":
-            albedo = g.node("albedo", "ND_image_color3", C3, file=(A, Sdf.AssetPath(f"textures/{val}")),
-                            texcoord=(F2, (uv0, "out")), uaddressmode=(S, "periodic"), vaddressmode=(S, "periodic"))
-            albedo = (albedo, "out")
+            albedo = (image("albedo", val, "periodic"), "out")
         else:
             albedo = Gf.Vec3f(*[float(c) for c in val])
         lm = spec["lightmaps"]
@@ -149,8 +159,7 @@ class Writer:
         if spec.get("emit"):
             (ekind, eval_), strength, level = spec["emit"]
             if ekind == "tex":
-                ecol = (g.node("emit_tex", "ND_image_color3", C3, file=(A, Sdf.AssetPath(f"textures/{eval_}")),
-                               texcoord=(F2, (uv0, "out")), uaddressmode=(S, "clamp"), vaddressmode=(S, "clamp")), "out")
+                ecol = (image("emit_tex", eval_, "clamp"), "out")
             else:
                 ecol = Gf.Vec3f(*[float(c) for c in eval_])
             lv = {"house": "houseEmission", "ambient": "ambient", "screen": "screenAverage"}[level]
