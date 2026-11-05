@@ -47,3 +47,4 @@
 - `WebPage.callJavaScript` で呼んだ処理（`a.click()` で動画を開く・AudioContext を作る）は、利用者の操作と同じに扱われ、動画は音ありで始まり、AudioContext は `running` になった（visionOS 26.5 の Simulator）（2026-11-05）
 - xcodebuild のコマンドラインで渡した `SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) DEBUG'` は、ローカルの Swift Package（Packages/TheaterMedia）にも効く。Release に DEBUG の印を付けたビルドで、パッケージの `#if DEBUG` の中の型をアプリから使えた（2026-11-05）
 - Simulator で映画館を開いているとき、RealityKit の空間オーディオ（PHASE の `PullStreamSamplerSlice::Process`）で、たまに EXC_BAD_ACCESS（「Bad access in stack guard region for thread N but crash was associated with thread M - possible stray access?」）で落ちる（2026-10-30・2026-11-05 に見た。変更と関係なく起きる）。確認の操作の途中で落ちたら、まず流し直す（2026-11-05）
+- RealityKit の `AudioGeneratorController`：`stop()` の直後（同じ処理の中）に `play()` を呼ぶと、鳴らずに止まったままになる（visionOS 26.5 の Simulator。`stop()` の直後は `isPlaying` がまだ true）。止めて鳴らし直すときは、少し（0.3 秒）待ってから `play()` を呼ぶ（2026-11-06）
