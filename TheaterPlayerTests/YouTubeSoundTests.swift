@@ -3,7 +3,7 @@
 //  TheaterPlayerTests
 //
 //  デバッグ用の YouTube（デバッグのビルドだけ）の「映画館の音響に通す」：デコードした音を動画の時刻ごとに持つ入れ物、
-//  ページの <video> の時計、空間オーディオの音源が読む輪のバッファの切り替え
+//  ページの <video> の時計、ページの元の音を消すか・空間オーディオを鳴らし直すかの決め方、空間オーディオの音源が読む輪のバッファの切り替え
 //
 
 #if DEBUG
@@ -124,6 +124,57 @@ struct YouTubeSoundTests {
         let seek = clock.update(mediaTime: 40, at: 102, rate: 1, playing: true)
         #expect(seek == nil)
         #expect(try #require(clock.mediaTime(at: 102)) == 40)
+    }
+
+    // MARK: - ページの元の音を消すか・鳴らし直すか
+
+    /// 空間オーディオが描画していて、音声を読めているときだけ、ページの元の音を消す
+    @Test
+    func guardMutesOnlyWhileTheaterSoundWorks() {
+        var guardState = YouTubeSoundGuard()
+        #expect(guardState.update(rendering: true, decoding: false) == .none)
+        #expect(!guardState.mutesOriginal)
+        #expect(guardState.update(rendering: true, decoding: true) == .none)
+        #expect(guardState.mutesOriginal)
+        // 読めなくなったら、すぐにページの音に戻す
+        #expect(guardState.update(rendering: true, decoding: false) == .none)
+        #expect(!guardState.mutesOriginal)
+    }
+
+    /// 描画が止まったら鳴らし直す。消したあとに止まっても、鳴らし直すあいだは消したまま。上限まで止まったままなら、ページの音に戻す
+    @Test
+    func guardHealsThenGivesUp() {
+        var guardState = YouTubeSoundGuard()
+        _ = guardState.update(rendering: true, decoding: true)
+        #expect(guardState.mutesOriginal)
+        var heals: [YouTubeSoundGuard.Action] = []
+        for _ in 0..<(YouTubeSoundGuard.silentLimit * (YouTubeSoundGuard.maxHeals + 1)) {
+            let action = guardState.update(rendering: false, decoding: true)
+            if action != .none {
+                heals.append(action)
+            }
+            if !guardState.gaveUp {
+                #expect(guardState.mutesOriginal)
+            }
+        }
+        #expect(heals == (1...YouTubeSoundGuard.maxHeals).map { .heal(attempt: $0) })
+        #expect(guardState.gaveUp)
+        #expect(!guardState.mutesOriginal)
+        // あきらめたら、描画が戻っても消さない（スイッチを入れ直すまで）
+        #expect(guardState.update(rendering: true, decoding: true) == .none)
+        #expect(!guardState.mutesOriginal)
+    }
+
+    /// 消す前から描画が止まっていても（音声のセッションが有効でないなど）鳴らし直し、戻ったら消す
+    @Test
+    func guardHealsBeforeMuting() {
+        var guardState = YouTubeSoundGuard()
+        #expect(guardState.update(rendering: false, decoding: true) == .none)
+        #expect(guardState.update(rendering: false, decoding: true) == .heal(attempt: 1))
+        #expect(!guardState.mutesOriginal)
+        #expect(guardState.update(rendering: true, decoding: true) == .none)
+        #expect(guardState.mutesOriginal)
+        #expect(guardState.silentSeconds == 0)
     }
 
     // MARK: - 音源の切り替え
