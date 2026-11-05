@@ -16,7 +16,25 @@ extension YouTubeBrowser {
     /// スイッチの状態を、ページのスクリプトと音源に渡す（入れた・切った・ページを読み込んだ・閉じた）
     func applySoundRoute() {
         let active = routesSoundThroughTheater && page != nil
+        let wasActive = sound?.isActive ?? false
         sound?.setActive(active)
+        sentOriginalMuted = nil
+        if active != wasActive {
+            let troubled = soundGuard.heals > 0 || soundGuard.silentSeconds > 0
+            soundGuard = YouTubeSoundGuard()
+            soundNotes = []
+            if active {
+                // 音声のセッションは、手元のファイルを開くまで有効にしない。YouTube だけ見ているときのために、ここで有効にする
+                soundNotes.append("音声のセッションを\(soundSession.activate(mixing: false))")
+            } else {
+                // 混ぜる設定にしていたら戻す。通しているあいだに空間オーディオが止まったなら、手元のファイルの音を鳴らせるよう、
+                // 音源を鳴らし直す（うまく鳴っていたときは触らない）
+                soundSession.restore()
+                if troubled {
+                    _ = restartSpeakers?()
+                }
+            }
+        }
         followReport(active)
         guard let page else {
             soundPage = nil
@@ -50,10 +68,42 @@ extension YouTubeBrowser {
                 guard !Task.isCancelled else {
                     return
                 }
+                guard let self else {
+                    return
+                }
                 let report = sound.report()
-                self?.soundReport = report
-                Diagnostics.log("YouTube の音 \(report.logDescription) page=\(self?.soundPage?.logDescription ?? "なし")")
+                soundReport = report
+                follow(report)
+                Diagnostics.log(
+                    "YouTube の音 \(report.logDescription) guard=\(soundGuard.logDescription) " +
+                        "session=\(soundSession.summary) event=\(soundSession.lastEvent) page=\(soundPage?.logDescription ?? "なし")"
+                )
             }
+        }
+    }
+
+    /// 1 秒ごとの様子から、空間オーディオを鳴らし直すか・ページの元の音を消すかを決める
+    private func follow(_ report: YouTubeSound.Report) {
+        let decoding = !report.format.isEmpty && report.problem.isEmpty
+        if case let .heal(attempt) = soundGuard.update(rendering: report.renders > 0, decoding: decoding) {
+            // 1 回目は有効にし直すだけ。2 回目からは、ほかの音（WebKit の再生）と混ぜる設定にする
+            let result = soundSession.activate(mixing: attempt >= 2)
+            let stopped = restartSpeakers?() ?? -1
+            let note = "鳴らし直した（\(attempt) 回目）：音声のセッションを\(result)・止まっていた音源 \(stopped) 本"
+            soundNotes.append(note)
+            Diagnostics.log("YouTube の音 \(note)")
+        }
+        let muted = soundGuard.mutesOriginal
+        guard muted != sentOriginalMuted, let page else {
+            return
+        }
+        sentOriginalMuted = muted
+        Task {
+            _ = try? await page.callJavaScript(
+                YouTubeSoundScript.setOriginalMuted,
+                arguments: ["muted": muted],
+                contentWorld: YouTubeSoundScript.world
+            )
         }
     }
 
@@ -66,7 +116,7 @@ extension YouTubeBrowser {
         case "state":
             soundPage = YouTubeSoundPageState(message: message)
         case "ready":
-            // 読み込み直したページに、スイッチの状態を渡し直す
+            // 読み込み直したページに、スイッチの状態を渡し直す（元の音を消してよいかは、次の様子で渡し直す）
             if routesSoundThroughTheater {
                 applySoundRoute()
             }
@@ -85,16 +135,19 @@ struct YouTubeSoundPageState: Equatable {
     var active: String
     /// ページの元の音を消している
     var muted: Bool
+    /// アプリが、ページの元の音を消してよいと言っている
+    var mutesOriginal: Bool
 
     init(message: [String: Any]) {
         enabled = (message["enabled"] as? NSNumber)?.boolValue ?? false
         buffers = (message["buffers"] as? NSNumber)?.intValue ?? 0
         active = message["active"] as? String ?? ""
         muted = (message["muted"] as? NSNumber)?.boolValue ?? false
+        mutesOriginal = (message["mutesOriginal"] as? NSNumber)?.boolValue ?? false
     }
 
     var logDescription: String {
-        "enabled=\(enabled) buffers=\(buffers) active=\(active.isEmpty ? "なし" : active) muted=\(muted)"
+        "enabled=\(enabled) buffers=\(buffers) active=\(active.isEmpty ? "なし" : active) muted=\(muted) mutesOriginal=\(mutesOriginal)"
     }
 }
 
@@ -113,9 +166,16 @@ extension YouTubeSound.Report {
             "bytes=\(bytes)",
             "peak=\(String(format: "%.3f", peak))",
             "readers=\(readers)",
+            "renders=\(String(format: "%.0f", renders))/s",
             "problem=\(problem.isEmpty ? "なし" : problem)"
         ]
         return values.joined(separator: " ")
+    }
+}
+
+extension YouTubeSoundGuard {
+    var logDescription: String {
+        "mutesOriginal=\(mutesOriginal) heals=\(heals) gaveUp=\(gaveUp) silent=\(silentSeconds)s"
     }
 }
 

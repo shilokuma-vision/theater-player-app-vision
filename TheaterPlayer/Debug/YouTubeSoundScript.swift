@@ -14,7 +14,8 @@
 //    そのため、ページの世界（.page）で、読み込みの始めに動かす
 //  - 音声の断片は、スイッチを切っているあいだもページの中にだけ写しておく（入れたとき、もう MSE に入った先の分も送れるように）。
 //    アプリへ送るのは、入れているあいだだけ
-//  - 入れているあいだは（速さが 1 倍のとき）、<video> の本当の muted を true にして、ページの元の音を消す。ページ（YouTube）からは、
+//  - 入れているあいだ、アプリが映画館の音響で鳴らせていると確かめたら（setOriginalMuted。速さが 1 倍のとき）、
+//    <video> の本当の muted を true にして、ページの元の音を消す。鳴らせないあいだは消さない（無音にしない）。ページ（YouTube）からは、
 //    元の muted が見えるようにする（<video> に muted の読み書きを被せる）。音量とミュートは、アプリへ送って音量に掛ける。
 //    切ると、被せた物を外して元に戻す
 //
@@ -30,6 +31,8 @@ enum YouTubeSoundScript {
 
     /// スイッチを入れる・切る（callJavaScript に渡す関数の中身。引数は enabled）
     static let setEnabled = "return window.__theaterSound ? window.__theaterSound.setEnabled(enabled) : null;"
+    /// ページの元の音を消してよいか（アプリが映画館の音響で鳴らせていると確かめたときだけ true。引数は muted）
+    static let setOriginalMuted = "return window.__theaterSound ? window.__theaterSound.setOriginalMuted(muted) : null;"
 
     static var userScript: WKUserScript {
         WKUserScript(source: source, injectionTime: .atDocumentStart, forMainFrameOnly: true, in: world)
@@ -42,7 +45,7 @@ enum YouTubeSoundScript {
     /// - remove：ページが MSE から消した範囲（id・start・end。秒）
     /// - abort：ページが断片の読み込みをやめた（id）
     /// - clock：<video> の時計（time・at（1970 年からのミリ秒）・rate・playing・volume（ミュートなら 0））
-    /// - state：様子（enabled・buffers・active・muted）
+    /// - state：様子（enabled・buffers・active・muted（元の音を消している）・mutesOriginal（アプリが消してよいと言っている））
     static let source = #"""
     (() => {
       "use strict";
@@ -72,6 +75,8 @@ enum YouTubeSoundScript {
       let sent = null;
       // 本当の muted を true にしている <video> と、ページから見える muted
       let shadow = null;
+      // アプリが、ページの元の音を消してよいと言っている
+      let mutesOriginal = false;
       let timer = 0;
 
       function isInitialization(bytes) {
@@ -262,7 +267,7 @@ enum YouTubeSoundScript {
       }
 
       function report() {
-        post({ type: "state", enabled, buffers: records.size, active: sent ? sent.type : "", muted: !!shadow });
+        post({ type: "state", enabled, buffers: records.size, active: sent ? sent.type : "", muted: !!shadow, mutesOriginal });
       }
 
       // 再生している入れ物を送る（替わったら、写しておいた断片から）。音声の入れ物が見つかったときだけ、元の音を消す
@@ -284,18 +289,29 @@ enum YouTubeSoundScript {
           report();
         }
         // 速さが 1 倍でないあいだは、アプリは鳴らさないので、ページの音のままにする
-        if (record && record.init && video.playbackRate === 1) {
+        const wasMuted = !!shadow;
+        if (record && record.init && mutesOriginal && video.playbackRate === 1) {
           mute(video);
         } else {
           unmute();
         }
+        if (wasMuted !== !!shadow) {
+          report();
+        }
         reportClock(video);
+      }
+
+      function setOriginalMuted(value) {
+        mutesOriginal = !!value;
+        sync();
+        return !!shadow;
       }
 
       function setEnabled(value) {
         enabled = !!value;
         clearInterval(timer);
         sent = null;
+        mutesOriginal = false;
         if (enabled) {
           timer = setInterval(sync, 250);
           sync();
@@ -309,7 +325,7 @@ enum YouTubeSoundScript {
       for (const type of ["play", "playing", "pause", "seeking", "seeked", "ratechange", "waiting", "volumechange", "ended", "emptied"]) {
         document.addEventListener(type, () => sync(), true);
       }
-      window.__theaterSound = { setEnabled };
+      window.__theaterSound = { setEnabled, setOriginalMuted };
       post({ type: "ready" });
     })();
     """#

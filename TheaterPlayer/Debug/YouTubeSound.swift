@@ -70,6 +70,9 @@ nonisolated final class YouTubeSound: @unchecked Sendable {
         var jitterSum = 0.0
         var jitterCount = 0
         var missingFrames = 0
+        /// 前に様子を読んだときの、音源の描画の回数（通し）とホストの時刻
+        var renderCount = 0
+        var reportedHost = mach_absolute_time()
     }
 
     /// 鳴らすスレッドだけが持つ状態
@@ -127,7 +130,10 @@ nonisolated final class YouTubeSound: @unchecked Sendable {
         inputQueue.async { [self] in
             decoder.stop()
             store.clear()
-            shared.withLock { $0 = Shared(audioDelay: $0.audioDelay) }
+            shared.withLock {
+                $0 = Shared(audioDelay: $0.audioDelay)
+                $0.renderCount = SpeakerRoute.shared.renderCount
+            }
             decoderStatus.value.withLock { $0 = nil }
         }
         guard value else {
@@ -340,15 +346,23 @@ nonisolated final class YouTubeSound: @unchecked Sendable {
         processor.outputGain = engine.processor.outputGain
         ring.volume = engine.ring.volume
     }
+}
 
+extension YouTubeSound {
     // MARK: - 様子
 
     /// 前に読んでからの様子
     func report() -> Report {
         let now = Date().timeIntervalSince1970
+        let host = mach_absolute_time()
+        let renderCount = SpeakerRoute.shared.renderCount
         let milliseconds = 1_000 / Double(YouTubeAudioStore.sampleRate)
         let (base, mediaNow) = shared.withLock { shared -> (Report, Double?) in
             var report = shared.report
+            let elapsed = max(HostTime.seconds(from: shared.reportedHost, to: host), 0.001)
+            report.renders = Double(renderCount - shared.renderCount) / elapsed
+            shared.renderCount = renderCount
+            shared.reportedHost = host
             report.offset = shared.offsetCount > 0 ? shared.offsetSum / Double(shared.offsetCount) * milliseconds : 0
             report.clockJitter = shared.jitterCount > 0 ? shared.jitterSum / Double(shared.jitterCount) * 1_000 : 0
             report.missing = Double(shared.missingFrames) * milliseconds
@@ -403,6 +417,8 @@ extension YouTubeSound {
         var peak: Float = 0
         /// YouTube の輪のバッファを、最近読んだ空間オーディオの音源の数
         var readers = 0
+        /// 空間オーディオの音源の描画が呼ばれた回数（1 秒あたり。全部の音源。0 なら空間オーディオが止まっている）
+        var renders = 0.0
         /// 動画を再生している（速さは 1 倍）
         var isPlaying = false
         /// 動画の再生の速さ（1 倍以外のあいだは鳴らさない。ページの音のまま）

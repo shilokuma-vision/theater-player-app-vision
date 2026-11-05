@@ -39,6 +39,16 @@ final class YouTubeBrowser {
     var soundDelay = 0 {
         didSet { sound?.audioDelay = Double(soundDelay) / 1_000 }
     }
+    /// ページの元の音を消してよいか・空間オーディオを鳴らし直すかを決める（通しているあいだ）
+    var soundGuard = YouTubeSoundGuard()
+    /// 音声のセッションを有効にし直した・鳴らし直したこと（通しているあいだ。起きた順）
+    var soundNotes: [String] = []
+    /// アプリの音声のセッションの様子と、有効にし直す操作
+    let soundSession = YouTubeAudioSession()
+    /// 空間オーディオの音源を鳴らし直す（AppModel が今の舞台につなぐ。止まっていた音源の数を返す。舞台が無ければ -1）
+    @ObservationIgnored var restartSpeakers: (() -> Int)?
+    /// ページに最後に渡した「元の音を消してよいか」（ページを読み込み直した・入れ直したら nil）
+    @ObservationIgnored var sentOriginalMuted: Bool?
     /// ページから写した音を、映画館の音響の処理に通す（作れなければ nil）
     @ObservationIgnored let sound: YouTubeSound?
     @ObservationIgnored var reportTask: Task<Void, Never>?
