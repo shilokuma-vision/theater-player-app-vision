@@ -43,9 +43,15 @@ final class SpatialSpeakers {
             parent.addChild(entity)
             entity.look(at: emitter.position + emitter.forward, from: emitter.position, relativeTo: parent)
             entity.components.set([Self.audioComponent(for: emitter.bus)])
+            #if DEBUG
+            // デバッグの YouTube の音を映画館の音響に通しているあいだは、そちらを鳴らす
+            let renderBlock = SpeakerRoute.shared.renderBlock(feed: index, main: ring)
+            #else
+            let renderBlock = ring.renderBlock(feed: index)
+            #endif
             do {
                 let controller = try entity.prepareAudio(configuration: AudioGeneratorConfiguration(layoutTag: kAudioChannelLayoutTag_Mono),
-                                                         ring.renderBlock(feed: index))
+                                                         renderBlock)
                 controllers.append(controller)
             } catch {
                 continue
@@ -63,6 +69,26 @@ final class SpatialSpeakers {
     func stop() {
         controllers.forEach { $0.stop() }
     }
+
+    #if DEBUG
+    /// デバッグの YouTube：音源を鳴らし直す（空間オーディオが止まったとき）。止まっていた音源の数を返す。
+    /// 止まっている物が無ければ、全部をいったん止めてから鳴らす（鳴っている扱いのまま、描画されていないことがあるため）。
+    /// 止めた直後に鳴らしても鳴らない（Simulator で確かめた。止まったままになる）ので、少し待ってから鳴らす
+    @discardableResult
+    func restart() -> Int {
+        let stopped = controllers.filter { !$0.isPlaying }.count
+        guard stopped == 0 else {
+            play()
+            return stopped
+        }
+        stop()
+        Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(300))
+            self?.controllers.forEach { $0.play() }
+        }
+        return 0
+    }
+    #endif
 
     /// 音源を止めて外す（同じ輪のバッファを、古い舞台の音源が読み続けないように）
     func remove() {
