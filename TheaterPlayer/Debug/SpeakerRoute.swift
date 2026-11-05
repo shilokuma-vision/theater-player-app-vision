@@ -18,9 +18,15 @@ nonisolated final class SpeakerRoute: Sendable {
 
     /// 再生のエンジンの物の代わりに鳴らす輪のバッファ（nil なら再生のエンジンの物）
     private let replacement = Mutex<SpeakerFeedRing?>(nil)
+    /// 描画の関数が呼ばれた回数（全部の音源の通し）。空間オーディオが止まっていないかを見る
+    private let renders = Atomic<Int>(0)
 
     func use(_ ring: SpeakerFeedRing?) {
         replacement.withLock { $0 = ring }
+    }
+
+    var renderCount: Int {
+        renders.load(ordering: .relaxed)
     }
 
     /// feed 番目の音源の描画の関数（SpeakerFeedRing.renderBlock と同じく、オーディオのリアルタイムのスレッドから呼ばれる）。
@@ -29,6 +35,7 @@ nonisolated final class SpeakerRoute: Sendable {
         let mainBlock = main.renderBlock(feed: feed)
         let gain = ReplacementGain()
         return { [self] isSilence, timestamp, frameCount, bufferList in
+            renders.add(1, ordering: .relaxed)
             guard let ring = replacement.withLock({ $0 }) else {
                 // 次に切り替えたとき、無音から上げる
                 gain.value = 0
