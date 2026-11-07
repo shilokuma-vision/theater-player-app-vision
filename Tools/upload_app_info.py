@@ -259,6 +259,15 @@ def load_availability(raw, problems: list[str]) -> dict | None:
         and all(isinstance(code, str) and TERRITORY_PATTERN.fullmatch(code) for code in territories)
     ):
         problems.append("availability.territories は \"ALL\" か、国と地域の 3 文字のコードの配列で書く（例: [\"JPN\"]）")
+    excluded = availability.get("excludedTerritories")
+    if excluded is not None and not (
+        territories == "ALL" and isinstance(excluded, list)
+        and all(isinstance(code, str) and TERRITORY_PATTERN.fullmatch(code) for code in excluded)
+    ):
+        problems.append(
+            "availability.excludedTerritories は territories が \"ALL\" のときだけ、"
+            "国と地域の 3 文字のコードの配列で書く（例: [\"CHN\"]）"
+        )
     if not isinstance(availability.get("availableInNewTerritories"), bool):
         problems.append("availability.availableInNewTerritories は true か false で書く")
     return availability
@@ -486,6 +495,32 @@ def _is_zero(price) -> bool:
         return False
 
 
+def all_territories(client) -> list[str]:
+    """App Store Connect の国と地域のコードをすべて返す（1 回の実行で何度も読まないよう、client に覚えておく）。"""
+    cached = getattr(client, "_all_territories", None)
+    if cached is None:
+        cached = [entry["id"] for entry in client.get_all("/v1/territories")]
+        client._all_territories = cached
+    return cached
+
+
+def selected_territories(availability: dict | None, territories: list[str]) -> list[str]:
+    """配信状況の書き方（"ALL" と excludedTerritories、または 3 文字のコードの配列）から、配信する国と地域を返す。
+
+    配信状況を書いていないときは、すべての国と地域。
+    """
+    if availability is None or availability["territories"] == "ALL":
+        excluded = set((availability or {}).get("excludedTerritories") or [])
+        unknown = sorted(excluded - set(territories))
+        selected = [code for code in territories if code not in excluded]
+    else:
+        unknown = sorted(set(availability["territories"]) - set(territories))
+        selected = list(availability["territories"])
+    if unknown:
+        raise SystemExit(f"App Store Connect に無い国と地域のコード: {', '.join(unknown)}")
+    return selected
+
+
 def plan_availability(client, app: dict, availability: dict, reminders: list[str]) -> Step:
     label = "配信状況"
     current = client.get_or_none(f"/v1/apps/{app['id']}/appAvailabilityV2")
@@ -496,13 +531,15 @@ def plan_availability(client, app: dict, availability: dict, reminders: list[str
             reminders.append("価格および配信状況の、配信する国と地域（1 つも選ばれていません）")
         return label, [f"    設定済みなので触りません（{count} の国と地域で配信。変えるときは App Store Connect で）"], None
 
-    territories = [entry["id"] for entry in client.get_all("/v1/territories")]
-    selected = territories if availability["territories"] == "ALL" else availability["territories"]
-    unknown = sorted(set(selected) - set(territories))
-    if unknown:
-        raise SystemExit(f"App Store Connect に無い国と地域のコード: {', '.join(unknown)}")
+    territories = all_territories(client)
+    selected = selected_territories(availability, territories)
     new_territories = "はい" if availability["availableInNewTerritories"] else "いいえ"
-    lines = [f"    （未設定） → {len(selected)} の国と地域で配信（新しい国と地域にも自動で配信: {new_territories}）"]
+    excluded = availability.get("excludedTerritories") or []
+    excluded_note = f"。配信しない: {', '.join(excluded)}" if excluded else ""
+    lines = [
+        f"    （未設定） → {len(selected)} の国と地域で配信"
+        f"（新しい国と地域にも自動で配信: {new_territories}{excluded_note}）"
+    ]
 
     # 配信しない国と地域も available: false で明示し、すべての国と地域の扱いを 1 回で決める
     return label, lines, lambda: client.post(
