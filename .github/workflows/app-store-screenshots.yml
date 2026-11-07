@@ -297,7 +297,8 @@ jobs:
     # 撮影が途中で失敗した表示サイズも artifact は残るので、反映の前に中身を検査して落とす
     if: ${{ !cancelled() && needs.plan.outputs.should_upload == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 取り込みが終わらない画像は 300 秒待ってから上げ直す（Tools/upload_screenshots.py）。1 言語で 10 分ほど延びることがあるので長めにする
+    timeout-minutes: 90
     strategy:
       # missing_locales: create のとき、表示サイズごとのジョブが同じ言語を同時に作ろうとして失敗するので 1 本ずつ
       max-parallel: 1
