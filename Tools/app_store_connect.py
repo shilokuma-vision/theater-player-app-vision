@@ -52,8 +52,10 @@ EDITABLE_APP_INFO_STATES = {
     "REJECTED",
 }
 
-#: アップロード後、Apple 側の取り込みが終わるのを待つ上限（秒）
-DELIVERY_TIMEOUT = 300
+#: アップロード後、Apple 側の取り込みが終わるのを待つ上限（秒）。
+#: ふつうは数十秒で終わるが、1 枚だけいつまでも終わらないことがある（2026-11、visionOS の 3840x2160）。
+#: 終わらなかった物は Tools/upload_screenshots.py が上げ直す
+DELIVERY_TIMEOUT = 600
 
 #: 1 リクエストあたりの待ち時間の上限（秒）。指定しないと応答が無いときに無期限に待つ
 REQUEST_TIMEOUT = 60
@@ -370,31 +372,33 @@ class AppStoreConnect:
             {"data": [{"type": "appScreenshots", "id": i} for i in screenshot_ids]},
         )
 
-    def wait_for_delivery(self, screenshot_ids: list[str]) -> None:
-        """Apple 側の取り込みが終わるまで待つ。失敗していればここで気づける。"""
+    def wait_for_delivery(self, screenshot_ids: list[str]) -> dict[str, str]:
+        """Apple 側の取り込みが終わるまで待つ。取り込みに失敗した物と、時間内に終わらなかった物を、id → 理由 で返す。
+
+        呼び出し側でその画像だけを上げ直せるよう、ここでは止めずに返す。
+        """
         if self.dry_run:
-            return
+            return {}
         deadline = time.time() + DELIVERY_TIMEOUT
         pending = list(screenshot_ids)
+        problems: dict[str, str] = {}
+        last_states: dict[str, str] = {}
         while pending and time.time() < deadline:
             still_pending = []
             for screenshot_id in pending:
                 attributes = self.get(f"/v1/appScreenshots/{screenshot_id}")["data"]["attributes"]
                 state = attributes.get("assetDeliveryState") or {}
                 if state.get("errors"):
-                    raise SystemExit(
-                        f"{attributes.get('fileName')} の取り込みに失敗しました: {state['errors']}"
-                    )
-                if state.get("state") != "COMPLETE":
+                    problems[screenshot_id] = f"{attributes.get('fileName')} の取り込みに失敗しました: {state['errors']}"
+                elif state.get("state") != "COMPLETE":
                     still_pending.append(screenshot_id)
+                    last_states[screenshot_id] = f"{attributes.get('fileName')}（{state.get('state')}）"
             pending = still_pending
             if pending:
                 time.sleep(5)
-        if pending:
-            raise SystemExit(
-                f"{len(pending)} 枚の取り込みが {DELIVERY_TIMEOUT} 秒で終わりませんでした。"
-                "App Store Connect の画面で状態を確認してください。"
-            )
+        for screenshot_id in pending:
+            problems[screenshot_id] = f"{last_states[screenshot_id]} の取り込みが {DELIVERY_TIMEOUT} 秒で終わりません"
+        return problems
 
 
 def make_token(key_id: str, issuer_id: str, private_key: str) -> str:
