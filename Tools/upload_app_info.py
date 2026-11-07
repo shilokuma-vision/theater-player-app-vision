@@ -494,7 +494,8 @@ def plan_pricing(client, app: dict, pricing: dict) -> Step:
     label = "価格"
     schedule = client.get_or_none(f"/v1/apps/{app['id']}/appPriceSchedule")
     if schedule is not None:
-        manual_prices = client.get(f"/v1/appPriceSchedules/{schedule['id']}/manualPrices", {"limit": 1}).get("data")
+        # 価格を一度も設定していないアプリでも appPriceSchedule は返るが、その manualPrices は 404 になる（未設定として扱う）
+        manual_prices = client.get_or_none(f"/v1/appPriceSchedules/{schedule['id']}/manualPrices", {"limit": 1})
         if manual_prices:
             return label, ["    設定済みなので触りません（変えるときは App Store Connect の「価格および配信状況」で）"], None
 
