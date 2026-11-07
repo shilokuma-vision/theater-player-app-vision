@@ -370,12 +370,17 @@ class AppStoreConnect:
             {"data": [{"type": "appScreenshots", "id": i} for i in screenshot_ids]},
         )
 
-    def wait_for_delivery(self, screenshot_ids: list[str]) -> None:
-        """Apple 側の取り込みが終わるまで待つ。失敗していればここで気づける。"""
+    def wait_for_delivery(self, screenshot_ids: list[str]) -> list[str]:
+        """Apple 側の取り込みが終わるまで待ち、時間内に終わらなかった物の id を返す。失敗していればここで気づける。
+
+        ほかの画像は数十秒で終わるのに、1 枚だけ取り込みがいつまでも終わらないことがある（2026-11、visionOS の 3840x2160）。
+        終わらなかった物を呼び出し側で上げ直せるよう、ここでは止めずに返す。
+        """
         if self.dry_run:
-            return
+            return []
         deadline = time.time() + DELIVERY_TIMEOUT
         pending = list(screenshot_ids)
+        last_states: dict[str, str] = {}
         while pending and time.time() < deadline:
             still_pending = []
             for screenshot_id in pending:
@@ -387,14 +392,13 @@ class AppStoreConnect:
                     )
                 if state.get("state") != "COMPLETE":
                     still_pending.append(screenshot_id)
+                    last_states[screenshot_id] = f"{attributes.get('fileName')}（{state.get('state')}）"
             pending = still_pending
             if pending:
                 time.sleep(5)
-        if pending:
-            raise SystemExit(
-                f"{len(pending)} 枚の取り込みが {DELIVERY_TIMEOUT} 秒で終わりませんでした。"
-                "App Store Connect の画面で状態を確認してください。"
-            )
+        for screenshot_id in pending:
+            print(f"    {DELIVERY_TIMEOUT} 秒で取り込みが終わらない: {last_states[screenshot_id]}")
+        return pending
 
 
 def make_token(key_id: str, issuer_id: str, private_key: str) -> str:

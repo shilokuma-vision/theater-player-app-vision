@@ -37,7 +37,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from app_store_config import MAX_SCREENSHOTS, bundle_id, languages, parse_list
-from app_store_connect import AppStoreConnect
+from app_store_connect import DELIVERY_TIMEOUT, AppStoreConnect
 
 
 def screenshots_for(directory: Path) -> list[Path]:
@@ -157,7 +157,23 @@ def main() -> int:
 
         screenshot_ids = [client.upload(set_id, image) for image in images]
         client.reorder(set_id, screenshot_ids)
-        client.wait_for_delivery(screenshot_ids)
+        pending = client.wait_for_delivery(screenshot_ids)
+        # 取り込みが終わらない物は、消して上げ直す（1 回だけ）。並び順は上げ直した物で揃え直す
+        if pending:
+            retried = []
+            for screenshot_id in pending:
+                index = screenshot_ids.index(screenshot_id)
+                print(f"  {target.language}: {images[index].name} の取り込みが終わらないので、上げ直します")
+                client.delete(f"/v1/appScreenshots/{screenshot_id}")
+                screenshot_ids[index] = client.upload(set_id, images[index])
+                retried.append(screenshot_ids[index])
+            client.reorder(set_id, screenshot_ids)
+            pending = client.wait_for_delivery(retried)
+        if pending:
+            raise SystemExit(
+                f"{target.language}: {len(pending)} 枚の取り込みが、上げ直しても {DELIVERY_TIMEOUT} 秒で終わりませんでした。"
+                "App Store Connect の画面で状態を確認してください。"
+            )
         uploaded_total += len(images)
         print(f"  {target.language} → {target.store_locale}: {len(images)} 枚")
 
