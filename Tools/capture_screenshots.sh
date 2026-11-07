@@ -200,6 +200,13 @@ wait_until_ready() {
     done
 }
 
+# アプリが動いているか。アプリが落ちるとホーム画面が「落ち着いた画面」として撮れてしまい、寸法の検査では気づけない
+# （GitHub Actions の macOS ランナー（仮想マシン）の Simulator では、映画館を描くと描画のサーバーが落ち、アプリも止められる）
+app_is_running() {
+    xcrun simctl spawn "$UDID" launchctl list 2>/dev/null \
+        | awk -v label="UIKitApplication:${BUNDLE_ID}[" 'index($3, label) == 1 && $1 ~ /^[0-9]+$/ { found = 1 } END { exit !found }'
+}
+
 # 起動直後はウィンドウやシートが出てくる途中だったりするので、連続で撮った 2 枚が同じになるまで待つ。
 # visionOS には時刻の表示が無いので、アニメーションが終われば画面は変わらない
 capture_when_settled() {
@@ -246,6 +253,11 @@ while IFS=$'\t' read -r -u 3 language apple_language apple_locale store_locale; 
             -AppleLocale "$apple_locale" >/dev/null
         wait_until_ready "$file.png"
         capture_when_settled "$destination/$file.png"
+        if ! app_is_running; then
+            echo "::error::$file.png を撮るあいだにアプリが落ちました（仮想マシンの Simulator では映画館を描けない。映画館の場面は手元の Mac で撮る）"
+            rm -f "$destination/$file.png"
+            exit 1
+        fi
         echo "  $file.png"
     done 4< <(printf '%s\n' "$SCENE_LIST")
     echo "::endgroup::"
