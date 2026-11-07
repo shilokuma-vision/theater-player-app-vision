@@ -14,7 +14,12 @@ struct TheaterPlayer: App {
     @State private var immersion: ImmersionStyle = .full
 
     init() {
+        #if DEBUG || SCREENSHOT_DEMO
+        // 撮影モードでは、実データと混ざらないデモの設定と最近の一覧を使う
+        let appModel = ScreenshotDemo.makeAppModel() ?? AppModel()
+        #else
         let appModel = AppModel()
+        #endif
         _appModel = State(initialValue: appModel)
         // Siri・ショートカットの App の操作（PlaybackIntents）にも、同じ AppModel を渡す
         AppDependencyManager.shared.add(dependency: appModel)
@@ -38,11 +43,11 @@ struct TheaterPlayer: App {
         .immersionStyle(selection: $immersion, in: .full)
     }
 
-    /// 撮影モード（ScreenshotDemo）のときは、撮る画面を開く
-    @ViewBuilder private var rootView: some View {
-        switch ScreenshotDemo.scene {
-        case .home, nil:
-            LibraryView()
-        }
+    /// 最初のウィンドウ。撮影モード（ScreenshotDemo）のときは、ここから撮る場面を開く（映画館に入る場面は、ライブラリから入る）
+    private var rootView: some View {
+        LibraryView()
+        #if DEBUG || SCREENSHOT_DEMO
+            .modifier(ScreenshotDemo.Director())
+        #endif
     }
 }

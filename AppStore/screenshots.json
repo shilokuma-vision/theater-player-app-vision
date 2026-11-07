@@ -11,7 +11,12 @@
     "              visionOS の表示サイズは Apple Vision Pro（3840x2160）の 1 つだけ。Simulator の「Apple Vision Pro」がこの寸法で撮れる。"
   ],
   "scenes": [
-    { "file": "01_home", "scene": "home" }
+    { "file": "01_theater", "scene": "theater" },
+    { "file": "02_controls", "scene": "controls" },
+    { "file": "03_seats", "scene": "seats" },
+    { "file": "04_lobby", "scene": "lobby" },
+    { "file": "05_lighting", "scene": "lighting" },
+    { "file": "06_library", "scene": "library" }
   ],
   "displayTypes": {
     "APP_APPLE_VISION_PRO": {
