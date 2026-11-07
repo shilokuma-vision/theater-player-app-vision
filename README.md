@@ -155,6 +155,7 @@ Archive / Upload ワークフローは App Store Connect API Key で認証しま
 
 API Key は App Store Connect の「ユーザとアクセス → 統合 → App Store Connect API」で、App Manager 以上の権限で発行します。
 App Store の掲載情報の反映で使う、審査の連絡先の Secrets（任意）は「8. App Store の掲載情報」を参照してください。
+TestFlight の内部テスターのメールアドレスの Secret（任意）は「5. App Store Connect にアプリを作成する」の「TestFlight の内部テスター」を参照してください。
 
 ### 5. App Store Connect にアプリを作成する
 
@@ -167,14 +168,17 @@ SKU は Bundle ID と同じ値にします。SKU はユーザーには見えな�
 
 #### TestFlight の内部テスター
 
-Upload ワークフローは、アップロードの前に TestFlight の内部テストグループ「Internal Testers」を作り、変数 `TESTFLIGHT_INTERNAL_TESTERS` のメールアドレスを内部テスターに追加します（[.github/scripts/ensure-internal-testers.rb](.github/scripts/ensure-internal-testers.rb)）。グループは「すべてのビルドへのアクセス」を有効にして作るため、以降のビルドは処理が終わりしだい自動で配信されます。2 回目以降の Upload では確認だけで何もしません。
+Upload ワークフローは、アップロードの前に TestFlight の内部テストグループ「Internal Testers」を作り、Secret `TESTFLIGHT_INTERNAL_TESTERS` のメールアドレスを内部テスターに追加します（[.github/scripts/ensure-internal-testers.rb](.github/scripts/ensure-internal-testers.rb)）。グループは「すべてのビルドへのアクセス」を有効にして作るため、以降のビルドは処理が終わりしだい自動で配信されます。2 回目以降の Upload では確認だけで何もしません。
 
-| 変数 | 内容 |
+| Secret | 内容 |
 |---|---|
-| `TESTFLIGHT_INTERNAL_TESTERS` | 内部テスターにするメールアドレス。複数のときはカンマ区切り。Organization の変数に登録しておくと、テンプレートから作ったリポジトリすべてで使われます。空なら何もしません |
+| `TESTFLIGHT_INTERNAL_TESTERS` | 内部テスターにするメールアドレス。複数のときはカンマ区切り。Organization の Secret に登録しておくと、テンプレートから作ったリポジトリすべてで使われます（Free プランの Organization の Secret は public リポジトリからしか使えません。private リポジトリではリポジトリの Secret に登録します）。空なら何もしません |
 
+- メールアドレスは、変数ではなく Secret に入れます。変数の値はステップの `env:` の表示で Actions のログにそのまま出ます（public リポジトリのログは誰でも見られます）
+- Upload のログ・注釈・Job Summary では、メールアドレスを伏せて「書いた順の何件目か（`t***@example.com`）」で示します。Secret は登録した後に値を見られないので、書いた順は控えておきます
+- 以前は変数 `TESTFLIGHT_INTERNAL_TESTERS` で渡していました。変数が残っていて Secret が無いと、Upload は内部テスターの設定を省いて警告を出します。Secret に移したら、Organization のほかのリポジトリが変数を使っていないかを確かめてから変数を消します
 - 内部テスターになれるのは App Store Connect のユーザー（「ユーザとアクセス」に登録されているメンバー）だけです
-- テスターの追加に失敗してもアップロードは止めません。失敗したメールアドレスは Job Summary に表示されます
+- テスターの追加に失敗してもアップロードは止めません。失敗した人は Job Summary に何件目かで表示され、原因を追う手がかり（テスターの記録・入っているグループ・App Store Connect のユーザーか・招待）も添えます
 - グループの作成とテスターの追加には、API Key が App Manager 以上の権限である必要があります
 
 ### 6. ブランチ運用と CI
