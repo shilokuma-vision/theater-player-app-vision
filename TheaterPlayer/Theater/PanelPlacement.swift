@@ -14,8 +14,10 @@ import SwiftUI
 import TheaterMedia
 
 enum PanelPlacement {
-    /// 既定の位置（座ったときのひざの少し上、目の前）
-    static let defaultPosition = SIMD3<Float>(0, 0.78, -0.6)
+    /// 既定の位置（座ったときのひざの少し上、目の前）。撮影モード（ScreenshotDemo）では、Simulator の視点から写る所
+    static var defaultPosition: SIMD3<Float> {
+        ScreenshotDemo.scene?.panelPosition ?? SIMD3(0, 0.78, -0.6)
+    }
     /// パネルを向ける目の高さ（座ったとき）
     static let eyeHeight: Float = 1.2
     static let rootName = "ControlPanelRoot"

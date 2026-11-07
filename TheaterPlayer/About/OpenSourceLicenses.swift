@@ -77,7 +77,7 @@ enum OpenSourceLicenses {
             name: "Theater Player",
             version: appVersion,
             license: "MIT License",
-            copyright: "Copyright © 2024 Shilokuma Inc.",
+            copyright: "Copyright © 2024 Takumi Muraishi",
             usage: String(localized: "The source code of this app itself."),
             licenseFile: "TheaterPlayer-MIT",
             source: repository

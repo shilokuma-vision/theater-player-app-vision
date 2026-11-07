@@ -233,7 +233,7 @@ App Store のプロダクトページに載せるものは、`AppStore/` の JSO
 
 | ワークフロー | 反映するもの | 元ネタ | ランナー |
 |---|---|---|---|
-| `Screenshots/App Store` | スクリーンショット（Apple Vision Pro × 各言語） | `AppStore/screenshots.json` / `AppStore/languages.json` / `AppStore/app.json` | 撮影だけ macOS、反映は ubuntu |
+| `Screenshots/App Store` | スクリーンショット（Apple Vision Pro × 各言語） | `AppStore/screenshots.json` / `AppStore/languages.json` / `AppStore/app.json` | 撮影は macOS（映画館の場面は手元の Mac）、反映は ubuntu |
 | `Metadata/App Store` | 名前・サブタイトル・説明文・キーワード・プロモーションテキスト・最新情報・URL・プライバシーポリシーの URL・著作権、カテゴリ・コンテンツの権利・年齢制限・App Review に関する情報・価格と配信状況・使用許諾契約（既定は dry-run） | `AppStore/metadata/*.json` / `AppStore/app_info.json` / `docs/EULA.md` | ubuntu |
 | `Submit/App Store` | バージョンへのビルドの選択と、審査への提出（提出は `submit` を true にしたときだけ。既定は dry-run） | App Store Connect の処理済みのビルド | ubuntu |
 | `Verify/App Store metadata` | PR で、文字数の上限・App 情報の書き方・撮影設定・撮影モードの Scene との対応を検査する | `AppStore/**` | ubuntu |
@@ -242,13 +242,23 @@ iOS 版にあるプロダクトページのヘッダーと検索結果のクリ�
 
 **スクリーンショット**
 
-- 撮影はアプリの撮影モード（[TheaterPlayer/Screenshot/ScreenshotDemo.swift](TheaterPlayer/Screenshot/ScreenshotDemo.swift)）で行います。`Tools/capture_screenshots.sh` が `-screenshot-demo -screenshot-scene <名前>` と言語を起動引数で渡し、アプリはデモデータで目的の画面を開きます
-- 画面を足すときは、`ScreenshotDemo.Scene` に case を足し、`TheaterPlayer.swift` の `rootView` で開く画面を返し、`AppStore/screenshots.json` の `scenes` に同じ名前を足します（1 表示サイズにつき 10 枚まで）
+- 撮影はアプリの撮影モード（[TheaterPlayer/Screenshot/ScreenshotDemo.swift](TheaterPlayer/Screenshot/ScreenshotDemo.swift)）で行います。`Tools/capture_screenshots.sh` が `-screenshot-demo -screenshot-scene <名前>` と言語を起動引数で渡し、アプリはデモデータで目的の場面を開きます。場面が整うと、アプリは一時フォルダに `ScreenshotDemo/ready` を置き、スクリプトはそれを待ってから、画面が落ち着いたところを撮ります
+- 撮る場面は、上映中の映画館・操作パネル・座席表・上映前の明るい場内・照明のページ・ライブラリの 6 つです。スクリーンには、撮影モードがその場で描く自作の夕焼けの絵（[ScreenshotMovie.swift](TheaterPlayer/Screenshot/ScreenshotMovie.swift)）を H.264 の動画にして映します（外部の素材は使いません）。動画の題名とライブラリのファイル名は、言語ごとに `ScreenshotDemo.Names` に書きます
+- 撮影モードは Debug と撮影のビルドにだけ入ります（`#if DEBUG || SCREENSHOT_DEMO`。審査のガイドライン 2.5.19 の隠し機能に当たらないように）。撮影は YouTube の入らない Release で行い、`capture_screenshots.sh` が `SWIFT_ACTIVE_COMPILATION_CONDITIONS` に `SCREENSHOT_DEMO` を足してビルドします（ワークフローで撮るときも同じスクリプトを使います）。App Store に出す Release では、起動引数を渡しても何も起きず、デモの場面のコードもバイナリに入りません
+- 場面を足すときは、`ScreenshotDemo.Scene` に case を足し、同じファイルの extension で開き方（映画館に入るか・パネルのページ・席・客電）を決め、`AppStore/screenshots.json` の `scenes` に同じ名前を足します（1 表示サイズにつき 10 枚まで）
 - 表示サイズは Apple Vision Pro（`APP_APPLE_VISION_PRO`、3840x2160）の 1 つだけです。Simulator の「Apple Vision Pro」がこの寸法で撮れます
-- 撮れるのは起動直後のウィンドウ（`WindowGroup`）で、Simulator の部屋の中に浮かんだ状態で写ります。Immersive Space の様子を載せたいときは、Xcode の Simulator で撮った画像を App Store Connect に直接上げます
 - 撮るのはリリースのときだけです。`release/**` ブランチを選んで手動実行します（それ以外のブランチでは止まります）
 - macOS ランナーの枠を開発のビルドと取り合わないよう、撮影は 1 本ずつ流し、App Store Connect への反映は ubuntu で行います
-- 手元で撮るなら `Tools/capture_screenshots.sh APP_APPLE_VISION_PRO ja`（出力は `build/screenshots/`）
+
+**映画館の場面は手元の Mac で撮る**
+
+GitHub Actions の macOS ランナー（仮想マシン）の Simulator では、映画館を描くと描画のサーバーが落ちるため、映画館の場面を撮れません（[LEARNINGS.md](LEARNINGS.md)）。手元の Mac で撮り、ドラフトのリリースを経由してワークフローで反映します。
+
+1. `Tools/capture_screenshots.sh APP_APPLE_VISION_PRO` で全言語を撮る（出力は `build/screenshots/APP_APPLE_VISION_PRO/<言語>/`。言語を絞るなら `ja,en` のように足す。FFmpeg の xcframework が要ります）
+2. 撮れた画像を目で確かめる（文字の切れ・言語・黒くなっていないか）
+3. `Tools/publish_screenshots.sh screenshots-<バージョン>` で zip にまとめ、ドラフトのリリースに添付する（ドラフトは公開されません）
+4. `release/**` ブランチで `Screenshots/App Store` を、`screenshots_release` にそのタグ名を入れて流す。撮影を飛ばし、添付した画像を検査してから反映します。App Store Connect にその言語が無いときは `missing_locales` を `create` にします
+5. 反映が済んだら、ドラフトのリリースは消してかまいません
 
 **名前・説明文・最新情報**
 
