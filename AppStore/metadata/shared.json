@@ -7,8 +7,7 @@
     "shilokuma のアプリは https://shilokuma.jp/privacy/<slug>/（shilokuma-inc/shilokuma-web の privacy/apps.json にアプリを足して作る）。",
     "copyright はバージョンの著作権表示で必須。年は権利を得た年（最初のリリースの年）なので、リリースのたびに変えなくてよい。"
   ],
-  "supportUrl": "TODO: https://（アプリのお問い合わせ窓口の URL）",
-  "marketingUrl": "TODO: https://（アプリの紹介ページの URL。不要なら項目ごと消す）",
-  "privacyPolicyUrl": "TODO: https://shilokuma.jp/privacy/<slug>/（アプリのプライバシーポリシーの URL）",
+  "supportUrl": "https://shilokuma.jp/about/",
+  "privacyPolicyUrl": "https://shilokuma.jp/privacy/theater-player/",
   "copyright": "© 2026 Takumi Muraishi"
 }

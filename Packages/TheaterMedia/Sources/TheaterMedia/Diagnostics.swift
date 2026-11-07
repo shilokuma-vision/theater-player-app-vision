@@ -4,13 +4,19 @@
 //
 //  実機で再生の様子を調べるためのログ。起動の引数に -tp-diagnostics を付けたときだけ、標準エラーに書く
 //  （xcrun devicectl device process launch --console … jp.shilokuma.TheaterPlayer -- -tp-diagnostics で読める。-- が無いと devicectl が自分の引数と取り違える）。
+//  App Store に出す Release では起動の引数を読まない（隠しの機能を残さない。ガイドライン 2.5.19）。
+//  実機の確認で Release に入れるときは、ビルドに SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) TP_DIAGNOSTICS' を付ける（README の「診断のログ」）。
 //
 
 import Foundation
 import Synchronization
 
 public enum Diagnostics {
+    #if DEBUG || TP_DIAGNOSTICS
     public static let enabled = ProcessInfo.processInfo.arguments.contains("-tp-diagnostics")
+    #else
+    public static let enabled = false
+    #endif
 
     /// 行の頭に、起動してからの秒（systemUptime）を付ける（スレッドをまたいだ出来事の前後を見る）
     public static func log(_ message: @autoclosure () -> String) {

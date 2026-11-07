@@ -14,6 +14,7 @@ name: Metadata/App Store
 # 欠損と文字数超過は Verify/App Store metadata が PR の時点で落とすので、ここまで来たものは通る前提。
 # 最新情報（whatsNew）は、JSON の whatsNew.version が反映先のバージョンと一致するときだけ書き込む。
 # テンプレートの仮の文言（TODO:）が残っているあいだは、dry-run でも止まる。
+# ただし shared.json の URL だけは、仮の値（TODO:）のままなら書き込まずに飛ばす（置き場所が文言より後に決まることがあるため）。
 #
 # 反映先は「編集できる状態のバージョン」だけ。審査中・配信済みのバージョンには触らない。
 # dry_run にすると、App Store Connect の現在値との差分だけを出して何も書き込まない。

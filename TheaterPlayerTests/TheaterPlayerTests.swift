@@ -30,4 +30,16 @@ struct TheaterPlayerTests {
         let number = try #require(Int(build), "CURRENT_PROJECT_VERSION は整数で指定する: \(build)")
         #expect(number > 0)
     }
+
+    /// 輸出の申告（暗号）を Info.plist で済ませ、アップロードのたびに App Store Connect で聞かれないようにする。
+    /// FFmpeg の AES などは、暗号化されたメディア（MP4 の CENC・ASF・OMA など）を復号するデマクサーだけが使い、通信もしないので、
+    /// 免除の範囲として NO にしている。通信や暗号を使う機能を足したら見直す
+    @Test
+    func declaresNoNonExemptEncryption() throws {
+        let value = try #require(
+            Bundle.main.object(forInfoDictionaryKey: "ITSAppUsesNonExemptEncryption") as? Bool,
+            "Info.plist に ITSAppUsesNonExemptEncryption が無い"
+        )
+        #expect(value == false)
+    }
 }

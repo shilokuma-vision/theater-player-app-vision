@@ -7,13 +7,30 @@
     "promotionalText は省略できる（省略すると App Store Connect 側の値をそのまま残す）。",
     "whatsNew は「このバージョンの最新情報」。{\"version\": \"1.1.0\", \"text\": \"…\"} の形で書き、version が反映先のバージョンと一致するときだけ書き込む。",
     "最初のバージョン（1.0.0）には最新情報の欄が無いので、2 つ目のバージョンから足す。",
-    "TODO: テンプレートの仮の文言。アプリを作ったら書き換える（Metadata/App Store は既定で dry-run）。"
+    "ほかの言語（zh-Hans・zh-Hant・ko・de・fr）は、この英語の文言から訳している。ここを変えたら、ほかの言語もそろえる。",
+    "他社の商標（VLC・Dolby・DTS など）は、説明・キーワードに使わない（App Review Guidelines 2.3.7）。形式は AC-3 などの中立の名前で書く。「Apple Vision Pro」は名前に入れられない（説明には書ける）。",
+    "用語はアプリの訳（TheaterPlayer/Localizable.xcstrings）にそろえる（House Lights・Showtime・Start Now・Spatial Video など）。"
   ],
-  "name": "TODO: App name",
-  "subtitle": "TODO: Short phrase under name",
-  "promotionalText": "TODO: One line about why people will love this app (up to 170 characters).",
-  "description": "TODO: App description. What the app does, its key features, and how to get started.\n\n■ Key features\n• Feature 1\n• Feature 2\n• Feature 3",
+  "name": "Theater Player",
+  "subtitle": "Your Own 442-Seat Cinema",
+  "promotionalText": "Step into a 442-seat movie theater, pick any seat, and watch your own videos on the big screen, surrounded by sound from 31 speakers.",
+  "description": "Theater Player takes you into a 442-seat movie theater on Apple Vision Pro. Play your own videos and music, and show your pictures and PDFs on the big screen.\nTake any seat, wait for the house lights to dim and the curtain to open, and enjoy the movie the way it was meant to be seen.\n\n■ A movie theater, built in detail\n• A 442-seat stadium-style auditorium built in Blender, with a curved screen, masking, wooden fins and acoustic panels, a floating ceiling with downlights and cove lighting, aisle lights, and exit signs\n• Baked lighting, with the colors of the movie reflecting off the screen onto the walls and seats\n• Move to any seat from the seating chart\n\n■ Theater sound\n• 31 speakers behind the screen, on the side and rear walls, and on the ceiling, plus a subwoofer, all played as spatial audio\n• 5.1, 7.1, and 7.1.4 play as they are, and stereo is spread out like in a theater\n• Adjust bass, virtual bass, dialogue boost, room reverb, and more\n\n■ Showtime\n• When a video plays from the beginning, a buzzer sounds, the house lights dim, and the curtain opens before the feature starts\n• During the end credits, the lights come up a little, then slowly return to full brightness\n• Choose Start Now to skip it\n\n■ A wide range of formats\n• Video: MKV, MP4, MOV, AVI, WMV, FLV, WebM, TS, M2TS, VOB, OGG, and more\n• Audio: AAC, AC-3, E-AC-3, FLAC, ALAC, MP3, Opus, Vorbis, WAV, and more\n• Hardware decoding for H.264 and HEVC (including HDR)\n• Subtitles (SRT, ASS, WebVTT, PGS, and more), audio and subtitle track selection, chapters, playback speed, audio and subtitle delay, and resume playback\n\n■ 3D\n• Side-by-side and top-and-bottom 3D videos (full and half) appear in 3D on the screen\n• Watch spatial videos captured on iPhone or Apple Vision Pro in 3D\n\n■ Pictures and PDFs\n• Show pictures (PNG, JPEG, HEIC, GIF, WebP, and more) and PDFs on the screen\n• Page through PDFs, and reopen them where you left off\n\n■ Control without the panel\n• Control Center, AirPods, and Siri (\"Pause Theater Player\" and more)\n• Bluetooth keyboards and game controllers\n\n■ Getting your files in\n• The Theater Player folder in the Files app (On My Apple Vision Pro)\n• Open files in iCloud Drive, on external storage, or on file servers right where they are, without copying\n• Choose videos from Photos\n\n■ Please note\n• Theater Player doesn't include any movies or other content. It plays files you already have\n• Copy-protected (DRM) files can't be played\n• No account needed, and no ads\n\nAvailable in English, Japanese, Simplified Chinese, Traditional Chinese, Korean, German, and French.",
   "keywords": [
-    "TODO: keyword"
+    "video",
+    "movie",
+    "film",
+    "mkv",
+    "subtitles",
+    "3d",
+    "sbs",
+    "spatial",
+    "surround",
+    "sound",
+    "immersive",
+    "screen",
+    "media",
+    "home",
+    "music",
+    "pdf"
   ]
 }
