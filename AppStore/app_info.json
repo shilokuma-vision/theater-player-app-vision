@@ -11,6 +11,7 @@
     "  連絡先（氏名・電話番号・メールアドレス）とデモアカウントは個人情報・秘密なので、ここには書かず Secrets（APP_REVIEW_CONTACT_* / APP_REVIEW_DEMO_ACCOUNT_*）で渡す。",
     "pricing / availability は、App Store Connect で未設定のとき（最初のリリースの前）だけ書き込む。設定済みなら触らないので、価格や配信先を変えるときは App Store Connect の画面で行う。",
     "  pricing.price は FREE だけ書ける（有料のアプリは App Store Connect で設定し、pricing を消す）。availability.territories は ALL（すべての国と地域）か、[\"JPN\"] のような 3 文字のコードの配列。ALL のときは excludedTerritories（例: [\"CHN\"]）で配信しない国と地域を除ける。",
+    "eula は独自の使用許諾契約（EULA）。file の本文（Markdown なら最初の ```text のコードブロックの中身）を、配信する国と地域（availability と同じ）に登録する。あれば本文と国と地域を書き換える。消すと App Store Connect 側の設定を残す。",
     "Theater Player のカテゴリ: 映画館で観る体験が主なので ENTERTAINMENT をプライマリに、動画プレイヤーを探す人に向けて PHOTO_AND_VIDEO をセカンダリにする。",
     "Theater Player の価格と配信：無料。中国本土（CHN）は ICP の届け出をしていないので除き、ほかのすべての国と地域で配信する（新しい国と地域にも自動で配信）。"
   ],
@@ -56,5 +57,8 @@
       "CHN"
     ],
     "availableInNewTerritories": true
+  },
+  "eula": {
+    "file": "docs/EULA.md"
   }
 }
