@@ -22,6 +22,9 @@ struct LicensesView: View {
                     """
                 )
                 .font(.callout)
+                // FFmpeg の LGPL の遵守のチェックリスト（https://ffmpeg.org/legal.html の 10）が about box に求める一文。訳さずにそのまま出す
+                Text(verbatim: OpenSourceLicenses.ffmpegNotice)
+                    .font(.callout)
                 Link(destination: OpenSourceLicenses.release) {
                     Label("Source Code of This Version (\(OpenSourceLicenses.appVersion))", systemImage: "arrow.down.doc")
                 }
