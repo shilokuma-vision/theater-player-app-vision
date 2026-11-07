@@ -36,6 +36,9 @@ enum OpenSourceLicenses {
     static let ffmpegVersion = "9.0.2"
     static let dav1dVersion = "1.5.4"
 
+    /// FFmpeg が about box に求める一文（https://ffmpeg.org/legal.html の 10。言語によらず英語のまま出す）
+    static let ffmpegNotice = "This software uses libraries from the FFmpeg project under the LGPLv2.1."
+
     static let repository = URL(string: "https://github.com/shilokuma-vision/theater-player-app-vision")!
 
     /// この版の Release（この版のソースと、FFmpeg・dav1d のソースの配布物を置く）

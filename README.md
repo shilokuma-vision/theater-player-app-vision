@@ -330,6 +330,20 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 - サラウンドは同じ信号を何台ものスピーカーで鳴らす（映画館のアレイ）ので、スピーカーごとに 0〜6 ms ずらして音が濁らないようにしています
 - 再生の時計は、音が実際に鳴った位置（描画の時刻）から求め、映像の時計（`AVSampleBufferRenderSynchronizer`）をそれに合わせます
 
+### 診断のログ（実機の確認）
+
+起動引数 `-tp-diagnostics` を付けると、再生の様子（デコード・映像の待ち行列・音の時計など）を 1 秒ごとに標準エラーへ書きます（[Diagnostics.swift](Packages/TheaterMedia/Sources/TheaterMedia/Diagnostics.swift)）。
+App Store に出す Release には入れない（隠しの機能を残さない。ガイドライン 2.5.19）ので、効くのは Debug と、`TP_DIAGNOSTICS` の印を付けたビルドだけです。
+実機の確認は Release で行う（Debug は音響の処理が追いつかない）ので、Release に印を付けてビルドします（コマンドラインの指定はローカルのパッケージにも効きます）。
+
+```bash
+xcodebuild build -project TheaterPlayer.xcodeproj -scheme TheaterPlayer -configuration Release -destination 'generic/platform=visionOS' "SWIFT_ACTIVE_COMPILATION_CONDITIONS=\$(inherited) TP_DIAGNOSTICS" -derivedDataPath <リポジトリの外> -allowProvisioningUpdates -skipPackagePluginValidation -skipMacroValidation
+```
+
+```bash
+xcrun devicectl device process launch --console --device <実機> jp.shilokuma.TheaterPlayer -- -tp-diagnostics
+```
+
 ## 構成
 
 ```
@@ -347,9 +361,10 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 ├── Tools/
 │   ├── Theater/                  # 映画館のモデル（Blender のスクリプト・RealityKit で確かめる道具）
 │   ├── StereoConvert/            # 2D の動画を 3D に変換する道具（Swift Package。モデルは Models/ に置き、git に入れない）
+│   ├── ReviewSample/             # 審査の担当者に渡すサンプルの動画を、コードだけで作る道具
 │   └── …                         # スクリーンショットの撮影と App Store Connect への反映
-├── docs/                         # ExportOptions.plist のサンプル・使用許諾契約（EULA）の文案
-├── scripts/                      # build-ffmpeg.sh・rename.sh
+├── docs/                         # ExportOptions.plist のサンプル・使用許諾契約（EULA）の文案・審査に出すときの手順（AppReview.md）
+├── scripts/                      # build-ffmpeg.sh・publish-source-release.sh（審査に出した版のソースの Release）・rename.sh
 ├── .swiftlint.yml                # SwiftLint 設定
 └── .github/                      # Issue・PR のテンプレートと、ワークフロー（_build.yml・_archive.yml は FFmpeg を作ってキャッシュする）
 ```
@@ -418,7 +433,7 @@ FFmpeg はアプリに静的にリンクしています。LGPL 2.1 の条件は�
 
 | LGPL 2.1 が求めること | このアプリでの対応 |
 |---|---|
-| FFmpeg を使っていること・LGPL であることを示し、ライセンスの全文を付ける | アプリの「ライセンス」の画面（ライブラリのウィンドウのツールバー）に、使い方・著作権・全文を出す |
+| FFmpeg を使っていること・LGPL であることを示し、ライセンスの全文を付ける | アプリの「ライセンス」の画面（ライブラリのウィンドウのツールバー）に、使い方・著作権・全文と、FFmpeg が about box に求める一文（"This software uses libraries from the FFmpeg project under the LGPLv2.1"）を出す |
 | 配ったバイナリと同じ FFmpeg のソースを渡す | 審査に出す版ごとに GitHub の Release を作り、FFmpeg・dav1d のソースの配布物を添付する。パッチとビルドのスクリプトは、その版のタグのリポジトリにある |
 | 利用者が FFmpeg を差し替えて作り直せる（第 6 条） | このアプリのソースをすべて公開しているので、差し替えた FFmpeg でビルドし直せる |
 | 使用許諾契約で、改変とデバッグのための解析を禁じない・LGPL の権利を制限しない | App Store Connect に [docs/EULA.md](docs/EULA.md) の使用許諾契約を設定する（Apple の標準使用許諾契約を使い、オープンソースの部品のライセンスを優先させる） |
@@ -426,19 +441,19 @@ FFmpeg はアプリに静的にリンクしています。LGPL 2.1 の条件は�
 ### 審査に出すときにすること
 
 アプリの「ライセンス」の画面は、その版の Release（`v<MARKETING_VERSION>`）へ案内します。審査に出すたびに、出すビルドのコミット（App Store Connect に上げた Upload の実行のコミット）に、タグと Release を作ってください。
+[scripts/publish-source-release.sh](scripts/publish-source-release.sh) が、出すコミット・版・添付する物を確かめてから作ります（既定は確かめるだけ）。
 
 ```bash
-git tag v1.0.0 <コミット>
+scripts/publish-source-release.sh
 ```
 
 ```bash
-git push origin v1.0.0
+scripts/publish-source-release.sh --publish
 ```
 
-```bash
-gh release create v1.0.0 .build/ffmpeg/src/ffmpeg-9.0.2.tar.xz .build/ffmpeg/src/dav1d-1.5.4.tar.xz --title "v1.0.0" --notes "App Store に出した版のソースです。FFmpeg 9.0.2（LGPL 2.1 以降）と dav1d 1.5.4（BSD 2-Clause）のソースの配布物を添付しています。FFmpeg に当てたパッチとビルドのスクリプトは、このタグの scripts/ にあります。"
-```
-
-- 添付する 2 つは、`scripts/build-ffmpeg.sh` が公式の配布物を取得し、SHA-256 を確かめて置いたものです（一度ビルドすると `.build/ffmpeg/src/` にあります）
-- 同じ版でビルドを出し直したときは、タグと Release を作り直してください
+- 出すコミットは、省くと develop の最新の成功した Upload の実行のコミットです。App Store Connect で選ぶビルドが、表示される Upload の時刻に上がったものか確かめてから `--publish` を付けます。ほかのコミットは `--commit <コミット>` で指定します
+- 添付するのは、FFmpeg・dav1d のソースの配布物（`scripts/build-ffmpeg.sh` が公式の配布物を取得し、SHA-256 を確かめて `.build/ffmpeg/src/` に置いたもの）、FFmpeg に当てたパッチをつないだ diff、FFmpeg の作り方（`build-ffmpeg.sh`）です。
+  Release の本文には、FFmpeg が配布のページに求める一文（"This software uses code of FFmpeg licensed under the LGPLv2.1 …"）を入れます
+- 同じ版でビルドを出し直したときは、`--replace` を付けてタグと Release を作り直します
 - FFmpeg・dav1d の版を上げたら、[TheaterPlayer/About/OpenSourceLicenses.swift](TheaterPlayer/About/OpenSourceLicenses.swift) の版も直します（`scripts/build-ffmpeg.sh` が食い違いを確かめて止まります）
+- 審査のサンプルの動画・Notes for Review・Release のバイナリの点検は [docs/AppReview.md](docs/AppReview.md) にあります

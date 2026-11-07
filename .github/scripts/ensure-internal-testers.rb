@@ -42,10 +42,11 @@ def mask_email(email)
   "#{local[0]}***@#{domain}"
 end
 
-# 文中のメールアドレスを、ログに出してよい表記に置き換える（長いものから。a@x.com が aa@x.com の一部を置き換えないように）
+# 文中のメールアドレスを、ログに出してよい表記に置き換える（長いものから。a@x.com が aa@x.com の一部を置き換えないように）。
+# 置き換え先はブロックで返す（文字列で渡すと、表記に入った \0・\k<…> が後方参照になり、伏せる前の値が出たり例外になったりする）
 def redact(text, testers)
   testers.sort_by { |tester| -tester[:email].length }.reduce(text.to_s) do |result, tester|
-    result.gsub(/#{Regexp.escape(tester[:email])}/i, tester[:label])
+    result.gsub(/#{Regexp.escape(tester[:email])}/i) { tester[:label] }
   end
 end
 
@@ -125,9 +126,9 @@ def tester_hints(email:, app_id:, token:)
     tester = find_beta_tester(email: email, token: token)
     next 'なし' unless tester
 
-    attributes = tester.fetch('attributes', {}).reject { |key, _| PERSONAL_ATTRIBUTES.include?(key) }
-    values = attributes.map { |key, value| "#{key}: #{value.is_a?(Array) ? "#{value.size} 件" : value.inspect}" }
-    values.empty? ? 'あり' : "あり（#{values.join('、')}）"
+    # 値（state・inviteType など）は出さず、項目の名前だけにする。伏せた表記から本人が分かると、その人の状態が public のログに出るため
+    names = tester.fetch('attributes', {}).keys - PERSONAL_ATTRIBUTES
+    names.empty? ? 'あり' : "あり（項目: #{names.join('・')}）"
   end
   return [record] unless tester
 
