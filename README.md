@@ -243,7 +243,7 @@ iOS 版にあるプロダクトページのヘッダーと検索結果のクリ�
 
 - 撮影はアプリの撮影モード（[TheaterPlayer/Screenshot/ScreenshotDemo.swift](TheaterPlayer/Screenshot/ScreenshotDemo.swift)）で行います。`Tools/capture_screenshots.sh` が `-screenshot-demo -screenshot-scene <名前>` と言語を起動引数で渡し、アプリはデモデータで目的の場面を開きます。場面が整うと、アプリは一時フォルダに `ScreenshotDemo/ready` を置き、スクリプトはそれを待ってから、画面が落ち着いたところを撮ります
 - 撮る場面は、上映中の映画館・操作パネル・座席表・上映前の明るい場内・照明のページ・ライブラリの 6 つです。スクリーンには、撮影モードがその場で描く自作の夕焼けの絵（[ScreenshotMovie.swift](TheaterPlayer/Screenshot/ScreenshotMovie.swift)）を H.264 の動画にして映します（外部の素材は使いません）。動画の題名とライブラリのファイル名は、言語ごとに `ScreenshotDemo.Names` に書きます
-- 撮影モードは撮影のビルドにだけ入ります。`capture_screenshots.sh` が `SWIFT_ACTIVE_COMPILATION_CONDITIONS` に `SCREENSHOT_DEMO` を足してビルドするので、App Store に出すビルドでは起動引数を渡しても何も起きません
+- 撮影モードは Debug と撮影のビルドにだけ入ります（`#if DEBUG || SCREENSHOT_DEMO`。審査のガイドライン 2.5.19 の隠し機能に当たらないように）。撮影は YouTube の入らない Release で行い、`capture_screenshots.sh` が `SWIFT_ACTIVE_COMPILATION_CONDITIONS` に `SCREENSHOT_DEMO` を足してビルドします（ワークフローで撮るときも同じスクリプトを使います）。App Store に出す Release では、起動引数を渡しても何も起きず、デモの場面のコードもバイナリに入りません
 - 場面を足すときは、`ScreenshotDemo.Scene` に case を足し、同じファイルの extension で開き方（映画館に入るか・パネルのページ・席・客電）を決め、`AppStore/screenshots.json` の `scenes` に同じ名前を足します（1 表示サイズにつき 10 枚まで）
 - 表示サイズは Apple Vision Pro（`APP_APPLE_VISION_PRO`、3840x2160）の 1 つだけです。Simulator の「Apple Vision Pro」がこの寸法で撮れます
 - 撮るのはリリースのときだけです。`release/**` ブランチを選んで手動実行します（それ以外のブランチでは止まります）
