@@ -5,10 +5,10 @@
 //  撮影モードでスクリーンに映す動画。外部の素材を使わないよう、夕焼けの山並みの絵をその場で描き、H.264 の動画にする。
 //  一時停止して決まった位置（position）を映すので、絵は 1 枚で、コマは頭とその位置の前後と終わりにだけ置く
 //  （長さは長編の映画ほどにして、操作パネルの時刻を映画らしくする）。
-//  撮影のビルド（SCREENSHOT_DEMO）にだけ入る。
+//  Debug と撮影のビルド（SCREENSHOT_DEMO）にだけ入る。
 //
 
-#if SCREENSHOT_DEMO
+#if DEBUG || SCREENSHOT_DEMO
 import AVFoundation
 import CoreGraphics
 import Foundation

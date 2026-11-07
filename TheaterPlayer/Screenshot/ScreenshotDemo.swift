@@ -7,8 +7,9 @@
 //
 //    -screenshot-demo -screenshot-scene <Scene の rawValue> -AppleLanguages (<言語>) -AppleLocale <ロケール>
 //
-//  撮影モードは、撮影のビルド（capture_screenshots.sh が SWIFT_ACTIVE_COMPILATION_CONDITIONS に SCREENSHOT_DEMO を足す）にだけ入る。
-//  App Store に出すビルドでは scene がいつも nil で、起動引数を渡しても何も起きない。
+//  撮影モードは、Debug と撮影のビルド（capture_screenshots.sh が SWIFT_ACTIVE_COMPILATION_CONDITIONS に SCREENSHOT_DEMO を足す）
+//  にだけ入る。審査のガイドライン 2.5.19（隠し機能）に当たらないよう、App Store に出す Release では scene がいつも nil で、
+//  起動引数を渡しても何も起きない（デモの場面・動画を作るコードもバイナリに入らない）。撮影は YouTube の入らない Release で行う。
 //
 //  画面を足すときは、Scene に case を足し、下の extension で開き方（映画館に入るか・パネルのページ・席・明るさ）を決め、
 //  AppStore/screenshots.json の scenes に同じ rawValue を足す（突き合わせは Tools/app_store_config.py が行う）。
@@ -18,7 +19,7 @@
 
 import Foundation
 import SwiftUI
-#if SCREENSHOT_DEMO
+#if DEBUG || SCREENSHOT_DEMO
 import TheaterMedia
 #endif
 
@@ -33,9 +34,9 @@ enum ScreenshotDemo {
         case library
     }
 
-    /// 撮影モードで開く画面。撮影のビルドでないとき・撮影モードでないとき・知らない値を渡されたときは nil
+    /// 撮影モードで開く画面。提出する Release（Debug でも撮影のビルドでもない）・撮影モードでないとき・知らない値を渡されたときは nil
     static let scene: Scene? = {
-        #if SCREENSHOT_DEMO
+        #if DEBUG || SCREENSHOT_DEMO
         let arguments = ProcessInfo.processInfo.arguments
         guard arguments.contains("-screenshot-demo"),
               let index = arguments.firstIndex(of: "-screenshot-scene"),
@@ -110,7 +111,7 @@ extension ScreenshotDemo.Scene {
     }
 }
 
-#if SCREENSHOT_DEMO
+#if DEBUG || SCREENSHOT_DEMO
 extension ScreenshotDemo {
     /// デモデータを置くフォルダ（アプリの一時フォルダの中）
     private static var folder: URL {
