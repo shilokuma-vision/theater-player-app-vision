@@ -23,7 +23,8 @@
    - 別のコミットのビルドを出すときは `--commit <コミット>`。同じ版でビルドを出し直したときは `--replace`（タグと Release を作り直す）
    - FFmpeg・dav1d の配布物は `scripts/build-ffmpeg.sh` が置いた `.build/ffmpeg/src/` から取ります（SHA-256 を確かめます）。worktree などで無いときは、`FFMPEG_BUILD_DIR=<メインのフォルダ>/.build/ffmpeg` を付けます
 4. [審査のサンプル](#審査のサンプルの動画)の URL が開けるか確かめる
-5. [Notes for Review](#notes-for-review下書き) を、`AppStore/app_info.json` の `review.notes` に入れて Metadata のワークフローで反映する（App Store Connect の「App Review に関する情報」→「メモ」に直接書いてもよい）
+5. [Notes for Review](#notes-for-review下書き) を、`AppStore/app_info.json` の `review.notes` に入れて Metadata のワークフローで反映する（App Store Connect の「App Review に関する情報」→「メモ」に直接書いてもよい）。
+   今の `review.notes` は、サンプルに Big Buck Bunny（Blender Foundation の CC BY の動画）の URL を書いています。`review-sample` の Release を作ったら、下の下書きの URL に替えます
 6. App Store Connect でビルドを選び、審査へ提出する
 
 ## Release のバイナリの点検
@@ -115,7 +116,7 @@ HOW TO TEST
    https://github.com/shilokuma-vision/theater-player-app-vision/releases/download/review-sample/TheaterPlayer-Sample.mov
    Safari saves it to the Downloads folder in the Files app.
 2. Open Theater Player. In the library window, tap "Choose a File", open Downloads, and choose TheaterPlayer-Sample.mov.
-3. The app enters the theater (Full immersion), and the show starts: a buzzer sounds, the house lights dim, and the curtains open (about 8 seconds; this only happens for videos 5 minutes or longer).
+3. The app enters the theater (Full immersion), and the show starts: a buzzer sounds, the house lights dim, and the curtains open (about 8.5 seconds; this only happens for videos 5 minutes or longer played from the beginning). Tap "Start Now" on the control panel to skip it.
 4. The sample has chapters: a countdown, color bars, a 5.1 speaker check (each speaker of the theater plays in turn), a sound that circles the room, ambient music, and end credits (the house lights come up a little during the credits).
 5. The control panel is in front of you at hand height. It has play/pause, skip back and forward, the playback position, and the Audio, Subtitles, Speed, 3D, Lighting, Seats, and Sound pages. "Seats" lets you move to another seat in the 442-seat theater. Pinch and drag the handle below the panel to move it. During playback the panel collapses after a few seconds; tap "Show Controls" to open it again.
 6. To leave, tap "Leave the Theater" on the control panel. The library window comes back.
