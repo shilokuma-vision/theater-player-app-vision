@@ -10,9 +10,12 @@
     "review は App Review に関する情報。ログインしないと使えない機能があるなら demoAccountRequired を true にし、notes（審査のメモ。英語で書く）に試し方を書く。",
     "  連絡先（氏名・電話番号・メールアドレス）とデモアカウントは個人情報・秘密なので、ここには書かず Secrets（APP_REVIEW_CONTACT_* / APP_REVIEW_DEMO_ACCOUNT_*）で渡す。",
     "pricing / availability は、App Store Connect で未設定のとき（最初のリリースの前）だけ書き込む。設定済みなら触らないので、価格や配信先を変えるときは App Store Connect の画面で行う。",
-    "  pricing.price は FREE だけ書ける（有料のアプリは App Store Connect で設定し、pricing を消す）。availability.territories は ALL（すべての国と地域）か、[\"JPN\"] のような 3 文字のコードの配列。"
+    "  pricing.price は FREE だけ書ける（有料のアプリは App Store Connect で設定し、pricing を消す）。availability.territories は ALL（すべての国と地域）か、[\"JPN\"] のような 3 文字のコードの配列。",
+    "Theater Player のカテゴリ: 映画館で観る体験が主なので ENTERTAINMENT をプライマリに、動画プレイヤーを探す人に向けて PHOTO_AND_VIDEO をセカンダリにする。",
+    "Theater Player の価格と配信する国と地域は未定なので、pricing と availability は書かない（App Store Connect の「価格および配信状況」で決める。中国本土で配るには ICP の届け出が要る）。"
   ],
-  "primaryCategory": "TODO: UTILITIES",
+  "primaryCategory": "ENTERTAINMENT",
+  "secondaryCategory": "PHOTO_AND_VIDEO",
   "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
   "ageRating": {
     "alcoholTobaccoOrDrugUseOrReferences": "NONE",
@@ -41,13 +44,5 @@
   },
   "review": {
     "demoAccountRequired": false
-  },
-  "pricing": {
-    "price": "FREE",
-    "baseTerritory": "JPN"
-  },
-  "availability": {
-    "territories": "ALL",
-    "availableInNewTerritories": true
   }
 }
