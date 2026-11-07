@@ -752,7 +752,7 @@ def main() -> int:
     # アプリの作成は、済んでいなければ find_app で先に止まるので載せない
     reminders.extend([
         "App のプライバシー（収集するデータの申告。API が無いので、いつも App Store Connect で入力する）",
-        "ビルドの選択と審査への提出",
+        "ビルドの選択と審査への提出（Submit/App Store のワークフロー。審査に出すのは submit を true にしたときだけ）",
         "デジタルサービス法（EU）の取引業者の情報（アカウントで一度だけ。登録済みなら不要）",
     ])
     print("審査に出す前に App Store Connect で入力が要るもの:")

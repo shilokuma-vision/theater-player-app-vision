@@ -1,0 +1,113 @@
+name: Submit/App Store
+
+# App Store のバージョンに処理済みのビルドを付け、審査に出す。手動実行のみ。
+#
+#   Tools/submit_for_review.py … ビルドの選択（そのバージョンの処理済みのビルドを付ける）と、審査への提出（reviewSubmissions）
+#
+# 審査に出すのはリリースの判断なので、submit の既定は false、dry_run の既定は true。
+# submit を true にし、dry_run を外したときだけ審査に出す。
+# 提出の前に、Metadata/App Store の反映と、App Store Connect の画面での入力（App のプライバシーなど）を済ませておく。
+# develop へのマージでも同じバージョンのビルドが上がるので、リリースのブランチのビルドを付けるときは build_number で選ぶ。
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_version:
+        description: 'ビルドを付けるバージョン（例: 1.0.0）。空なら編集できるバージョンを自動で選ぶ'
+        required: false
+        default: ''
+      build_number:
+        description: '付けるビルドのビルド番号（CFBundleVersion）。空ならそのバージョンの最新の処理済みのビルド'
+        required: false
+        default: ''
+      submit:
+        description: 'ビルドを付けたあと、審査に出す'
+        type: boolean
+        default: false
+      dry_run:
+        description: '書き込まず、付けるビルドと提出の予定だけ出す'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# 同じアプリを 2 本同時に審査に出さないよう、1 本ずつ流す
+concurrency:
+  group: app-store-submit
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    name: submit
+    # App Store Connect にアプリが無いリポジトリ（テンプレート自身など）は ENABLE_DELIVERY=false でスキップする
+    if: vars.ENABLE_DELIVERY != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Create Private Key
+        # Secrets はシェル展開ではなく env 経由で渡す
+        env:
+          APPLE_API_KEY_BASE64: ${{ secrets.APPLE_API_KEY_BASE64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/private_keys"
+          printf '%s' "$APPLE_API_KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/private_keys/AuthKey.p8"
+
+      - name: Select build and submit
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY_PATH: ${{ runner.temp }}/private_keys/AuthKey.p8
+          APP_VERSION: ${{ inputs.app_version }}
+          BUILD_NUMBER: ${{ inputs.build_number }}
+          SUBMIT: ${{ inputs.submit }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          # PyJWT は標準では入っていないので、この実行かぎりの venv に入れる
+          python3 -m venv .venv
+          .venv/bin/pip install --quiet --disable-pip-version-check pyjwt cryptography
+
+          options=()
+          if [ -n "$APP_VERSION" ]; then
+            options+=(--app-version "$APP_VERSION")
+          fi
+          if [ -n "$BUILD_NUMBER" ]; then
+            options+=(--build "$BUILD_NUMBER")
+          fi
+          if [ "$SUBMIT" = "true" ]; then
+            options+=(--submit)
+          fi
+          if [ "$DRY_RUN" = "true" ]; then
+            options+=(--dry-run)
+          fi
+
+          # Bundle ID は Configs/Project.xcconfig から読む
+          .venv/bin/python -u Tools/submit_for_review.py "${options[@]}" | tee "$RUNNER_TEMP/submit.log"
+
+      - name: Summary
+        if: always()
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          SUBMIT: ${{ inputs.submit }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## ビルドの選択と審査への提出"
+            echo
+            echo "- 反映: $([ "$DRY_RUN" = "true" ] && echo "しない（dry-run）" || echo "する")"
+            echo "- 審査への提出: $([ "$SUBMIT" = "true" ] && echo "する" || echo "しない")"
+            echo
+            if [ -f "$RUNNER_TEMP/submit.log" ]; then
+              echo '```'
+              cat "$RUNNER_TEMP/submit.log"
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
