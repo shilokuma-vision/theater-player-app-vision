@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "App Store のフランス語（fr-FR）の説明文など。上限: name 30 字 / subtitle 30 字 / description 4000 字 / keywords 合計 100 字（カンマ込み）/ promotionalText 170 字 / whatsNew 4000 字。",
+    "書き方の決まり（省略したときの扱い・whatsNew・商標）は en.json・ja.json の _comment と同じ。",
+    "en.json の英語から訳し、用語はアプリの訳（TheaterPlayer/Localizable.xcstrings）にそろえている。en.json を変えたら、ここもそろえる。",
+    "アプリと同じく vous で書く（Siri のフレーズだけは Apple に合わせて tu）。「:」の前と « » の内側の空白は、改行しない空白（U+00A0）。"
+  ],
+  "name": "Theater Player",
+  "subtitle": "Votre cinéma de 442 places",
+  "promotionalText": "Entrez dans une salle de 442 places, choisissez votre siège et regardez vos propres vidéos sur grand écran, entouré du son de 31 haut-parleurs.",
+  "description": "Theater Player vous fait entrer dans une salle de cinéma de 442 places sur Apple Vision Pro. Lisez vos propres vidéos et votre musique, et affichez vos images et PDF sur grand écran.\nChoisissez votre place, attendez que les lumières de la salle baissent et que le rideau s’ouvre, et profitez du film comme au cinéma.\n\n■ Une salle soignée dans les moindres détails\n• Une salle de 442 places en gradins, modélisée dans Blender : écran incurvé, masquage, lames de bois et panneaux acoustiques, plafond suspendu avec spots encastrés et éclairage indirect, éclairage des allées et panneaux de sortie\n• Éclairage précalculé : les couleurs du film se reflètent de l’écran sur les murs et les sièges\n• Changez de place à tout moment depuis le plan de salle\n\n■ Le son du cinéma\n• 31 haut-parleurs derrière l’écran, sur les murs latéraux et arrière et au plafond, plus un caisson de basses, le tout restitué en audio spatial\n• Le 5.1, le 7.1 et le 7.1.4 sont lus tels quels, et la stéréo est élargie comme dans une salle de cinéma\n• Réglez le renforcement des graves, les graves virtuels, le renforcement des dialogues, la réverbération de la salle et plus encore\n\n■ Effets de séance\n• Lorsqu’une vidéo est lue depuis le début, une sonnerie retentit, les lumières de la salle baissent et le rideau s’ouvre avant le début du film\n• Pendant le générique de fin, les lumières remontent un peu, puis reviennent lentement à pleine luminosité\n• Choisissez « Démarrer maintenant » pour passer cette séquence\n\n■ De nombreux formats\n• Vidéo : MKV, MP4, MOV, AVI, WMV, FLV, WebM, TS, M2TS, VOB, OGG, etc.\n• Audio : AAC, AC-3, E-AC-3, FLAC, ALAC, MP3, Opus, Vorbis, WAV, etc.\n• Décodage matériel pour H.264 et HEVC (HDR compris)\n• Sous-titres (SRT, ASS, WebVTT, PGS, etc.), choix des pistes audio et de sous-titres, chapitres, vitesse de lecture, décalage audio et des sous-titres, reprise de la lecture\n\n■ 3D\n• Les vidéos 3D côte à côte et haut et bas (pleine et demi-résolution) s’affichent en relief sur l’écran\n• Regardez en relief les vidéos spatiales filmées avec un iPhone ou un Apple Vision Pro\n\n■ Images et PDF\n• Affichez des images (PNG, JPEG, HEIC, GIF, WebP, etc.) et des PDF sur l’écran\n• Feuilletez vos PDF et rouvrez-les là où vous vous étiez arrêté\n\n■ Contrôle sans le panneau\n• Centre de contrôle, AirPods et Siri (« Mets Theater Player en pause », etc.)\n• Claviers Bluetooth et manettes de jeu\n\n■ Importer vos fichiers\n• Le dossier Theater Player dans l’app Fichiers (Sur mon Apple Vision Pro)\n• Ouvrez des fichiers sur iCloud Drive, un stockage externe ou un serveur de fichiers directement à leur emplacement, sans les copier\n• Choisissez des vidéos dans Photos\n\n■ À noter\n• Theater Player ne contient aucun film ni autre contenu. L’app lit les fichiers que vous possédez déjà\n• Les fichiers protégés contre la copie (DRM) ne peuvent pas être lus\n• Aucun compte requis, aucune publicité\n\nDisponible en français, anglais, allemand, japonais, coréen, chinois simplifié et chinois traditionnel.",
+  "keywords": [
+    "vidéo",
+    "lecteur",
+    "film",
+    "mkv",
+    "sous-titres",
+    "3d",
+    "sbs",
+    "spatial",
+    "surround",
+    "son",
+    "home cinéma",
+    "grand écran",
+    "musique",
+    "pdf"
+  ]
+}

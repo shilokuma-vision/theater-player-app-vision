@@ -9,6 +9,11 @@
   ],
   "languages": [
     { "language": "ja", "appleLanguage": "ja", "appleLocale": "ja_JP", "storeLocale": "ja" },
-    { "language": "en", "appleLanguage": "en", "appleLocale": "en_US", "storeLocale": "en-US" }
+    { "language": "en", "appleLanguage": "en", "appleLocale": "en_US", "storeLocale": "en-US" },
+    { "language": "zh-Hans", "appleLanguage": "zh-Hans", "appleLocale": "zh_CN", "storeLocale": "zh-Hans" },
+    { "language": "zh-Hant", "appleLanguage": "zh-Hant", "appleLocale": "zh_TW", "storeLocale": "zh-Hant" },
+    { "language": "ko", "appleLanguage": "ko", "appleLocale": "ko_KR", "storeLocale": "ko" },
+    { "language": "de", "appleLanguage": "de", "appleLocale": "de_DE", "storeLocale": "de-DE" },
+    { "language": "fr", "appleLanguage": "fr", "appleLocale": "fr_FR", "storeLocale": "fr-FR" }
   ]
 }
