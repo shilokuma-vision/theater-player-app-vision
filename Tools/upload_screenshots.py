@@ -40,6 +40,10 @@ from app_store_config import MAX_SCREENSHOTS, bundle_id, languages, parse_list
 from app_store_connect import AppStoreConnect
 
 
+#: 取り込みに失敗した・終わらない画像を上げ直す回数の上限
+MAX_REDELIVERY = 2
+
+
 def screenshots_for(directory: Path) -> list[Path]:
     """ファイル名の順に並べる。この順がそのまま App Store の並び順になる。"""
     return sorted(p for p in directory.glob("*.png"))
@@ -157,7 +161,25 @@ def main() -> int:
 
         screenshot_ids = [client.upload(set_id, image) for image in images]
         client.reorder(set_id, screenshot_ids)
-        client.wait_for_delivery(screenshot_ids)
+        problems = client.wait_for_delivery(screenshot_ids)
+        # 取り込みに失敗した・終わらない画像だけを、消して上げ直す（上限まで）。並び順は上げ直した物でそろえ直す
+        for attempt in range(1, MAX_REDELIVERY + 1):
+            if not problems:
+                break
+            retried = []
+            for screenshot_id, reason in problems.items():
+                index = screenshot_ids.index(screenshot_id)
+                print(f"  {target.language}: {reason}。上げ直します（{attempt}/{MAX_REDELIVERY}）")
+                client.delete(f"/v1/appScreenshots/{screenshot_id}")
+                screenshot_ids[index] = client.upload(set_id, images[index])
+                retried.append(screenshot_ids[index])
+            client.reorder(set_id, screenshot_ids)
+            problems = client.wait_for_delivery(retried)
+        if problems:
+            raise SystemExit(
+                f"{target.language}: {MAX_REDELIVERY} 回上げ直しても取り込めませんでした。"
+                "App Store Connect の画面で状態を確認してください。\n  " + "\n  ".join(problems.values())
+            )
         uploaded_total += len(images)
         print(f"  {target.language} → {target.store_locale}: {len(images)} 枚")
 
