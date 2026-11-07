@@ -189,19 +189,20 @@ extension ScreenshotDemo {
         var aurora: String
         var program: String
 
-        /// アプリが今使っている言語（-AppleLanguages で渡した言語）の名前
+        /// アプリが今使っている言語（-AppleLanguages で渡した言語）の名前。知らない言語なら英語
         static var current: Names {
-            let language = Bundle.main.preferredLocalizations.first ?? "en"
-            return all[language] ?? all["en"]!
+            Bundle.main.preferredLocalizations.first.flatMap { all[$0] } ?? english
         }
 
+        private static let english = Names(
+            movie: "Sunset Hills",
+            recital: "Piano Recital",
+            aurora: "Northern Lights",
+            program: "Recital Program"
+        )
+
         private static let all: [String: Names] = [
-            "en": Names(
-                movie: "Sunset Hills",
-                recital: "Piano Recital",
-                aurora: "Northern Lights",
-                program: "Recital Program"
-            ),
+            "en": english,
             "ja": Names(
                 movie: "夕焼けの丘",
                 recital: "ピアノの発表会",
