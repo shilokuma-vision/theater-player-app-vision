@@ -68,20 +68,25 @@ SHARED_URLS = {
 }
 
 
-def load_shared(directory: Path) -> tuple[dict[str, str], str | None, list[str]]:
-    """全言語に書く値と、バージョンに書く著作権を読む。"""
+def load_shared(directory: Path) -> tuple[dict[str, str], str | None, list[str], list[str]]:
+    """全言語に書く値と、バージョンに書く著作権と、まだ決まっていない（TODO:）URL を読む。"""
     path = directory / SHARED_FILE
     if not path.is_file():
-        return {}, None, [f"{path} がありません"]
+        return {}, None, [], [f"{path} がありません"]
     raw = json.loads(path.read_text(encoding="utf-8"))
     problems = []
     attributes = {}
+    pending = []
     for key, required in SHARED_URLS.items():
         value = raw.get(key)
         if isinstance(value, str) and value.strip():
-            # テンプレートの仮の値（TODO:）は形を問わず、反映の前の TODO: の検査で止める
+            # URL の置き場所は、文言より後に決まることがある。仮の値（TODO:）の URL は書き込まずに飛ばし、
+            # ほかの項目は反映できるようにする（審査に出すには App Store Connect 側で URL が要るので、そこで止まる）
+            if "TODO:" in value:
+                pending.append(key)
+                continue
             parsed = urllib.parse.urlparse(value)
-            if "TODO:" not in value and not (parsed.scheme == "https" and parsed.hostname):
+            if not (parsed.scheme == "https" and parsed.hostname):
                 problems.append(f"{path}: {key} は https:// で始まる URL にしてください（ホスト名も要る）")
             attributes[key] = value
         elif required:
@@ -92,7 +97,7 @@ def load_shared(directory: Path) -> tuple[dict[str, str], str | None, list[str]]
     if not (isinstance(copyright_text, str) and copyright_text.strip()):
         problems.append(f"{path}: copyright がありません（例: \"© 2026 Takumi Muraishi\"）")
         copyright_text = None
-    return attributes, copyright_text, problems
+    return attributes, copyright_text, pending, problems
 
 
 def load(directory: Path, target: Language, shared: dict[str, str]) -> tuple[dict[str, str] | None, str | None, list[str]]:
@@ -216,7 +221,7 @@ def main() -> int:
 
     targets = languages(parse_list(args.languages))
 
-    shared, copyright_text, problems = load_shared(args.metadata_dir)
+    shared, copyright_text, pending_urls, problems = load_shared(args.metadata_dir)
     entries: list[tuple[Language, dict[str, str]]] = []
     whats_new_versions: dict[str, str] = {}
     for target in targets:
@@ -238,10 +243,17 @@ def main() -> int:
         placeholders.append("shared.copyright")
     if placeholders and not args.check:
         raise SystemExit(f"テンプレートの仮の文言（TODO:）が残っています: {', '.join(placeholders)}")
+    pending_notice = (
+        f"注意: 仮の値（TODO:）の URL は書き込みません: {', '.join(pending_urls)}"
+        "（審査に出す前に shared.json に書いて、もう一度流す）"
+        if pending_urls else None
+    )
 
     if args.check:
         if placeholders:
             print(f"注意: テンプレートの仮の文言（TODO:）が残っています: {', '.join(placeholders)}")
+        if pending_notice:
+            print(pending_notice)
         for target, attributes in entries:
             counts = " / ".join(
                 f"{field} {len(attributes[field])} 字" for field in LIMITS if field in attributes
@@ -275,6 +287,8 @@ def main() -> int:
           f"({version['attributes']['appStoreState']})")
     if args.dry_run:
         print("--dry-run: App Store Connect には何も書き込みません")
+    if pending_notice:
+        print(pending_notice)
 
     # 最新情報は、書いてあるバージョンが反映先と一致する言語だけに入れる
     for target, attributes in entries:
