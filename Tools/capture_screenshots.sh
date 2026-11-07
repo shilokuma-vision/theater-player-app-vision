@@ -31,7 +31,9 @@ SCREENSHOTS_DIR="${SCREENSHOTS_DIR:-$PWD/build/screenshots}"
 # DerivedData はリポジトリ外に置く。リポジトリ内に置くと、ビルドフェーズの SwiftLint が
 # SPM 依存のソース（DerivedData/SourcePackages/checkouts）まで lint して、ビルドが失敗することがある
 DERIVED_DATA="${DERIVED_DATA:-${RUNNER_TEMP:-${TMPDIR:-/tmp}}/${SIMULATOR_PREFIX}ScreenshotDerivedData}"
-# 起動してから画面が落ち着くまで待つ上限と、落ち着いたとみなすまでの最短の待ち（秒）
+# アプリが場面を整える（撮影モードが印のファイルを置く）まで待つ上限（秒）。映画館に入る場面は、動画を書き出して映画館を読むので長い
+READY_TIMEOUT="${READY_TIMEOUT:-120}"
+# 場面が整ってから画面が落ち着くまで待つ上限と、落ち着いたとみなすまでの最短の待ち（秒）
 SETTLE_TIMEOUT="${SETTLE_TIMEOUT:-40}"
 SETTLE_MINIMUM="${SETTLE_MINIMUM:-4}"
 # 撮影の前の 1 回目の起動で待つ時間（秒）
@@ -135,7 +137,8 @@ xcodebuild build \
     -derivedDataPath "$DERIVED_DATA" \
     ${PLUGIN_OPTIONS[@]+"${PLUGIN_OPTIONS[@]}"} \
     -quiet \
-    CODE_SIGNING_ALLOWED=NO
+    CODE_SIGNING_ALLOWED=NO \
+    "SWIFT_ACTIVE_COMPILATION_CONDITIONS=\$(inherited) SCREENSHOT_DEMO"
 
 SETTINGS="$(xcodebuild -showBuildSettings \
     -project "$PROJECT" \
@@ -168,6 +171,10 @@ echo "撮る画面: ${DISPLAY_ID:-既定}（${EXPECTED_SIZE}）"
 
 xcrun simctl install "$UDID" "$BUILT_DIR/$APP_NAME"
 
+# 撮影モードは、場面が整ったらアプリの一時フォルダに ScreenshotDemo/ready を置く（ScreenshotDemo.swift の readyMarker）。
+# 映画館に入る場面は、動画の書き出し・映画館の読み込みのあいだに画面が止まるので、「2 枚が同じ」だけでは撮る時を決められない
+READY_FILE="$(xcrun simctl get_app_container "$UDID" "$BUNDLE_ID" data)/tmp/ScreenshotDemo/ready"
+
 # インストール直後の初回起動は遅く、アプリが出る前のホーム画面を「落ち着いた」と誤って撮ってしまう。
 # 撮影の前に 1 回だけ起動しておく
 xcrun simctl launch "$UDID" "$BUNDLE_ID" -screenshot-demo >/dev/null
@@ -178,6 +185,26 @@ xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
 
 screenshot() {
     xcrun simctl io "$UDID" screenshot ${DISPLAY_OPTION[@]+"${DISPLAY_OPTION[@]}"} "$1" >/dev/null 2>&1
+}
+
+# アプリが場面を整え終えるまで待つ
+wait_until_ready() {
+    waited=0
+    while [ ! -f "$READY_FILE" ]; do
+        if [ "$waited" -ge "$READY_TIMEOUT" ]; then
+            echo "::error::$1 は ${READY_TIMEOUT} 秒たっても場面が整いませんでした（撮影モードの印のファイルが置かれない）"
+            return 1
+        fi
+        sleep 1
+        waited=$((waited + 1))
+    done
+}
+
+# アプリが動いているか。アプリが落ちるとホーム画面が「落ち着いた画面」として撮れてしまい、寸法の検査では気づけない
+# （GitHub Actions の macOS ランナー（仮想マシン）の Simulator では、映画館を描くと描画のサーバーが落ち、アプリも止められる）
+app_is_running() {
+    xcrun simctl spawn "$UDID" launchctl list 2>/dev/null \
+        | awk -v label="UIKitApplication:${BUNDLE_ID}[" 'index($3, label) == 1 && $1 ~ /^[0-9]+$/ { found = 1 } END { exit !found }'
 }
 
 # 起動直後はウィンドウやシートが出てくる途中だったりするので、連続で撮った 2 枚が同じになるまで待つ。
@@ -218,12 +245,19 @@ while IFS=$'\t' read -r -u 3 language apple_language apple_locale store_locale; 
     echo "::group::${DISPLAY_TYPE} / ${language}（${store_locale}）"
     while IFS=$'\t' read -r -u 4 file scene; do
         xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
+        rm -f "$READY_FILE"
         xcrun simctl launch "$UDID" "$BUNDLE_ID" \
             -screenshot-demo \
             -screenshot-scene "$scene" \
             -AppleLanguages "($apple_language)" \
             -AppleLocale "$apple_locale" >/dev/null
+        wait_until_ready "$file.png"
         capture_when_settled "$destination/$file.png"
+        if ! app_is_running; then
+            echo "::error::$file.png を撮るあいだにアプリが落ちました（仮想マシンの Simulator では映画館を描けない。映画館の場面は手元の Mac で撮る）"
+            rm -f "$destination/$file.png"
+            exit 1
+        fi
         echo "  $file.png"
     done 4< <(printf '%s\n' "$SCENE_LIST")
     echo "::endgroup::"

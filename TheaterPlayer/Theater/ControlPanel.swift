@@ -24,8 +24,9 @@ struct ControlPanel: View {
     @Environment(AppModel.self) private var appModel
     @Environment(\.openWindow) private var openWindow
     @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
-    @State private var page = Page.main
-    @State private var collapsed = false
+    // 撮影モード（ScreenshotDemo）では、撮る場面のページを開く・畳んでおく
+    @State private var page = ScreenshotDemo.scene?.panelPage ?? .main
+    @State private var collapsed = ScreenshotDemo.scene.map { $0.panelPage == nil } ?? false
     @State private var lastInteraction = Date()
 
     var body: some View {

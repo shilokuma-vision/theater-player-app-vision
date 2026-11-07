@@ -10,6 +10,15 @@ import SwiftUI
 struct LicensesView: View {
     var body: some View {
         List {
+            // プライバシーポリシーとサポート（アプリの中から開けるようにする。ガイドライン 5.1.1(i)）
+            Section {
+                Link(destination: AppLinks.privacyPolicy) {
+                    Label("Privacy Policy", systemImage: "hand.raised")
+                }
+                Link(destination: AppLinks.support) {
+                    Label("Support", systemImage: "questionmark.circle")
+                }
+            }
             Section {
                 Text(
                     """

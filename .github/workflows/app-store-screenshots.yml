@@ -14,6 +14,10 @@ name: Screenshots/App Store
 #
 # 反映先は「編集できる状態のバージョン」だけ。審査中・配信済みのバージョンには触らない。
 # upload を外せば撮るだけで、結果は artifact から取れる。
+#
+# GitHub Actions の macOS ランナー（仮想マシン）の Simulator では、映画館（Immersive Space）を描くと描画のサーバーが落ちる
+# （LEARNINGS.md）。そのときは手元の Mac で撮り（Tools/capture_screenshots.sh）、Tools/publish_screenshots.sh で
+# ドラフトのリリースに添付してから、screenshots_release にそのタグ名を入れて流す。撮影を飛ばし、添付した画像を反映する。
 
 on:
   workflow_dispatch:
@@ -46,6 +50,10 @@ on:
         description: 'release/** 以外のブランチでも撮る（撮影の仕組みを確かめるときだけ。反映はしない）'
         type: boolean
         default: false
+      screenshots_release:
+        description: '撮らずに、このドラフトのリリース（タグ名）に添付した screenshots-<表示サイズ>.zip を使う（手元の Mac で撮ったとき）'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -65,6 +73,8 @@ jobs:
       upload: ${{ steps.matrix.outputs.upload }}
       has_derive: ${{ steps.matrix.outputs.has_derive }}
       should_upload: ${{ steps.matrix.outputs.should_upload }}
+      # capture: macOS ランナーで撮る / release: 手元で撮ってドラフトのリリースに添付したものを使う
+      source: ${{ steps.matrix.outputs.source }}
 
     steps:
       - name: Check branch
@@ -90,6 +100,7 @@ jobs:
           REF: ${{ github.ref }}
           UPLOAD: ${{ inputs.upload }}
           ENABLE_DELIVERY: ${{ vars.ENABLE_DELIVERY }}
+          SCREENSHOTS_RELEASE: ${{ inputs.screenshots_release }}
         run: |
           set -euo pipefail
           # 指定ミスは撮影（macOS ランナーで数十分）の前にここで落とす
@@ -102,6 +113,11 @@ jobs:
             echo "derive=$(jq -c .derive <<<"$matrix")"
             echo "upload=$(jq -c .upload <<<"$matrix")"
             echo "has_derive=$(jq -r '.derive | length > 0' <<<"$matrix")"
+            if [ -n "$SCREENSHOTS_RELEASE" ]; then
+              echo "source=release"
+            else
+              echo "source=capture"
+            fi
             # 反映は release/** から実行したときだけ。ENABLE_DELIVERY=false のリポジトリ（テンプレート自身など）は反映しない
             if [[ "$UPLOAD" == "true" && "$REF" == refs/heads/release/* && "$ENABLE_DELIVERY" != "false" ]]; then
               echo "should_upload=true"
@@ -113,6 +129,7 @@ jobs:
   capture:
     name: capture (${{ matrix.label }})
     needs: plan
+    if: ${{ needs.plan.outputs.source == 'capture' }}
     # runner と Xcode は表示サイズごとに screenshots.json の runsOn / xcodeVersion で決める
     runs-on: ${{ matrix.runs_on }}
     timeout-minutes: 90
@@ -182,9 +199,48 @@ jobs:
           # 途中で失敗したときも撮れたぶんは残したいので、無くても警告どまりにする
           if-no-files-found: warn
 
+  # 手元の Mac で撮った画像を、ドラフトのリリースから取り出して、capture と同じ名前の artifact にする。
+  # ドラフトのリリースは書き込みの権限が無いと見えないので、このジョブだけ contents: write にする。
+  # リポジトリのコードはチェックアウトせず、gh でダウンロードして展開するだけにする
+  fetch:
+    name: fetch (${{ matrix.label }})
+    needs: plan
+    if: ${{ needs.plan.outputs.source == 'release' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.capture) }}
+
+    env:
+      SCREENSHOTS_DIR: build/screenshots
+
+    steps:
+      - name: Download screenshots from the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.screenshots_release }}
+          DISPLAY_TYPE: ${{ matrix.display_type }}
+        run: |
+          set -euo pipefail
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" --pattern "screenshots-${DISPLAY_TYPE}.zip" --dir "$RUNNER_TEMP"
+          mkdir -p "$SCREENSHOTS_DIR/$DISPLAY_TYPE"
+          unzip -q "$RUNNER_TEMP/screenshots-${DISPLAY_TYPE}.zip" -d "$SCREENSHOTS_DIR/$DISPLAY_TYPE"
+          find "$SCREENSHOTS_DIR/$DISPLAY_TYPE" -name '*.png' | sort
+
+      - name: Upload screenshots as artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots-${{ matrix.display_type }}
+          path: ${{ env.SCREENSHOTS_DIR }}/${{ matrix.display_type }}
+          if-no-files-found: error
+
   derive:
     name: derive (${{ matrix.label }})
-    needs: [plan, capture]
+    needs: [plan, capture, fetch]
     if: ${{ !cancelled() && needs.plan.outputs.has_derive == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -236,7 +292,7 @@ jobs:
 
   upload:
     name: upload (${{ matrix.label }})
-    needs: [plan, capture, derive]
+    needs: [plan, capture, fetch, derive]
     # 撮れた表示サイズだけでも反映できるよう、ほかの表示サイズが失敗していても進む。
     # 撮影が途中で失敗した表示サイズも artifact は残るので、反映の前に中身を検査して落とす
     if: ${{ !cancelled() && needs.plan.outputs.should_upload == 'true' }}
