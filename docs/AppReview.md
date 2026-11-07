@@ -23,8 +23,7 @@
    - 別のコミットのビルドを出すときは `--commit <コミット>`。同じ版でビルドを出し直したときは `--replace`（タグと Release を作り直す）
    - FFmpeg・dav1d の配布物は `scripts/build-ffmpeg.sh` が置いた `.build/ffmpeg/src/` から取ります（SHA-256 を確かめます）。worktree などで無いときは、`FFMPEG_BUILD_DIR=<メインのフォルダ>/.build/ffmpeg` を付けます
 4. [審査のサンプル](#審査のサンプルの動画)の URL が開けるか確かめる
-5. [Notes for Review](#notes-for-review下書き) を、`AppStore/app_info.json` の `review.notes` に入れて Metadata のワークフローで反映する（App Store Connect の「App Review に関する情報」→「メモ」に直接書いてもよい）。
-   今の `review.notes` は、サンプルに Big Buck Bunny（Blender Foundation の CC BY の動画）の URL を書いています。`review-sample` の Release を作ったら、下の下書きの URL に替えます
+5. [Notes for Review](#notes-for-review) が今の版の操作と合っているか確かめ、Metadata のワークフローで反映する（`AppStore/app_info.json` の `review.notes`）
 6. `Submit/App Store` のワークフローで、出すビルドを付ける（`build_number` に 3 で確かめたビルドの番号を入れる。まず dry-run で、付けるビルドを確かめる）
 7. 審査に出すと決めたら、`Submit/App Store` を `submit` を true にし、`dry_run` を外して流す（App Store Connect の画面で提出してもよい）
 
@@ -90,7 +89,7 @@ xcrun devicectl device process launch --console --device <実機> jp.shilokuma.T
 | **GitHub の Release に置き、Notes for Review に URL を書く（おすすめ）** | アプリを変えない（容量も増えない）。担当者は実機の Safari でダウンロードし、「ファイル」の「ダウンロード」から開ける。利用者と同じ道（「ファイルを選ぶ」）を試してもらえる | 担当者がダウンロードの手順を飛ばすと、2.1 で戻ってくることがある。112 MB のダウンロードが要る |
 | アプリに同梱し、ライブラリに「サンプルを再生」を出す | 担当者がすぐ試せる。初めての利用者にも映画館を見せられる | アプリが 112 MB 増える（短くすると開演の流れが動かない）。画面と体験が変わるので、仕様の判断が要る |
 
-まずは Release に置く案で出し、2.1 で戻ってきたら同梱を考えます。置く場所は、版と関係なく同じ URL になるよう、`review-sample` という Release にします。
+Release に置く案で出し、2.1 で戻ってきたら同梱を考えます。置く場所は、版と関係なく同じ URL になるよう、`review-sample` という Release にしています（2026-11-08 に公開済み）。最初に作ったときのコマンドは次のとおりです。
 
 ```bash
 Tools/ReviewSample/make-review-sample.sh
@@ -103,30 +102,10 @@ gh release create review-sample .build/review-sample/TheaterPlayer-Sample.mov -R
 - URL は `https://github.com/shilokuma-vision/theater-player-app-vision/releases/download/review-sample/TheaterPlayer-Sample.mov` です
 - 作り直したときは、`gh release upload review-sample <ファイル> --clobber -R shilokuma-vision/theater-player-app-vision` で差し替えます
 
-## Notes for Review（下書き）
+## Notes for Review
 
-App Store Connect の「App Review に関する情報」→「メモ」に入れる英語の文です（4,000 字まで）。画面の名前は英語の表示に合わせています。
+App Store Connect の「App Review に関する情報」→「メモ」は、`AppStore/app_info.json` の `review.notes` に英語で書き、Metadata のワークフロー（`app-store-metadata.yml`）で反映します（4,000 字まで）。
 
-```text
-Theater Player is a media player for Apple Vision Pro. It plays the user's own video and music files (and shows images and PDFs) on the screen of a virtual movie theater. The theater is a Full ImmersiveSpace built with RealityKit, and the sound comes from 31 spatial audio sources placed where the speakers of a real theater are.
-
-The app has no account, no in-app purchase, no ads, and no network features. It does not connect to YouTube or any other online service, and it does not collect any data. It only opens files that the user chooses.
-
-HOW TO TEST
-1. On the Vision Pro, open this URL in Safari and download the sample video (QuickTime, 5 min 20 s, 112 MB). We generated it with our own code for this review; it contains no third-party content.
-   https://github.com/shilokuma-vision/theater-player-app-vision/releases/download/review-sample/TheaterPlayer-Sample.mov
-   Safari saves it to the Downloads folder in the Files app.
-2. Open Theater Player. In the library window, tap "Choose a File", open Downloads, and choose TheaterPlayer-Sample.mov.
-3. The app enters the theater (Full immersion), and the show starts: a buzzer sounds, the house lights dim, and the curtains open (about 8.5 seconds; this only happens for videos 5 minutes or longer played from the beginning). Tap "Start Now" on the control panel to skip it.
-4. The sample has chapters: a countdown, color bars, a 5.1 speaker check (each speaker of the theater plays in turn), a sound that circles the room, ambient music, and end credits (the house lights come up a little during the credits).
-5. The control panel is in front of you at hand height. It has play/pause, skip back and forward, the playback position, and the Audio, Subtitles, Speed, 3D, Lighting, Seats, and Sound pages. "Seats" lets you move to another seat in the 442-seat theater. Pinch and drag the handle below the panel to move it. During playback the panel collapses after a few seconds; tap "Show Controls" to open it again.
-6. To leave, tap "Leave the Theater" on the control panel. The library window comes back.
-
-OTHER WAYS TO OPEN FILES
-- "Choose from Photos" plays videos and shows images from the photo library through the system photo picker (no permission prompt).
-- Files copied to Files > On My Apple Vision Pro > Theater Player can be chosen with "Choose a File".
-- Playback can also be controlled without the panel: Control Center, AirPods, Siri ("Pause Theater Player"), a Bluetooth keyboard, or a game controller.
-
-LICENSES
-Media playback uses FFmpeg (LGPL 2.1 or later), statically linked into the app. The license texts and the link to the source code of this version are in the app (library window > toolbar > Licenses). Our custom EULA keeps the rights granted by the LGPL.
-```
+- 書くこと：アプリの目的（手元のファイルを映画館で再生する。アカウント・データの収集・外部のサービスへの接続は無い）、サンプルの動画の URL と開き方、開演の流れ（5 分以上の動画で約 8.5 秒。「Start Now」で省ける）、操作パネル、映画館の出方、FFmpeg（LGPL）とライセンスの画面、プライバシーポリシーのリンクの場所
+- 画面の名前は英語の表示（`Choose a File`・`Start Now`・`Leave the Theater` など）に合わせます。ボタンの名前や操作を変えたら、メモも直します
+- サンプルの動画の URL（`review-sample` の Release）を変えたら、メモも直します
