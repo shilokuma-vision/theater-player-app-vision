@@ -234,7 +234,8 @@ App Store のプロダクトページに載せるものは、`AppStore/` の JSO
 | ワークフロー | 反映するもの | 元ネタ | ランナー |
 |---|---|---|---|
 | `Screenshots/App Store` | スクリーンショット（Apple Vision Pro × 各言語） | `AppStore/screenshots.json` / `AppStore/languages.json` / `AppStore/app.json` | 撮影は macOS（映画館の場面は手元の Mac）、反映は ubuntu |
-| `Metadata/App Store` | 名前・サブタイトル・説明文・キーワード・プロモーションテキスト・最新情報・URL・プライバシーポリシーの URL・著作権、カテゴリ・コンテンツの権利・年齢制限・App Review に関する情報・価格と配信状況（既定は dry-run） | `AppStore/metadata/*.json` / `AppStore/app_info.json` | ubuntu |
+| `Metadata/App Store` | 名前・サブタイトル・説明文・キーワード・プロモーションテキスト・最新情報・URL・プライバシーポリシーの URL・著作権、カテゴリ・コンテンツの権利・年齢制限・App Review に関する情報・価格と配信状況・使用許諾契約（既定は dry-run） | `AppStore/metadata/*.json` / `AppStore/app_info.json` / `docs/EULA.md` | ubuntu |
+| `Submit/App Store` | バージョンへのビルドの選択と、審査への提出（提出は `submit` を true にしたときだけ。既定は dry-run） | App Store Connect の処理済みのビルド | ubuntu |
 | `Verify/App Store metadata` | PR で、文字数の上限・App 情報の書き方・撮影設定・撮影モードの Scene との対応を検査する | `AppStore/**` | ubuntu |
 
 iOS 版にあるプロダクトページのヘッダーと検索結果のクリエイティブアセットは、iOS / iPadOS の App Store にだけ出るものなので、このテンプレートには入れていません。
@@ -266,7 +267,7 @@ GitHub Actions の macOS ランナー（仮想マシン）の Simulator では�
 - 名前（`name`）・サブタイトル（`subtitle`）も言語ごとの JSON に書きます（どちらも 30 字まで）。App Store Connect では「App 情報」の項目で、説明文とは別の場所（`appInfoLocalizations`）に書き込みます。アプリを作ったときの言語（日本語）以外は、App Store Connect に App 情報の言語が無いので、`missing_locales` を `create` にして追加します。追加するには `name` が要ります
 - `shared.json` の `privacyPolicyUrl`（プライバシーポリシーの URL。すべてのアプリで必須）は全言語に、`copyright`（著作権。既定は `© 2026 Takumi Muraishi`）はバージョンに書き込みます。shilokuma のアプリのプライバシーポリシーは [shilokuma-inc/shilokuma-web](https://github.com/shilokuma-inc/shilokuma-web) の `privacy/apps.json` にアプリを足して `https://shilokuma.jp/privacy/<slug>/` に置きます
 
-**App 情報・審査の情報・価格と配信状況**
+**App 情報・審査の情報・価格と配信状況・使用許諾契約**
 
 - `AppStore/app_info.json` に書き、`Metadata/App Store` が説明文の後に続けて反映します（`Tools/upload_app_info.py`）
 - App 情報・年齢制限・価格・配信状況はプラットフォームによらずアプリに 1 つです。visionOS だけのアプリでも、iOS のアプリと同じ値の書き方をします（App Review に関する情報だけは visionOS のバージョンに書き込みます）
@@ -278,7 +279,8 @@ GitHub Actions の macOS ランナー（仮想マシン）の Simulator では�
 | 年齢制限 | `ageRating` | 質問ごとの回答。テンプレートはすべて「なし」（4+）なので、広告（`advertising`）・ほかの人の投稿（`userGeneratedContent`）などをアプリに合わせて見直します。質問が漏れていると PR の検査で落ちます |
 | App Review に関する情報 | `review`（`demoAccountRequired`・`notes`） | 連絡先とデモアカウントは JSON に書かず、下の Secrets から渡します。値はログに出しません |
 | 価格 | `pricing` | **App Store Connect で未設定のときだけ**無料にします。設定済みなら触りません |
-| 配信状況 | `availability` | **App Store Connect で未設定のときだけ**、すべての国と地域（`"ALL"`）か指定した国と地域で配信します。設定済みなら触りません |
+| 配信状況 | `availability` | **App Store Connect で未設定のときだけ**、すべての国と地域（`"ALL"`）か指定した国と地域で配信します。`"ALL"` のときは `excludedTerritories`（例: `["CHN"]`）で除けます。設定済みなら触りません |
+| 使用許諾契約（EULA） | `eula`（`file`） | 独自の使用許諾契約を、配信する国と地域（`availability` と同じ）に登録します。`file` が Markdown なら、最初の ```` ```text ```` のコードブロックの中を本文にします。あれば本文と国と地域を書き換えます |
 
 - 価格と配信状況は、最初のリリースの前に一度だけ決める項目です。JSON を書き換えても配信中のアプリの価格や配信先が変わらないよう、設定済みなら書き込みません。変えるときは App Store Connect の「価格および配信状況」で行います
 - App Review に関する情報の連絡先は、次の Secrets から渡します。Organization の Secrets に登録しておくと、テンプレートから作ったリポジトリすべてで使われます。登録していなければ連絡先は書き込まず、Job Summary の「審査に出す前に App Store Connect で入力が要るもの」に出ます
@@ -298,12 +300,18 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 |---|---|
 | アプリの作成（名前・プライマリ言語・バンドル ID・SKU） | API で作れません。「5. App Store Connect にアプリを作成する」の手順で、Upload の Job Summary に出る値で作ります |
 | App のプライバシー（収集するデータの申告） | API がありません。[TheaterPlayer/PrivacyInfo.xcprivacy](TheaterPlayer/PrivacyInfo.xcprivacy) とプライバシーポリシーに合わせて「App のプライバシー」で答え、公開します |
-| ビルドの選択と審査への提出 | リリースの判断なので人が行います。輸出コンプライアンスは [TheaterPlayer/Info.plist](TheaterPlayer/Info.plist) の `ITSAppUsesNonExemptEncryption`（`false`）で申告済みなので、聞かれません |
 | デジタルサービス法（EU）の取引業者の情報 | アプリごとではなくアカウントで一度だけ行います（「ビジネス」）。登録済みなら不要です |
-| 使用許諾契約（EULA） | 初めて出すときに一度だけ。[docs/EULA.md](docs/EULA.md) の文を「App 情報」→「使用許諾契約」に設定します（LGPL の FFmpeg を使うため。下の「ライセンス」） |
 | この版の Release | 審査に出すたびに作ります（下の「ライセンス」の「審査に出すときにすること」） |
 
-流す順は、`Metadata/App Store` を dry-run で実行して Job Summary の差分を確かめ → `dry_run` を外して実行 → 最後に出る「審査に出す前に App Store Connect で入力が要るもの」を App Store Connect で埋める、です。
+**ビルドの選択と審査への提出**
+
+- `Submit/App Store`（`Tools/submit_for_review.py`）が、バージョン（`app_version`）に、処理の終わったビルドを付けます。`build_number`（CFBundleVersion）を省くと、そのバージョンでいちばん新しくアップロードしたビルドを使います
+- develop へのマージでも同じバージョンのビルドが上がるので、リリースのブランチのビルドを付けるときは `build_number` で選びます
+- 審査に出すのは、`submit` を true にし、`dry_run` を外したときだけです（リリースの判断なので、どちらも既定は出さない側）。審査中・対応の要る提出があるときは、何も書き込まずに止まります
+- 輸出コンプライアンスは [TheaterPlayer/Info.plist](TheaterPlayer/Info.plist) の `ITSAppUsesNonExemptEncryption`（`false`）で申告済みなので、聞かれません
+- 審査を通ったあとの配信のしかた（リリースの方法）は変えません。今の値をログに出すので、変えるときは App Store Connect で行います
+
+流す順は、`Metadata/App Store` を dry-run で実行して Job Summary の差分を確かめ → `dry_run` を外して実行 → 最後に出る「審査に出す前に App Store Connect で入力が要るもの」を App Store Connect で埋める → `Submit/App Store` でビルドを付ける → 審査に出すと決めたら `submit` を true にして流す、です。
 
 ## アプリの構成
 
@@ -436,7 +444,7 @@ FFmpeg はアプリに静的にリンクしています。LGPL 2.1 の条件は�
 | FFmpeg を使っていること・LGPL であることを示し、ライセンスの全文を付ける | アプリの「ライセンス」の画面（ライブラリのウィンドウのツールバー）に、使い方・著作権・全文と、FFmpeg が about box に求める一文（"This software uses libraries from the FFmpeg project under the LGPLv2.1"）を出す |
 | 配ったバイナリと同じ FFmpeg のソースを渡す | 審査に出す版ごとに GitHub の Release を作り、FFmpeg・dav1d のソースの配布物を添付する。パッチとビルドのスクリプトは、その版のタグのリポジトリにある |
 | 利用者が FFmpeg を差し替えて作り直せる（第 6 条） | このアプリのソースをすべて公開しているので、差し替えた FFmpeg でビルドし直せる |
-| 使用許諾契約で、改変とデバッグのための解析を禁じない・LGPL の権利を制限しない | App Store Connect に [docs/EULA.md](docs/EULA.md) の使用許諾契約を設定する（Apple の標準使用許諾契約を使い、オープンソースの部品のライセンスを優先させる） |
+| 使用許諾契約で、改変とデバッグのための解析を禁じない・LGPL の権利を制限しない | [docs/EULA.md](docs/EULA.md) の使用許諾契約を、`Metadata/App Store` で App Store Connect に設定する（Apple の標準使用許諾契約を使い、オープンソースの部品のライセンスを優先させる） |
 
 ### 審査に出すときにすること
 

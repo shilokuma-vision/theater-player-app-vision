@@ -1,7 +1,7 @@
 # App Store の審査に出すとき
 
 審査に出すたびに確かめること、審査の担当者に渡すもの（サンプルの動画と Notes for Review）をまとめます。
-掲載情報の反映と、App Store Connect で手入力するもの（App のプライバシー・EULA など）は、README の「8. App Store の掲載情報」にあります。
+掲載情報（EULA を含む）の反映と、App Store Connect で手入力するもの（App のプライバシーなど）は、README の「8. App Store の掲載情報」にあります。
 
 ## 審査に出すたびにすること
 
@@ -24,7 +24,8 @@
    - FFmpeg・dav1d の配布物は `scripts/build-ffmpeg.sh` が置いた `.build/ffmpeg/src/` から取ります（SHA-256 を確かめます）。worktree などで無いときは、`FFMPEG_BUILD_DIR=<メインのフォルダ>/.build/ffmpeg` を付けます
 4. [審査のサンプル](#審査のサンプルの動画)の URL が開けるか確かめる
 5. [Notes for Review](#notes-for-review) が今の版の操作と合っているか確かめ、Metadata のワークフローで反映する（`AppStore/app_info.json` の `review.notes`）
-6. App Store Connect でビルドを選び、審査へ提出する
+6. `Submit/App Store` のワークフローで、出すビルドを付ける（`build_number` に 3 で確かめたビルドの番号を入れる。まず dry-run で、付けるビルドを確かめる）
+7. 審査に出すと決めたら、`Submit/App Store` を `submit` を true にし、`dry_run` を外して流す（App Store Connect の画面で提出してもよい）
 
 ## Release のバイナリの点検
 

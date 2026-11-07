@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""App 情報（カテゴリ・コンテンツの権利・年齢制限）・App Review に関する情報・価格と配信状況を App Store Connect に反映する。
+"""App 情報（カテゴリ・コンテンツの権利・年齢制限）・App Review に関する情報・価格と配信状況・使用許諾契約を App Store Connect に反映する。
 
 `AppStore/app_info.json` を読む。名前・サブタイトル・プライバシーポリシーの URL・著作権は、
 言語ごとの掲載文と一緒に `upload_metadata.py` が反映する。
@@ -15,6 +15,7 @@
     年齢制限（ageRatingDeclarations）                 … 年齢制限の質問への回答
     App Review に関する情報（appStoreReviewDetails）  … 連絡先・メモ・デモアカウント（バージョンごと）
     価格（appPriceSchedules）・配信状況（appAvailabilities） … App Store Connect で未設定のときだけ
+    使用許諾契約（endUserLicenseAgreements）          … 独自の使用許諾契約の本文と、適用する国と地域（配信する国と地域と同じ）
 
 価格と配信状況は、一度決めたら App Store Connect の画面で変える前提なので、設定済みなら触らない
 （JSON を書き換えても、配信中のアプリの価格や配信先が変わらないようにするため）。
@@ -123,6 +124,9 @@ DEMO_ACCOUNT_ENV = {
 HIDDEN_FIELDS = set(CONTACT_ENV) | set(DEMO_ACCOUNT_ENV)
 
 TERRITORY_PATTERN = re.compile(r"[A-Z]{3}")
+
+#: 使用許諾契約の Markdown で、本文として読むコードブロックの始まりの行
+EULA_FENCE = "```text"
 CATEGORY_PATTERN = re.compile(r"[A-Z][A-Z_]*")
 
 
@@ -259,9 +263,51 @@ def load_availability(raw, problems: list[str]) -> dict | None:
         and all(isinstance(code, str) and TERRITORY_PATTERN.fullmatch(code) for code in territories)
     ):
         problems.append("availability.territories は \"ALL\" か、国と地域の 3 文字のコードの配列で書く（例: [\"JPN\"]）")
+    excluded = availability.get("excludedTerritories")
+    if excluded is not None and not (
+        territories == "ALL" and isinstance(excluded, list)
+        and all(isinstance(code, str) and TERRITORY_PATTERN.fullmatch(code) for code in excluded)
+    ):
+        problems.append(
+            "availability.excludedTerritories は territories が \"ALL\" のときだけ、"
+            "国と地域の 3 文字のコードの配列で書く（例: [\"CHN\"]）"
+        )
     if not isinstance(availability.get("availableInNewTerritories"), bool):
         problems.append("availability.availableInNewTerritories は true か false で書く")
     return availability
+
+
+def load_eula(raw, problems: list[str]) -> dict | None:
+    """使用許諾契約の本文を読む。Markdown のファイルなら、最初の ```text のコードブロックの中身を本文にする。
+
+    App Store Connect の使用許諾契約は書式の無いテキストとして表示されるので、Markdown の見出しや記号は入れない
+    （docs/EULA.md は、説明の下の ```text の中に、そのまま設定できる形で本文を書いている）。
+    """
+    if raw is None:
+        return None
+    eula = without_comment(raw) if isinstance(raw, dict) else {}
+    name = eula.get("file")
+    if not (isinstance(name, str) and name.strip()):
+        problems.append("eula.file に本文のファイルを、リポジトリのルートからのパスで書く（例: \"docs/EULA.md\"）")
+        return None
+    path = ROOT / name
+    if not path.is_file():
+        problems.append(f"eula.file のファイルがありません: {name}")
+        return None
+    text = path.read_text(encoding="utf-8")
+    if path.suffix.lower() == ".md":
+        lines = text.splitlines()
+        if EULA_FENCE not in lines or "```" not in lines[lines.index(EULA_FENCE) + 1:]:
+            problems.append(f"{name} に、本文を入れた {EULA_FENCE} 〜 ``` のコードブロックがありません")
+            return None
+        start = lines.index(EULA_FENCE) + 1
+        end = lines.index("```", start)
+        text = "\n".join(lines[start:end])
+    text = text.strip()
+    if not text:
+        problems.append(f"{name} の使用許諾契約の本文が空です")
+        return None
+    return {"file": name, "text": text}
 
 
 def load(path: Path) -> tuple[dict, list[str]]:
@@ -280,6 +326,7 @@ def load(path: Path) -> tuple[dict, list[str]]:
         "review": load_review(raw.get("review"), problems),
         "pricing": load_pricing(raw.get("pricing"), problems),
         "availability": load_availability(raw.get("availability"), problems),
+        "eula": load_eula(raw.get("eula"), problems),
         "placeholders": placeholders(raw),
     }
     if config["contentRights"] not in CONTENT_RIGHTS:
@@ -447,7 +494,8 @@ def plan_pricing(client, app: dict, pricing: dict) -> Step:
     label = "価格"
     schedule = client.get_or_none(f"/v1/apps/{app['id']}/appPriceSchedule")
     if schedule is not None:
-        manual_prices = client.get(f"/v1/appPriceSchedules/{schedule['id']}/manualPrices", {"limit": 1}).get("data")
+        # 価格を一度も設定していないアプリでも appPriceSchedule は返るが、その manualPrices は 404 になる（未設定として扱う）
+        manual_prices = client.get_or_none(f"/v1/appPriceSchedules/{schedule['id']}/manualPrices", {"limit": 1})
         if manual_prices:
             return label, ["    設定済みなので触りません（変えるときは App Store Connect の「価格および配信状況」で）"], None
 
@@ -486,6 +534,32 @@ def _is_zero(price) -> bool:
         return False
 
 
+def all_territories(client) -> list[str]:
+    """App Store Connect の国と地域のコードをすべて返す（1 回の実行で何度も読まないよう、client に覚えておく）。"""
+    cached = getattr(client, "_all_territories", None)
+    if cached is None:
+        cached = [entry["id"] for entry in client.get_all("/v1/territories")]
+        client._all_territories = cached
+    return cached
+
+
+def selected_territories(availability: dict | None, territories: list[str]) -> list[str]:
+    """配信状況の書き方（"ALL" と excludedTerritories、または 3 文字のコードの配列）から、配信する国と地域を返す。
+
+    配信状況を書いていないときは、すべての国と地域。
+    """
+    if availability is None or availability["territories"] == "ALL":
+        excluded = set((availability or {}).get("excludedTerritories") or [])
+        unknown = sorted(excluded - set(territories))
+        selected = [code for code in territories if code not in excluded]
+    else:
+        unknown = sorted(set(availability["territories"]) - set(territories))
+        selected = list(availability["territories"])
+    if unknown:
+        raise SystemExit(f"App Store Connect に無い国と地域のコード: {', '.join(unknown)}")
+    return selected
+
+
 def plan_availability(client, app: dict, availability: dict, reminders: list[str]) -> Step:
     label = "配信状況"
     current = client.get_or_none(f"/v1/apps/{app['id']}/appAvailabilityV2")
@@ -496,13 +570,15 @@ def plan_availability(client, app: dict, availability: dict, reminders: list[str
             reminders.append("価格および配信状況の、配信する国と地域（1 つも選ばれていません）")
         return label, [f"    設定済みなので触りません（{count} の国と地域で配信。変えるときは App Store Connect で）"], None
 
-    territories = [entry["id"] for entry in client.get_all("/v1/territories")]
-    selected = territories if availability["territories"] == "ALL" else availability["territories"]
-    unknown = sorted(set(selected) - set(territories))
-    if unknown:
-        raise SystemExit(f"App Store Connect に無い国と地域のコード: {', '.join(unknown)}")
+    territories = all_territories(client)
+    selected = selected_territories(availability, territories)
     new_territories = "はい" if availability["availableInNewTerritories"] else "いいえ"
-    lines = [f"    （未設定） → {len(selected)} の国と地域で配信（新しい国と地域にも自動で配信: {new_territories}）"]
+    excluded = availability.get("excludedTerritories") or []
+    excluded_note = f"。配信しない: {', '.join(excluded)}" if excluded else ""
+    lines = [
+        f"    （未設定） → {len(selected)} の国と地域で配信"
+        f"（新しい国と地域にも自動で配信: {new_territories}{excluded_note}）"
+    ]
 
     # 配信しない国と地域も available: false で明示し、すべての国と地域の扱いを 1 回で決める
     return label, lines, lambda: client.post(
@@ -529,6 +605,53 @@ def plan_availability(client, app: dict, availability: dict, reminders: list[str
             ],
         },
     )
+
+
+def plan_eula(client, app: dict, eula: dict, availability: dict | None) -> Step:
+    """使用許諾契約を、配信する国と地域（配信状況の書き方と同じ）に登録する。あれば本文と国と地域を書き換える。"""
+    label = "使用許諾契約"
+    territories = selected_territories(availability, all_territories(client))
+    text = eula["text"]
+    territory_data = {"data": [{"type": "territories", "id": code} for code in territories]}
+
+    current = client.get_or_none(f"/v1/apps/{app['id']}/endUserLicenseAgreement")
+    if current is None:
+        lines = [f"    （未設定） → {len(territories)} の国と地域に、独自の使用許諾契約（{eula['file']}）"]
+        lines.extend(describe_changes({}, {"agreementText": text}))
+        return label, lines, lambda: client.post(
+            "/v1/endUserLicenseAgreements",
+            {
+                "data": {
+                    "type": "endUserLicenseAgreements",
+                    "attributes": {"agreementText": text},
+                    "relationships": {
+                        "app": {"data": {"type": "apps", "id": app["id"]}},
+                        "territories": territory_data,
+                    },
+                }
+            },
+        )
+
+    current_text = (current.get("attributes") or {}).get("agreementText") or ""
+    current_territories = {
+        entry["id"] for entry in client.get_all(f"/v1/endUserLicenseAgreements/{current['id']}/territories")
+    }
+    lines = describe_changes({"agreementText": current_text}, {"agreementText": text})
+    added = sorted(set(territories) - current_territories)
+    removed = sorted(current_territories - set(territories))
+    if added or removed:
+        lines.append(
+            f"    territories: {len(current_territories)} → {len(territories)} の国と地域"
+            f"（足す: {', '.join(added) or 'なし'} / 外す: {', '.join(removed) or 'なし'}）"
+        )
+    if not lines:
+        return label, [], None
+    data: dict = {"type": "endUserLicenseAgreements", "id": current["id"]}
+    if current_text != text:
+        data["attributes"] = {"agreementText": text}
+    if added or removed:
+        data["relationships"] = {"territories": territory_data}
+    return label, lines, lambda: client.patch(f"/v1/endUserLicenseAgreements/{current['id']}", {"data": data})
 
 
 # MARK: - main
@@ -568,6 +691,8 @@ def main() -> int:
         print(f"  審査の情報: {', '.join(config['review']) or 'なし'}（連絡先は環境変数から）")
         print(f"  価格: {'無料（未設定のときだけ）' if config['pricing'] else '書き込まない'}")
         print(f"  配信状況: {'未設定のときだけ' if config['availability'] else '書き込まない'}")
+        eula = config["eula"]
+        print(f"  使用許諾契約: {eula['file'] + '（' + str(len(eula['text'])) + ' 字）' if eula else '書き込まない'}")
         print("問題なし")
         return 0
 
@@ -610,6 +735,8 @@ def main() -> int:
         steps.append(plan_pricing(client, app, config["pricing"]))
     if config["availability"]:
         steps.append(plan_availability(client, app, config["availability"], reminders))
+    if config["eula"]:
+        steps.append(plan_eula(client, app, config["eula"], config["availability"]))
 
     for label, lines, write in steps:
         if write is None:
@@ -626,7 +753,7 @@ def main() -> int:
     # アプリの作成は、済んでいなければ find_app で先に止まるので載せない
     reminders.extend([
         "App のプライバシー（収集するデータの申告。API が無いので、いつも App Store Connect で入力する）",
-        "ビルドの選択と審査への提出",
+        "ビルドの選択と審査への提出（Submit/App Store のワークフロー。審査に出すのは submit を true にしたときだけ）",
         "デジタルサービス法（EU）の取引業者の情報（アカウントで一度だけ。登録済みなら不要）",
     ])
     print("審査に出す前に App Store Connect で入力が要るもの:")
