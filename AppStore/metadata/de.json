@@ -1,0 +1,27 @@
+{
+  "_comment": [
+    "App Store のドイツ語（de-DE）の説明文など。上限: name 30 字 / subtitle 30 字 / description 4000 字 / keywords 合計 100 字（カンマ込み）/ promotionalText 170 字 / whatsNew 4000 字。",
+    "書き方の決まり（省略したときの扱い・whatsNew・商標）は en.json・ja.json の _comment と同じ。",
+    "en.json の英語から訳し、用語はアプリの訳（TheaterPlayer/Localizable.xcstrings）にそろえている。en.json を変えたら、ここもそろえる。",
+    "アプリと同じく du で書く。"
+  ],
+  "name": "Theater Player",
+  "subtitle": "Dein Kino mit 442 Plätzen",
+  "promotionalText": "Betritt ein Kino mit 442 Plätzen, wähle deinen Platz und sieh deine eigenen Videos auf der großen Leinwand – mit Klang aus 31 Lautsprechern rund um dich.",
+  "description": "Theater Player bringt dich auf Apple Vision Pro in ein Kino mit 442 Plätzen. Spiele deine eigenen Videos und deine Musik ab und zeige Bilder und PDFs auf der großen Leinwand.\nSuch dir einen Platz aus, warte, bis das Saallicht gedimmt wird und sich der Vorhang öffnet, und erlebe den Film so, wie er gedacht ist.\n\n■ Ein Kino bis ins Detail\n• Ein in Blender gebauter Kinosaal mit 442 Plätzen in Stadionbestuhlung: gebogene Leinwand, Maskierung, Holzlamellen und Akustikpaneele, eine schwebende Decke mit Downlights und indirekter Beleuchtung, Gangbeleuchtung und Notausgangsschilder\n• Vorberechnete Beleuchtung: Die Farben des Films fallen von der Leinwand auf Wände und Sitze\n• Wechsle im Sitzplan auf jeden beliebigen Platz\n\n■ Kinoklang\n• 31 Lautsprecher hinter der Leinwand, an Seiten- und Rückwänden und an der Decke sowie ein Subwoofer – alles als 3D-Audio wiedergegeben\n• 5.1, 7.1 und 7.1.4 werden unverändert wiedergegeben, Stereo wird wie im Kino aufgefächert\n• Passe Bassanhebung, virtuellen Bass, Dialoganhebung, Raumhall und mehr an\n\n■ Vorhang auf\n• Startet ein Video von Anfang an, ertönt ein Signalton, das Saallicht wird gedimmt und der Vorhang öffnet sich, bevor der Hauptfilm beginnt\n• Während des Abspanns wird es etwas heller, danach kehrt das Licht langsam zur vollen Helligkeit zurück\n• Mit „Jetzt starten“ kannst du das überspringen\n\n■ Viele Formate\n• Video: MKV, MP4, MOV, AVI, WMV, FLV, WebM, TS, M2TS, VOB, OGG und mehr\n• Audio: AAC, AC-3, E-AC-3, FLAC, ALAC, MP3, Opus, Vorbis, WAV und mehr\n• Hardwaredecodierung für H.264 und HEVC (einschließlich HDR)\n• Untertitel (SRT, ASS, WebVTT, PGS und mehr), Wahl der Audio- und Untertitelspur, Kapitel, Wiedergabetempo, Audio- und Untertitelverzögerung und Fortsetzen der Wiedergabe\n\n■ 3D\n• 3D-Videos nebeneinander oder übereinander (Full und Half) erscheinen in 3D auf der Leinwand\n• Sieh dir mit iPhone oder Apple Vision Pro aufgenommene räumliche Videos in 3D an\n\n■ Bilder und PDFs\n• Zeige Bilder (PNG, JPEG, HEIC, GIF, WebP und mehr) und PDFs auf der Leinwand an\n• Blättere durch PDFs und öffne sie dort, wo du aufgehört hast\n\n■ Steuerung ohne Bedienfeld\n• Kontrollzentrum, AirPods und Siri („Theater Player pausieren“ und mehr)\n• Bluetooth-Tastaturen und Gamecontroller\n\n■ So kommen deine Dateien in die App\n• Der Ordner „Theater Player“ in der „Dateien“-App (Auf meinem Apple Vision Pro)\n• Öffne Dateien aus iCloud Drive, von externen Speichermedien oder von Dateiservern direkt an ihrem Ort, ohne sie zu kopieren\n• Wähle Videos aus Fotos aus\n\n■ Bitte beachten\n• Theater Player enthält keine Filme oder anderen Inhalte. Die App spielt Dateien ab, die du bereits hast\n• Kopiergeschützte Dateien (DRM) können nicht wiedergegeben werden\n• Kein Account nötig und keine Werbung\n\nVerfügbar auf Deutsch, Englisch, Französisch, Japanisch, Koreanisch sowie in vereinfachtem und traditionellem Chinesisch.",
+  "keywords": [
+    "video",
+    "videoplayer",
+    "film",
+    "mkv",
+    "untertitel",
+    "3d",
+    "sbs",
+    "räumlich",
+    "raumklang",
+    "surround",
+    "heimkino",
+    "leinwand",
+    "musik"
+  ]
+}

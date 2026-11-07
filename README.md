@@ -251,7 +251,7 @@ iOS 版にあるプロダクトページのヘッダーと検索結果のクリ�
 
 **名前・説明文・最新情報**
 
-- `AppStore/metadata/<言語>.json` と `shared.json` に書きます。テンプレートの仮の文言（`TODO:`）が残っているあいだは反映できません
+- `AppStore/metadata/<言語>.json` と `shared.json` に書きます。テンプレートの仮の文言（`TODO:`）が残っているあいだは反映できません。ただし `shared.json` の URL（`supportUrl`・`marketingUrl`・`privacyPolicyUrl`）だけは、仮の値のままなら書き込まずに飛ばし、ほかの項目を反映します（審査に出す前に URL を書いて、もう一度流します）
 - 「このバージョンの最新情報」は `whatsNew` に `{"version": "1.1.0", "text": "…"}` の形で書きます。`version` が反映先のバージョンと一致するときだけ書き込むので、リリースごとに両方を書き換えます（最初のバージョンには最新情報の欄がありません）
 - 名前（`name`）・サブタイトル（`subtitle`）も言語ごとの JSON に書きます（どちらも 30 字まで）。App Store Connect では「App 情報」の項目で、説明文とは別の場所（`appInfoLocalizations`）に書き込みます。アプリを作ったときの言語（日本語）以外は、App Store Connect に App 情報の言語が無いので、`missing_locales` を `create` にして追加します。追加するには `name` が要ります
 - `shared.json` の `privacyPolicyUrl`（プライバシーポリシーの URL。すべてのアプリで必須）は全言語に、`copyright`（著作権。既定は `© 2026 Takumi Muraishi`）はバージョンに書き込みます。shilokuma のアプリのプライバシーポリシーは [shilokuma-inc/shilokuma-web](https://github.com/shilokuma-inc/shilokuma-web) の `privacy/apps.json` にアプリを足して `https://shilokuma.jp/privacy/<slug>/` に置きます

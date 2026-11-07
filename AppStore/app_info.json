@@ -10,9 +10,12 @@
     "review は App Review に関する情報。ログインしないと使えない機能があるなら demoAccountRequired を true にし、notes（審査のメモ。英語で書く）に試し方を書く。",
     "  連絡先（氏名・電話番号・メールアドレス）とデモアカウントは個人情報・秘密なので、ここには書かず Secrets（APP_REVIEW_CONTACT_* / APP_REVIEW_DEMO_ACCOUNT_*）で渡す。",
     "pricing / availability は、App Store Connect で未設定のとき（最初のリリースの前）だけ書き込む。設定済みなら触らないので、価格や配信先を変えるときは App Store Connect の画面で行う。",
-    "  pricing.price は FREE だけ書ける（有料のアプリは App Store Connect で設定し、pricing を消す）。availability.territories は ALL（すべての国と地域）か、[\"JPN\"] のような 3 文字のコードの配列。"
+    "  pricing.price は FREE だけ書ける（有料のアプリは App Store Connect で設定し、pricing を消す）。availability.territories は ALL（すべての国と地域）か、[\"JPN\"] のような 3 文字のコードの配列。",
+    "Theater Player のカテゴリ: 映画館で観る体験が主なので ENTERTAINMENT をプライマリに、動画プレイヤーを探す人に向けて PHOTO_AND_VIDEO をセカンダリにする。",
+    "Theater Player の価格と配信する国と地域は未定なので、pricing と availability は書かない（App Store Connect の「価格および配信状況」で決める。中国本土で配るには ICP の届け出が要る）。"
   ],
-  "primaryCategory": "TODO: UTILITIES",
+  "primaryCategory": "ENTERTAINMENT",
+  "secondaryCategory": "PHOTO_AND_VIDEO",
   "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT",
   "ageRating": {
     "alcoholTobaccoOrDrugUseOrReferences": "NONE",
@@ -40,14 +43,7 @@
     "userGeneratedContent": false
   },
   "review": {
-    "demoAccountRequired": false
-  },
-  "pricing": {
-    "price": "FREE",
-    "baseTerritory": "JPN"
-  },
-  "availability": {
-    "territories": "ALL",
-    "availableInNewTerritories": true
+    "demoAccountRequired": false,
+    "notes": "Theater Player is a media player for Apple Vision Pro. It plays the user's own video and music files, and shows pictures and PDFs, inside a fully immersive movie theater. The app doesn't include any content, doesn't require an account, and doesn't connect to any server or third-party service.\n\nHow to review:\n1. Launch the app. The Library window opens.\n2. Choose \"Choose a File\" and select a video in the Files app (or \"Choose from Photos\" to pick a video in Photos). The app opens the theater (a Full immersive space) and starts playing.\n   If you need a sample video: open https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip in Safari (Big Buck Bunny, CC BY 3.0, Blender Foundation; 263 MB), tap the downloaded ZIP file in the Files app to expand it, then choose the MP4 file with \"Choose a File\".\n3. When a video of 5 minutes or longer plays from the beginning, an opening sequence (buzzer, house lights dimming, curtain opening; about 8.5 seconds) plays first. Choose \"Start Now\" on the control panel to skip it.\n4. Use the control panel in front of you to pause, seek, change seats, and adjust the lighting and sound. If the panel is collapsed, look at the screen and pinch to show it. Choose \"Leave the Theater\" to go back to the Library.\n\nOpen source software:\nThe app statically links FFmpeg (LGPL 2.1 or later) and dav1d (BSD 2-Clause). Their license texts and links to the source code are in Licenses (in the toolbar of the Library window)."
   }
 }
