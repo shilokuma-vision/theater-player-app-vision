@@ -37,7 +37,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from app_store_config import MAX_SCREENSHOTS, bundle_id, languages, parse_list
-from app_store_connect import DELIVERY_TIMEOUT, AppStoreConnect
+from app_store_connect import AppStoreConnect
+
+
+#: 取り込みに失敗した・終わらない画像を上げ直す回数の上限
+MAX_REDELIVERY = 2
 
 
 def screenshots_for(directory: Path) -> list[Path]:
@@ -157,22 +161,24 @@ def main() -> int:
 
         screenshot_ids = [client.upload(set_id, image) for image in images]
         client.reorder(set_id, screenshot_ids)
-        pending = client.wait_for_delivery(screenshot_ids)
-        # 取り込みが終わらない物は、消して上げ直す（1 回だけ）。並び順は上げ直した物で揃え直す
-        if pending:
+        problems = client.wait_for_delivery(screenshot_ids)
+        # 取り込みに失敗した・終わらない画像だけを、消して上げ直す（上限まで）。並び順は上げ直した物でそろえ直す
+        for attempt in range(1, MAX_REDELIVERY + 1):
+            if not problems:
+                break
             retried = []
-            for screenshot_id in pending:
+            for screenshot_id, reason in problems.items():
                 index = screenshot_ids.index(screenshot_id)
-                print(f"  {target.language}: {images[index].name} の取り込みが終わらないので、上げ直します")
+                print(f"  {target.language}: {reason}。上げ直します（{attempt}/{MAX_REDELIVERY}）")
                 client.delete(f"/v1/appScreenshots/{screenshot_id}")
                 screenshot_ids[index] = client.upload(set_id, images[index])
                 retried.append(screenshot_ids[index])
             client.reorder(set_id, screenshot_ids)
-            pending = client.wait_for_delivery(retried)
-        if pending:
+            problems = client.wait_for_delivery(retried)
+        if problems:
             raise SystemExit(
-                f"{target.language}: {len(pending)} 枚の取り込みが、上げ直しても {DELIVERY_TIMEOUT} 秒で終わりませんでした。"
-                "App Store Connect の画面で状態を確認してください。"
+                f"{target.language}: {MAX_REDELIVERY} 回上げ直しても取り込めませんでした。"
+                "App Store Connect の画面で状態を確認してください。\n  " + "\n  ".join(problems.values())
             )
         uploaded_total += len(images)
         print(f"  {target.language} → {target.store_locale}: {len(images)} 枚")
