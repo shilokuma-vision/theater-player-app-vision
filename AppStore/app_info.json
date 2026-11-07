@@ -43,6 +43,7 @@
     "userGeneratedContent": false
   },
   "review": {
-    "demoAccountRequired": false
+    "demoAccountRequired": false,
+    "notes": "Theater Player is a media player for Apple Vision Pro. It plays the user's own video and music files, and shows pictures and PDFs, inside a fully immersive movie theater. The app doesn't include any content, doesn't require an account, and doesn't connect to any server or third-party service.\n\nHow to review:\n1. Launch the app. The Library window opens.\n2. Choose \"Choose a File\" and select a video in the Files app (or \"Choose from Photos\" to pick a video in Photos). The app opens the theater (a Full immersive space) and starts playing.\n   If you need a sample video: open https://download.blender.org/demo/movies/BBB/bbb_sunflower_1080p_30fps_normal.mp4.zip in Safari (Big Buck Bunny, CC BY 3.0, Blender Foundation; 263 MB), tap the downloaded ZIP file in the Files app to expand it, then choose the MP4 file with \"Choose a File\".\n3. When a video of 5 minutes or longer plays from the beginning, an opening sequence (buzzer, house lights dimming, curtain opening; about 8.5 seconds) plays first. Choose \"Start Now\" on the control panel to skip it.\n4. Use the control panel in front of you to pause, seek, change seats, and adjust the lighting and sound. If the panel is collapsed, look at the screen and pinch to show it. Choose \"Leave the Theater\" to go back to the Library.\n\nOpen source software:\nThe app statically links FFmpeg (LGPL 2.1 or later) and dav1d (BSD 2-Clause). Their license texts and links to the source code are in Licenses (in the toolbar of the Library window)."
   }
 }
