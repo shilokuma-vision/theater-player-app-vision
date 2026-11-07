@@ -37,7 +37,7 @@ xcodebuild archive -project TheaterPlayer.xcodeproj -scheme TheaterPlayer -sdk x
 ```bash
 app=/tmp/TheaterPlayer.xcarchive/Products/Applications/TheaterPlayer.app
 otool -L "$app/TheaterPlayer" | grep -i webkit
-grep -a -c -i -e youtube -e screenshot-demo -e '\[TheaterPlayer\]' "$app/TheaterPlayer"
+grep -a -c -i -e youtube -e '\[TheaterPlayer\]' "$app/TheaterPlayer"
 nm -u "$app/TheaterPlayer" | grep -E '^_(stat|fstat|fstatat|lstat|getattrlist|getattrlistbulk|fgetattrlist|getattrlistat|statfs|statvfs|fstatfs|fstatvfs|mach_absolute_time)$'
 plutil -p "$app/Info.plist" | grep -e UsageDescription -e NSAppTransportSecurity -e ITSAppUsesNonExemptEncryption
 ```
@@ -45,7 +45,7 @@ plutil -p "$app/Info.plist" | grep -e UsageDescription -e NSAppTransportSecurity
 | 見るもの | 期待する結果 |
 |---|---|
 | WebKit | リンクしていない（デバッグ用の YouTube は `#if DEBUG` の中だけ） |
-| `youtube`・`screenshot-demo`・`[TheaterPlayer]`（診断のログ） | 0 件 |
+| `youtube`・`[TheaterPlayer]`（診断のログ） | 0 件 |
 | `nm -u` の理由の申告が要る API | `stat`・`fstat`・`lstat`（File timestamp）と `mach_absolute_time`（System boot time）だけ。増えたら README の「プライバシーマニフェスト」に沿って申告を足す |
 | Info.plist | 権限の文言（`…UsageDescription`）と ATS の例外が無く、`ITSAppUsesNonExemptEncryption` が `false` |
 
@@ -60,7 +60,10 @@ App Store に出す Release では、起動引数で動きを変える隠しの�
 | 起動引数 | 使い道 | 効くビルド |
 |---|---|---|
 | `-tp-diagnostics` | 実機で再生の様子を調べるログ（`Diagnostics`） | Debug と、`TP_DIAGNOSTICS` を付けたビルドだけ |
-| `-screenshot-demo` | App Store のスクリーンショットの撮影（`ScreenshotDemo`） | 撮影の構成のビルド（`Tools/capture_screenshots.sh`） |
+| `-screenshot-demo` | App Store のスクリーンショットの撮影（`ScreenshotDemo`） | Release でも効く（撮影は Release でビルドする）。今は普段と同じライブラリを開くだけで、機能の差は無い |
+
+撮影モードで映画館やデモのデータを出すようにするときは、`-tp-diagnostics` と同じく `#if DEBUG || SCREENSHOT_DEMO` で囲み、
+撮影のビルド（`Tools/capture_screenshots.sh` の xcodebuild）にだけ `SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) SCREENSHOT_DEMO'` を付けて、提出するバイナリに残さないようにします。
 
 実機の確認で、Release に診断のログを入れるときは、次のようにビルドします（Debug は音響の処理が追いつかないため、実機の確認は Release で行います）。
 
