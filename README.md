@@ -316,6 +316,20 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 - サラウンドは同じ信号を何台ものスピーカーで鳴らす（映画館のアレイ）ので、スピーカーごとに 0〜6 ms ずらして音が濁らないようにしています
 - 再生の時計は、音が実際に鳴った位置（描画の時刻）から求め、映像の時計（`AVSampleBufferRenderSynchronizer`）をそれに合わせます
 
+### 診断のログ（実機の確認）
+
+起動引数 `-tp-diagnostics` を付けると、再生の様子（デコード・映像の待ち行列・音の時計など）を 1 秒ごとに標準エラーへ書きます（[Diagnostics.swift](Packages/TheaterMedia/Sources/TheaterMedia/Diagnostics.swift)）。
+App Store に出す Release には入れない（隠しの機能を残さない。ガイドライン 2.5.19）ので、効くのは Debug と、`TP_DIAGNOSTICS` の印を付けたビルドだけです。
+実機の確認は Release で行う（Debug は音響の処理が追いつかない）ので、Release に印を付けてビルドします（コマンドラインの指定はローカルのパッケージにも効きます）。
+
+```bash
+xcodebuild build -project TheaterPlayer.xcodeproj -scheme TheaterPlayer -configuration Release -destination 'generic/platform=visionOS' "SWIFT_ACTIVE_COMPILATION_CONDITIONS=\$(inherited) TP_DIAGNOSTICS" -derivedDataPath <リポジトリの外> -allowProvisioningUpdates -skipPackagePluginValidation -skipMacroValidation
+```
+
+```bash
+xcrun devicectl device process launch --console --device <実機> jp.shilokuma.TheaterPlayer -- -tp-diagnostics
+```
+
 ## 構成
 
 ```
