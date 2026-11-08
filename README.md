@@ -281,6 +281,7 @@ GitHub Actions の macOS ランナー（仮想マシン）の Simulator では�
 | 価格 | `pricing` | **App Store Connect で未設定のときだけ**無料にします。設定済みなら触りません |
 | 配信状況 | `availability` | **App Store Connect で未設定のときだけ**、すべての国と地域（`"ALL"`）か指定した国と地域で配信します。`"ALL"` のときは `excludedTerritories`（例: `["CHN"]`）で除けます。設定済みなら触りません |
 | 使用許諾契約（EULA） | `eula`（`file`） | 独自の使用許諾契約を、配信する国と地域（`availability` と同じ）に登録します。`file` が Markdown なら、最初の ```` ```text ```` のコードブロックの中を本文にします。あれば本文と国と地域を書き換えます |
+| 動きの激しいコンテンツのラベル | `hasHighMotionLabel`（必須） | visionOS のバージョンの属性で、審査に出すのに必須です（未設定だと提出が 409 で止まります）。酔いやすい動きを含むなら `true`。バージョンを作るたびに書き込みます |
 
 - 価格と配信状況は、最初のリリースの前に一度だけ決める項目です。JSON を書き換えても配信中のアプリの価格や配信先が変わらないよう、設定済みなら書き込みません。変えるときは App Store Connect の「価格および配信状況」で行います
 - App Review に関する情報の連絡先は、次の Secrets から渡します。Organization の Secrets に登録しておくと、テンプレートから作ったリポジトリすべてで使われます。登録していなければ連絡先は書き込まず、Job Summary の「審査に出す前に App Store Connect で入力が要るもの」に出ます
@@ -308,6 +309,7 @@ API が無い・アカウントで一度だけ行うなど、ワークフロー�
 - `Submit/App Store`（`Tools/submit_for_review.py`）が、バージョン（`app_version`）に、処理の終わったビルドを付けます。`build_number`（CFBundleVersion）を省くと、そのバージョンでいちばん新しくアップロードしたビルドを使います
 - develop へのマージでも同じバージョンのビルドが上がるので、リリースのブランチのビルドを付けるときは `build_number` で選びます
 - 審査に出すのは、`submit` を true にし、`dry_run` を外したときだけです（リリースの判断なので、どちらも既定は出さない側）。審査中・対応の要る提出があるときは、何も書き込まずに止まります
+- 審査に出すときは、バージョンの必須の項目（`hasHighMotionLabel`）が未設定なら、dry-run でも何も書き込まずに止まります。`AppStore/app_info.json` に書いて `Metadata/App Store` を流してから出します
 - 輸出コンプライアンスは [TheaterPlayer/Info.plist](TheaterPlayer/Info.plist) の `ITSAppUsesNonExemptEncryption`（`false`）で申告済みなので、聞かれません
 - 審査を通ったあとの配信のしかた（リリースの方法）は変えません。今の値をログに出すので、変えるときは App Store Connect で行います
 

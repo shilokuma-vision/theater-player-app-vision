@@ -14,6 +14,7 @@
     App 情報（appInfos）                              … カテゴリ
     年齢制限（ageRatingDeclarations）                 … 年齢制限の質問への回答
     App Review に関する情報（appStoreReviewDetails）  … 連絡先・メモ・デモアカウント（バージョンごと）
+    バージョン（appStoreVersions）                    … 動きの激しいコンテンツのラベル（hasHighMotionLabel。visionOS で、審査に出すのに必須）
     価格（appPriceSchedules）・配信状況（appAvailabilities） … App Store Connect で未設定のときだけ
     使用許諾契約（endUserLicenseAgreements）          … 独自の使用許諾契約の本文と、適用する国と地域（配信する国と地域と同じ）
 
@@ -103,6 +104,13 @@ CATEGORY_KEYS = {
 SUBCATEGORY_KEYS = {
     "primarySubcategories": ("primarySubcategoryOne", "primarySubcategoryTwo"),
     "secondarySubcategories": ("secondarySubcategoryOne", "secondarySubcategoryTwo"),
+}
+
+#: バージョン（appStoreVersions）に書く属性と型。visionOS では審査に出すのに必須で、未設定だと提出が 409 で止まる。
+#: Submit/App Store（submit_for_review.py）の事前の確かめも、この一覧を見る
+VERSION_ATTRIBUTES = {
+    # 動きの激しいコンテンツ（酔いやすい動き）を含むか。App Store に「動きの激しいコンテンツ」のラベルが出る
+    "hasHighMotionLabel": bool,
 }
 
 #: 審査のメモの上限
@@ -310,6 +318,22 @@ def load_eula(raw, problems: list[str]) -> dict | None:
     return {"file": name, "text": text}
 
 
+def load_version_attributes(raw: dict, problems: list[str]) -> dict:
+    """バージョンに書く属性（hasHighMotionLabel など）。visionOS では必須なので、無ければ問題にする。"""
+    attributes = {}
+    for key, kind in VERSION_ATTRIBUTES.items():
+        if key not in raw:
+            problems.append(
+                f"{key} がありません（visionOS のバージョンで、審査に出すのに必須。"
+                "動きの激しいコンテンツを含まないなら false）"
+            )
+        elif not isinstance(raw[key], kind):
+            problems.append(f"{key} は {kind.__name__} で書く: {raw[key]!r}")
+        else:
+            attributes[key] = raw[key]
+    return attributes
+
+
 def load(path: Path) -> tuple[dict, list[str]]:
     if not path.is_file():
         return {}, [f"{path} がありません"]
@@ -327,6 +351,7 @@ def load(path: Path) -> tuple[dict, list[str]]:
         "pricing": load_pricing(raw.get("pricing"), problems),
         "availability": load_availability(raw.get("availability"), problems),
         "eula": load_eula(raw.get("eula"), problems),
+        "versionAttributes": load_version_attributes(raw, problems),
         "placeholders": placeholders(raw),
     }
     if config["contentRights"] not in CONTENT_RIGHTS:
@@ -454,6 +479,19 @@ def plan_age_rating(client, app_info: dict, answers: dict) -> Step:
     return label, describe(current, changed), lambda: client.patch(
         f"/v1/ageRatingDeclarations/{declaration['id']}",
         {"data": {"type": "ageRatingDeclarations", "id": declaration["id"], "attributes": changed}},
+    )
+
+
+def plan_version_attributes(client, version: dict, attributes: dict) -> Step:
+    """バージョン（appStoreVersions）の属性を書き換える（hasHighMotionLabel など）。"""
+    label = "バージョンの設定"
+    current = version.get("attributes") or {}
+    changed = {key: value for key, value in attributes.items() if current.get(key) != value}
+    if not changed:
+        return label, [], None
+    return label, describe(current, changed), lambda: client.patch(
+        f"/v1/appStoreVersions/{version['id']}",
+        {"data": {"type": "appStoreVersions", "id": version["id"], "attributes": changed}},
     )
 
 
@@ -693,6 +731,7 @@ def main() -> int:
         print(f"  配信状況: {'未設定のときだけ' if config['availability'] else '書き込まない'}")
         eula = config["eula"]
         print(f"  使用許諾契約: {eula['file'] + '（' + str(len(eula['text'])) + ' 字）' if eula else '書き込まない'}")
+        print(f"  バージョンの設定: {', '.join(f'{key} {show(value)}' for key, value in config['versionAttributes'].items())}")
         print("問題なし")
         return 0
 
@@ -730,6 +769,7 @@ def main() -> int:
         plan_categories(client, app_info, config["categories"]),
         plan_age_rating(client, app_info, config["ageRating"]),
         plan_review(client, version, review, reminders),
+        plan_version_attributes(client, version, config["versionAttributes"]),
     ]
     if config["pricing"]:
         steps.append(plan_pricing(client, app, config["pricing"]))
