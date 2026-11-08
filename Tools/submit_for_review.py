@@ -10,6 +10,8 @@
 develop へのマージでも同じバージョンのビルドが上がるので、リリースのブランチのビルドを付けるときは --build で選ぶ。
 
 審査への提出は reviewSubmissions で行う（提出の下書きを作り、バージョンを入れて、提出する）。
+バージョンの必須の属性（visionOS の hasHighMotionLabel など。AppStore/app_info.json から Metadata/App Store が書く）が
+未設定だと提出が 409 で止まるので、審査に出すときは、何かを書き込む前に確かめて止める（dry-run でも止める）。
 提出の下書き（READY_FOR_REVIEW）が残っていれば、それを使う。審査中・問題のある提出があるときは止める。
 提出の前に、Metadata/App Store の反映と、App Store Connect の画面での入力（App のプライバシーなど）を済ませておく。
 
@@ -31,6 +33,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from app_store_config import bundle_id
+from upload_app_info import VERSION_ATTRIBUTES
 
 #: 審査に出したあとの提出の状態。これがあるあいだは新しく出さない
 ACTIVE_SUBMISSION_STATES = ("WAITING_FOR_REVIEW", "IN_REVIEW", "UNRESOLVED_ISSUES", "CANCELING", "COMPLETING")
@@ -149,6 +152,25 @@ def main() -> int:
         raise SystemExit(
             "審査中か、対応の要る提出があるので、新しく審査に出しません。App Store Connect の画面で状態を確認してください。"
         )
+
+    # バージョンの必須の属性。null は未設定。応答に項目そのものが無いときは確かめられないので、注意だけ出す
+    attributes = version["attributes"]
+    missing = [key for key in VERSION_ATTRIBUTES if key in attributes and attributes[key] is None]
+    unknown = [key for key in VERSION_ATTRIBUTES if key not in attributes]
+    for key in VERSION_ATTRIBUTES:
+        value = attributes.get(key)
+        shown = "読めない" if key in unknown else "未設定" if value is None else str(value).lower()
+        print(f"  {key}: {shown}")
+    if unknown:
+        print(f"  注意: {', '.join(unknown)} を App Store Connect から読めませんでした（画面で入っているか確かめてください）")
+    if missing:
+        message = (
+            f"バージョン {version_string} の必須の項目が未設定です: {', '.join(missing)}。"
+            "AppStore/app_info.json に書いて Metadata/App Store を流すか、App Store Connect の画面で入れてから流してください。"
+        )
+        if args.submit:
+            raise SystemExit(message)
+        print(f"  注意: {message}")
 
     # ビルドの選択
     build = find_build(client, app["id"], version_string, PLATFORM, args.build)
