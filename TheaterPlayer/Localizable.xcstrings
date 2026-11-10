@@ -4625,42 +4625,42 @@
         }
       }
     },
-    "Search results and videos appear on the screen. Shorts don’t play. The sound doesn’t go through the theater’s sound system." : {
+    "Search results and videos appear on the screen. Shorts don’t play." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suchergebnisse und Videos erscheinen auf der Leinwand. Shorts werden nicht wiedergegeben. Der Ton wird nicht über das Soundsystem des Kinos ausgegeben."
+            "value" : "Suchergebnisse und Videos erscheinen auf der Leinwand. Shorts werden nicht wiedergegeben."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les résultats de recherche et les vidéos s’affichent sur l’écran. Les Shorts ne sont pas lus. Le son ne passe pas par le système audio de la salle."
+            "value" : "Les résultats de recherche et les vidéos s’affichent sur l’écran. Les Shorts ne sont pas lus."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "検索結果と動画はスクリーンに出ます。ショートは再生しません。音は映画館の音響を通りません"
+            "value" : "検索結果と動画はスクリーンに出ます。ショートは再生しません"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "검색 결과와 비디오가 스크린에 표시됩니다. Shorts는 재생되지 않습니다. 소리는 극장의 사운드 시스템을 거치지 않습니다."
+            "value" : "검색 결과와 비디오가 스크린에 표시됩니다. Shorts는 재생되지 않습니다."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "搜索结果和视频会显示在银幕上。无法播放 Shorts。声音不会经过影院的音响系统。"
+            "value" : "搜索结果和视频会显示在银幕上。无法播放 Shorts。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "搜尋結果和影片會顯示在銀幕上。無法播放 Shorts。聲音不會經過電影院的音響系統。"
+            "value" : "搜尋結果和影片會顯示在銀幕上。無法播放 Shorts。"
           }
         }
       }
