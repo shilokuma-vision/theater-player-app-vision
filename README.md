@@ -126,7 +126,7 @@ scripts/rename.sh MyApp
 - README のバッジ URL と Discussions の有効化に使うリポジトリ名は `origin` から推定します。別のものを使う場合は第 2 引数で `owner/repo` を渡します
 - 作業ツリーがクリーンな状態で実行し、実行後に `git diff` で差分を確認してコミットしてください
 - テストの `@testable import <アプリ名>` は、置き換えたあとに SwiftLint の `sorted_imports` に合う順へ並べ直します
-- テンプレートから作成したリポジトリには Discussions の設定が引き継がれず、無効のままになります（ralph-loop はゴールを Discussion で受け取ります）。スクリプトは `gh repo edit --enable-discussions` で有効にするため、`gh` で認証済みで、リポジトリの管理者権限が必要です
+- テンプレートから作成したリポジトリには Discussions の設定が引き継がれず、無効のままになります（AskHub は依頼の写しを Discussion に置きます）。スクリプトは `gh repo edit --enable-discussions` で有効にするため、`gh` で認証済みで、リポジトリの管理者権限が必要です
 - Discussions を有効にできなかったときは、リネームは止めずに警告と手順を表示します。表示された手順で有効にしてください
 
 ### 3. 署名情報を設定する
