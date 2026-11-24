@@ -183,6 +183,13 @@ final class TheaterStage {
         root.components.set(ReverbComponent(reverb: room.reverb))
     }
 
+    #if DEBUG
+    /// デバッグの YouTube：空間オーディオの音源を鳴らし直す。止まっていた音源の数を返す
+    func restartSpeakers() -> Int {
+        speakers.restart()
+    }
+    #endif
+
     /// 映像の形式に合わせて、スクリーンの映像の範囲とマスキングを変える。映像が無ければ（音楽）映像を消す。
     /// stereo は左右の目の並べ方（3D の映像なら、スクリーンとマスキングを片目の絵の縦横比に合わせる）。
     /// ceremony：開演の流れの段階。流しているあいだは映像を出さず（白いスクリーンの前で幕を開ける）、ブザーと 1 段目の暗転のあいだは幕を閉じる

@@ -43,7 +43,7 @@ final class AppModel {
     let hardwareControls = HardwareControls()
     #if DEBUG
     /// デバッグ用：スクリーンの前で開く YouTube
-    let youTube = YouTubeBrowser()
+    let youTube: YouTubeBrowser
     #endif
 
     /// デバッグの YouTube を、スクリーンの前に出している
@@ -59,6 +59,9 @@ final class AppModel {
         self.preferences = preferences
         self.recents = recents
         player = PlayerModel(preferences: preferences, recents: recents)
+        #if DEBUG
+        youTube = YouTubeBrowser(engine: player.engine, speakers: player.speakers)
+        #endif
         // コントロールセンター・AirPods・Siri・キーボード・コントローラーからの操作も、パネルの操作と同じ入口を通す
         player.nowPlaying.connect { [weak self] command in
             self?.perform(command)
@@ -66,6 +69,12 @@ final class AppModel {
         hardwareControls.connect { [weak self] command in
             self?.perform(command)
         }
+        #if DEBUG
+        // デバッグの YouTube の音を映画館の音響に通しているあいだ、空間オーディオが止まったら、今の舞台の音源を鳴らし直す
+        youTube.restartSpeakers = { [weak self] in
+            self?.activeStage?.restartSpeakers() ?? -1
+        }
+        #endif
     }
 
     /// 再生の操作を行う。操作パネル・Now Playing・キーボード・コントローラー・Siri のショートカット・スクリーンをつまむ操作など、
