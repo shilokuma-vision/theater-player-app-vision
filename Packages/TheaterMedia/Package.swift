@@ -1,6 +1,6 @@
 // swift-tools-version:6.2
 // 動画・音楽の再生（FFmpeg でファイルを開いてデコードし、映像は RealityKit のスクリーンへ、音声は映画館の音響処理へ渡す）。
-// FFmpeg は scripts/build-ffmpeg.sh で Vendor/FFmpeg.xcframework に作る（リポジトリには入れない）。
+// FFmpeg は GitHub の Release に置いた FFmpeg.xcframework を binaryTarget で取る（作り方は scripts/build-ffmpeg.sh、置き方は scripts/publish-ffmpeg-release.sh）。
 
 import PackageDescription
 
@@ -19,7 +19,13 @@ let package = Package(
         .package(path: "../TheaterCore")
     ],
     targets: [
-        .binaryTarget(name: "FFmpeg", path: "Vendor/FFmpeg.xcframework"),
+        // FFmpeg は scripts/build-ffmpeg.sh で作り、scripts/publish-ffmpeg-release.sh で GitHub の Release に置いたもの（LGPL のソースも同じ Release にある）。
+        // 作り方を変えて作り直したら、そのスクリプトが出す url と checksum に替える
+        .binaryTarget(
+            name: "FFmpeg",
+            url: "https://github.com/shilokuma-vision/theater-player-app-vision/releases/download/ffmpeg-9.0.2-dav1d-1.5.4-afc831a6/FFmpeg.xcframework.zip",
+            checksum: "0523d786444f7a7df744859c2fb88f15147b619e8655006984aaac84afb1bbf9"
+        ),
         .target(
             name: "CFFmpeg",
             dependencies: ["FFmpeg"],
