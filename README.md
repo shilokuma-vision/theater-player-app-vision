@@ -39,7 +39,7 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
 
 - Xcode 26.6
 - visionOS 26.0 以上
-- FFmpeg 9.0.2（LGPL の構成。`scripts/build-ffmpeg.sh` でソースから作る。下の「開発の準備」）
+- FFmpeg 9.0.2（LGPL の構成。`scripts/build-ffmpeg.sh` でソースから作り、GitHub の Release から取る。下の「開発の準備」）
 - Blender 5.2（映画館のモデルを作り直すときだけ。[Tools/Theater](Tools/Theater/README.md)）
 - Swift 6（Swift 6 言語モード / Strict Concurrency）
 - SwiftUI / RealityKit / Swift Testing / XCTest（UI テスト）
@@ -93,19 +93,25 @@ Apple Vision Pro で、映画館の空間に入って手元の動画・音楽を
 
 ## 開発の準備（FFmpeg）
 
-FFmpeg（と AV1 の dav1d）は、リポジトリに入れずにソースから作ります。clone したら最初に一度だけ実行してください（M4 Max で数分）。
+FFmpeg（と AV1 の dav1d）は、ソースから作って GitHub の Release に置いた `FFmpeg.xcframework`（zip）を、[Packages/TheaterMedia/Package.swift](Packages/TheaterMedia/Package.swift) の `binaryTarget(url:checksum:)` で取ります。
+clone した後に作る必要はありません（Xcode と `xcodebuild` がパッケージを解決するときに取ります。CI と AskHub のワーカーも同じ）。
+
+FFmpeg の版・パッチ・作り方を変えるときだけ、作り直して Release に置き直します。
 
 ```bash
-scripts/build-ffmpeg.sh
+scripts/build-ffmpeg.sh                       # 実機（xros）と Simulator（xrsimulator）の両方を作る
+scripts/publish-ffmpeg-release.sh             # 確かめるだけ。Package.swift に書く url と checksum を出す
+scripts/publish-ffmpeg-release.sh --publish   # Package.swift を直した後に、Release を作る（公開）
 ```
 
-- 公式の配布物（ffmpeg.org・videolan.org）を取得し、SHA-256 を確かめてから、visionOS の実機（xros）と Simulator（xrsimulator）向けにビルドします。Simulator の分だけなら `scripts/build-ffmpeg.sh xrsimulator`
+- `build-ffmpeg.sh` は、公式の配布物（ffmpeg.org・videolan.org）を取得し、SHA-256 を確かめてから、visionOS の実機（xros）と Simulator（xrsimulator）向けにビルドします
 - FFmpeg のソースには `scripts/ffmpeg/patches/` のパッチを当てます（visionOS に無い OpenGL ES の指定を Metal に替えるなど。中身は各パッチの先頭の説明）
-- できあがるのは `Packages/TheaterMedia/Vendor/FFmpeg.xcframework`（git には入りません）。これが無いと Xcode がパッケージを読めません
+- できあがるのは `Packages/TheaterMedia/Vendor/FFmpeg.xcframework`（git には入りません）。作ったものを Release に置く前に試すときは、`Package.swift` の binaryTarget を一時的に `path: "Vendor/FFmpeg.xcframework"` にします（コミットしない）
+- `publish-ffmpeg-release.sh` は、タグ `ffmpeg-<FFmpeg の版>-dav1d-<dav1d の版>-<作り方のハッシュ>` の Release に、zip と、LGPL の手続きとしてそのソース（公式の配布物・当てたパッチ・`build-ffmpeg.sh`）を添付します。
+  zip は時刻と並びをそろえて固めるので、同じ作ったものからは同じ checksum になります。`Package.swift` の url と checksum が出した値と違えば公開しません（先に `Package.swift` を直す PR を出します）
 - FFmpeg は LGPL 2.1 以降の構成です（GPL・nonfree のコンポーネントは有効にしません）。dav1d は BSD 2-Clause です
-- CI ではキャッシュし、スクリプト・パッチ・Xcode・Deployment Target が変わったときだけ作り直します
 - セキュリティソフトがスクリプトの直接の実行を止める（`zsh: killed`）Mac では、`bash scripts/build-ffmpeg.sh` で実行します
-- dav1d のビルドには Python の仮想環境に meson・ninja を入れます（pip を使います）。pip が使えないときは `FFMPEG_WITHOUT_DAV1D=1` を付けると dav1d を入れずに作れます（AV1 は VideoToolbox で扱える端末でだけ再生できます）
+- dav1d のビルドには Python の仮想環境に meson・ninja を入れます（pip を使います）。pip が使えないときは `FFMPEG_WITHOUT_DAV1D=1` を付けると dav1d を入れずに作れます（AV1 は VideoToolbox で扱える端末でだけ再生できます。Release に置くものは dav1d を入れて作ります）
 
 ## リポジトリの運用（テンプレートから引き継いだもの）
 
@@ -365,7 +371,7 @@ xcrun devicectl device process launch --console --device <実機> jp.shilokuma.T
 ├── TheaterPlayer.xcodeproj       # 共有スキーム TheaterPlayer を含む（パッケージのテストも実行する）
 ├── Packages/
 │   ├── TheaterCore/              # 映画館の音響処理（CinemaAudio）と空間（TheaterScene）
-│   ├── TheaterMedia/             # 再生のエンジン（FFmpeg）。Vendor/ は scripts/build-ffmpeg.sh が作る
+│   ├── TheaterMedia/             # 再生のエンジン（FFmpeg）。FFmpeg は Release の zip を取る（Vendor/ は scripts/build-ffmpeg.sh が作る）
 │   └── RealityKitContent/        # Reality Composer Pro の素材（テンプレートから）
 ├── AppStore/                     # App Store の掲載情報（言語・撮る画面・説明文）
 ├── Tools/
@@ -374,7 +380,7 @@ xcrun devicectl device process launch --console --device <実機> jp.shilokuma.T
 │   ├── ReviewSample/             # 審査の担当者に渡すサンプルの動画を、コードだけで作る道具
 │   └── …                         # スクリーンショットの撮影と App Store Connect への反映
 ├── docs/                         # ExportOptions.plist のサンプル・使用許諾契約（EULA）の文案・審査に出すときの手順（AppReview.md）
-├── scripts/                      # build-ffmpeg.sh・publish-source-release.sh（審査に出した版のソースの Release）・rename.sh
+├── scripts/                      # build-ffmpeg.sh・publish-ffmpeg-release.sh（FFmpeg の Release）・publish-source-release.sh（審査に出した版のソースの Release）・rename.sh
 ├── .swiftlint.yml                # SwiftLint 設定
 └── .github/                      # Issue・PR のテンプレートと、ワークフロー（_build.yml・_archive.yml は FFmpeg を作ってキャッシュする）
 ```
